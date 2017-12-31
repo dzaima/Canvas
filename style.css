@@ -9,6 +9,7 @@ textarea {
   background: #505C63;
   border-color: #333333;
   color: #D3D3D3;
+  resize: horizontal;
 }
 
 body {
@@ -29,6 +30,17 @@ button {
   border-color: #333333;
 }
 
+.left, .right {
+  vertical-align: top;
+  display: inline-block;
+  *display: inline;
+  zoom: 1;
+  width: 50%;
+}
+
+.right {
+  float: right;
+}
 
 a:hover {
   text-decoration: underline

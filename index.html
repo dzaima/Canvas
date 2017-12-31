@@ -2,16 +2,25 @@
 <meta charset="UTF-8">
 <html>
 <head>
-  <title>language</title>
+  <title>Canvas</title>
   <script src="bigDecimal.js"></script>
   <script src="asciiart.js"></script>
   <script src="main.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body style="background: #333;">
+  <center><H1 style="height:10px; margin-top:0;"><a href=https://github.com/dzaima/Canvas>Canvas</a></H1></center>
   <div id="p" style="width:40%;"><span id="bytecount" style="font-size:12px">0 bytes</span></div>
-  <textarea id="program" placeholder="Enter code..." spellcheck="false" style="width:100%" onclick="setTimeout(updater, 0);" oninput="setTimeout(updater, 0);"
-></textarea>
+  <div>
+    <div class="left">
+      <textarea id="program" placeholder="Enter code..." spellcheck="false" onclick="setTimeout(updater, 0);" oninput="setTimeout(updater, 0);"></textarea>
+    </div>
+    <div align="right" class="right">
+      <textarea id="inputs" placeholder="Enter inputs in each line" spellcheck="false" style="width:100%"></textarea>
+    </div>
+  </div>
+  <textarea id="result" placeholder="Output will be here" spellcheck="false" style="width:100%; background-color: #333333;" readonly></textarea>
+  <button id="run" onclick="runUI()">run</button>
   <!--
     9873｛62｛851｝5｝999991＋＋＋＋［o
     ９８７６５４３２１０１［３４｝９［ｏ
@@ -28,10 +37,6 @@
     |×╶_××/×««╶⇵［»：］⁷⇵ｍ↕↕┼╬
     Ｗ｛¹％］：Ｄ≡｝¹
   -->
-  <textarea id="inputs" placeholder="Enter inputs in each line" spellcheck="false" style="width:100%"
-></textarea>
-  <textarea id="result" placeholder="Output will be here" spellcheck="false" style="width:100%; background-color: #333333;" readonly></textarea>
-  <button id="run" onclick="runUI()">run</button>
   <script>
     async function runUI() {
       run(program.value, inputs.value.split("\n").map(
