@@ -34,8 +34,8 @@
   <input id="fakeFileInp" type="file" style="display:none" />
   <a id="fakeLink" style="display:none" />
   <script>
-    var usedVersion = -1;
     var latestVersion = 0;
+    var usedVersion = latestVersion;
     // loading initial permalinked data
     var args = location.search.substring(1).split(",");
     for (var i = 0; i < args.length; i++) {
