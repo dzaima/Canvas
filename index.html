@@ -156,10 +156,6 @@
           JScode = JScode.replace(/\b(async|await)\b/g, "");
           console.log("Looks like async isn't supported. Removing it from the code with Regex. Programs which run indefinitely can (and should) hang the page.");
         }
-<<<<<<< HEAD
-=======
-        Jst=JScode
->>>>>>> 9680cbc7677e39851f17aa6d879d0ed2576433fd
         window.eval(JScode);
       }
     });
