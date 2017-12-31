@@ -1,0 +1,35 @@
+textarea {
+  overflow: auto;
+  width: 98%;
+  font-family: Consolas, DejaVu Sans Mono, Monaco, Lucida Console, Liberation Mono, Bitstream Vera Sans Mono, Courier New, monospace;
+  font-size: 14px;
+  text-align: left;
+  border-radius: 4px;
+  height: 200px;
+  background: #505C63;
+  border-color: #333333;
+  color: #D3D3D3;
+}
+
+body {
+  background-color: #333;
+  color: #D3D3D3;
+}
+
+a {
+  color: #D3F3D3;
+  text-decoration: none;
+}
+button {
+  background-image: none;
+  background: none;
+  text-shadow: none;
+  background-color: #444;
+  color: #D3D3D3;
+  border-color: #333333;
+}
+
+
+a:hover {
+  text-decoration: underline
+}

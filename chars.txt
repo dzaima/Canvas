@@ -1,0 +1,296 @@
+⁰	wrap the stack in an array
+¹-⁹	context & input & program dependant variables
+  ⁹ - x: the program lines. ⁹ is the main program, ⁸ is the first helper, ⁷ - 2nd, ect.
+  after those, come the inputs. So for a program with 1 helper line the 1st input would be ⁷, the second ⁶, ect.
+  ¹-x: loop counters & stuff
+    the current loops item is it's depth, and optionally the next superscript may be something. The ones before gat saved from previous loops, but only 1 value is accessible.
+  if the above don't set a value, then this table shows each items value:
+  ¹: Infinity
+  ²: 256
+  ³: 13
+  ⁴: 64
+  ⁵: 11
+  ⁶: 12
+  ⁷: 16
+  ⁸: 128
+  
+＋	add / join horizontally
+  NN: add the numbers
+  aa: add the two items together horizontally
+－	subtract
+（	start an array wrapping
+）	end array wrapping. （ can be implicit TODO fix for `］`
+［	loop
+  N: repeat that many times (not pushing anything)
+    `６７２［!＋Ｐ` -> "7!¶6!"
+  S: for each prefix TODO this and v better ideas?
+  A: for each prefix
+］	close a loop, collecting the results and pushing them after, so `｛...］` would be a `.map` function
+｛	loop
+  N: repeat from 1 to that number, pushing the counter
+    `３｛a＊Ｐ` -> "a¶aa¶aaa"
+  S: for each character, pushing it
+    `abc｛-ｐｐ` -> "-a-b-c"
+  A: for each item, pushing it
+｝	close a loop
+＜	less than
+  NN: less than
+    `４６＜` -> 1
+＞	greater than
+  NN: greater than
+    `２７＞` -> 0
+‰	
+ø	push an empty art object
+▾	
+◂	
+←	
+↑	
+→	
+↓	
+↔	mirror horizontally
+  S, A: mirror horizontally - reverse & swap chars as required
+↕	mirror vertically
+  S, A: mirror vertically - reverse vertically & swap chars as required
+
+
+printable ascii+¶: part of strings
+
+
+┌	duplicate the item 2nd from top
+┐	pop & remove an item
+└	
+┘	
+├	double increment / uppercase first letter
+  N: increase by 2
+    `７├` -> 9
+  S: uppercase the first letter of the first word
+    `   hello, world!┤` -> "   Hello, world!"
+  A: vectorize
+┤	double decrement
+  N: decrease by 2
+    `０┤` -> -2
+  A: put all the elements on the stack
+┬	decode from base 10
+┴	encode into base 10
+╴	previous input
+╵	increment / sentence case
+  N: increase by 1
+  S: uppercase every letter after any of ".?!" and in the beginning
+    `  hello, world! goodbye, world!╵` -> "  Hello, world! Goodbye, world!"
+  A: vectorize
+╶	next input
+╷	decrement / title case
+  N: decrease by 1
+  S: uppercase the first letter of every word
+    `hello, world!╵` -> "Hello, World!"
+  A: vectorize
+╋	overlap
+  aaNN: overlap the 2nd art over the 1st at x;y using smartOverlap
+↖	
+↗	
+↘	
+↙	
+×	multiply horizontally / prepend
+  NN: multiply the numbers
+    `６７＊` -> 42
+  NA, AN, SN, NS: repeat horizontally
+    `string３＊` -> "stringstringstring"
+    `hello¶world!2＊` -> "hello hello ¶world!world!"
+    `hello∙world!）2＊` -> ["hello hello ", "world!world!"]
+  aa: reverse add / prepend
+    `World!∙Hello, ＊` -> "Hello, World!"
+＊	multiply vertically
+  SN, NS: repeat the string vertically that many times
+    `foo¶bar３×` -> "foo¶bar¶foo¶bar¶foo¶bar"
+  NA, AN: multiply the array vertically that many times
+    `a∙b）２×` -> ["a","b","a","b"]
+  *NN: expand the ascii-art by the numbers
+    `foo¶bar２３×` -> "ffoooo¶bbaarr¶ffoooo¶bbaarr¶ffoooo¶bbaarr"
+  AS, SA: join the array with the string
+    `3Ｒ:＊` -> "1:2:3"
+  SS: insert the second string between the firsts chars
+    `2xy∙^＊` -> "2^x^y"
+÷	divide
+  NN: divide the numbers
+    `３∙４÷`
+±	horizontal reverse / negate
+  N: negate
+  a: reverse horizontally
+    `\abc/±` -> "/cba\"
+    `abc∙(def)）±` -> ["  cba", ")fed("]
+«	shift left
+  N: shift left by 1 bit / multiply by 2
+  S: put the first char at the end
+  A: put the first item at the end
+»	shift right
+  N: shift right by 1 bit / floor divide by 2, storing the remainder
+    `7»` -> 3
+  S: put the last char at the beginning
+    `hello»` -> 
+  A: put the last item at the beginning
+≤	
+≥	
+≡	equal
+≠	not equal
+Ａ	push 10
+Ｂ	
+Ｃ	
+Ｄ	deduplicate
+Ｅ	
+Ｆ	
+Ｇ	
+Ｈ	
+Ｉ	
+Ｊ	
+Ｋ	
+Ｌ	get length, popping the item
+Ｍ	
+Ｎ	
+Ｒ	range
+  N: range from 1 to N, inclusive
+Ｓ	
+Ｕ	uppercase/ceiling
+  S: uppercase the string
+  N: get the ceiling of the number
+  A: vectorise
+ｕ	lowercase/floor
+  S: lowercase the string
+  N: get the floor of the number
+  A: vectorise
+Ｖ	
+Ｗ	while
+  ｝: do..while(pop)
+Ｘ	
+Ｙ	
+Ｚ	
+ａ	
+ｂ	
+ｃ	
+ｄ	
+ｅ	
+ｆ	
+ｇ	
+ｈ	
+ｉ	
+ｊ	remove first item / first line
+ｋ	remove last item / last line
+ｌ	get length, without popping the number
+ｍ	mold to length / reshape
+ｎ	split into chunks / divmod
+  NS, SN: split the string into chunks of length N, padding with spaces if necessary.
+  NA, AN: split the array into arrays of length N. If there aren't enough items, just leave as-is.
+    `１２３４５６）４ｎ` -> [[1,2,3,4],[5,6]]
+  NN: push the result of floor division and then modulo
+ｒ	
+  N: range from 0 to N-1, inclusive
+ｓ	
+ｖ	
+ｗ	
+ｘ	
+ｙ	
+ｚ	
+//   newline   pop   disable auto output
+// Ｏ	  x       x                       
+// Ｐ	  x       x        x              
+// Ｑ	  x                                
+// Ｔ	  x                x                
+// ｏ	          x                        
+// ｐ	          x        x                
+// ｑ	                                  
+// ｔ	                   x               
+
+Ｏ	output in a new line, popping the item
+Ｐ	output in a new line, popping the item
+Ｑ	output in a new line
+Ｔ	output in a new line, disabling implicit output
+ｏ	output in the current line, popping the item
+ｐ	output in the current line, popping the item
+ｑ	output in the current line
+ｔ	output in the current line, disabling implicit output
+０１２３４５６７８９ push that number
+§	
+‼	
+¼	
+½	
+¾	
+√	square root
+  N: get the square root
+    `９２√＊Ｕ` -> 13
+／	create an antidiagonal
+  N: create a antidiagonal of that length
+  S: create a antidiagonal of the characters of that string
+  a: prepend each line with one less space than the last, the last line having 0 spaces
+＼	create a diagonal
+  N: create a diagonal of that length
+  S: create a diagonal of the characters of that string
+  a: prepend each line with one more space than the last, the first having 0 spaces
+∑	join together
+  A: join the array together
+    `（（ab∙cd）（ef∙gh））∑` -> "abcdefgh"
+  N, S: join the stack until `（` or end into a string
+∙	NOOP/space
+  NOOP if both sides are ASCII
+    `abc∙def┐` -> "def"
+  if ASCII is only on one side, pushes a space
+    `abc∙×` -> "a b c"
+  if ASCII is on neither side, TODO
+‽	if not / switch
+    `‽false!｝` - if POP is falsy 
+    `‽N］north｝S］south｝E］east｝west｝We're going ＊` - input [NSEW] and the output will expand the direction name and prepend "We're going "
+‾	
+⇵	reverse vertically
+  N: ceiling divide by 2, storing the remainder
+    `７⇵` -> 4
+  A: reverse the items
+    `１２）hello（７world））⇵` -> [[7,"world"], "hello", [1,2]]
+  a: reverse vertically
+：	duplicate ToS
+  `la：＋` -> "lala"
+；	swap top two stack items
+  `４９；－` -> 5
+⟳	rotate clockwise
+  a: rotate clockwise once
+  aN: rotate clockwise that many times
+⤢	transpose
+∔	add vertically / reverse subtract
+  NN: reverse subtract
+  SS: add the two together with a separating newline
+  AS: add the string to the array
+  SA: prepend the string to the arrays beginning
+  AA: add the two arrays together
+  aa: add the two vertically
+ŗ	
+“	
+”	
+■	
+？	if/case. `if` if ending with `｝`, and `case` for numbers 0..x if followed by `］` and ended with `｝`. The last is also default - `？c0］c1］def｝` will push c0/c1. If only cases 0 & 1 are used, non-numbers map to truthy/falsy of them, not the default/last case to make it work like if-else (well, else-if)
+    `？truthy!｝` outputs "truthy" if the input is truthy
+    `？falsy］truthy!｝` outputs "truthy" if the input is truthy
+    `？zero］one］not zero nor one｝` self explanatory
+
+↶	
+↷	
+＠	get item
+  AN, NA: get from the array the item with that index
+  SN, SA: get the character from the string with that index
+＃	execute as JS
+    `"Hello, "+"JS!"＃` -> "Hello, JS!"
+％	modulo
+  NN: modulo
+    `８３％` -> 2
+！	
+α	get the second to last argument used in a simpleFunction
+    `７３÷１％α；－` -> 2 (floor division implementation)
+ω	get the last argument used in a simpleFunction
+    `７３÷αω％ω÷－` -> 2 (floor division implementation)
+
+─	palindzomize vertically with 1 overlap
+═	palindzomize vertically with 0 overlap
+│	palindzomize horizontally with 1 overlap
+║	palindzomize horizontally with 0 overlap
+┼	quad-palindzomize with 1 overlap
+╬	quad-palindzomize with 0 overlap
+╫	quad-palindzomize with 1 overlap vertically and 0 horizontally
+╪	quad-palindzomize with 0 overlap vertically and 1 horizontally
+two of the same palindromizators next to each other disable character mirroring
+

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+<head>
+  <title>language</title>
+  <script src="bigDecimal.js"></script>
+  <script src="asciiart.js"></script>
+  <script src="main.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body style="background: #333;">
+  <div id="p" style="width:40%;"><span id="bytecount" style="font-size:12px">0 bytes</span></div>
+  <textarea id="program" placeholder="Enter code..." spellcheck="false" style="width:100%" onclick="setTimeout(updater, 0);" oninput="setTimeout(updater, 0);"
+></textarea>
+  <!--
+    9873｛62｛851｝5｝999991＋＋＋＋［o
+    ９８７６５４３２１０１［３４｝９［ｏ
+    ５｛[]＊Ｏ
+    ６５４（（console.log([1,2,3,4,5,6].map(npop).map(c=>c+""))＃
+    ８｛）┐：（╵］）
+    abc∙def∙ghi３［-＋｝
+    ⇵｛*＊］⤢┼
+    >｛⇵-＊|；＋╬│Ｐ
+    -＊>＋＋
+    __ /|２ｎ╶┤ｒ⇵｛├⁸¹⁸｝ｊ*＋↔│
+    ⇵-＊/；＋╶⇵|×∔╬┼
+    abc¶def¶ghi∙a＋∙12¶3∙a＋２２╋
+    |×╶_××/×««╶⇵［»：］⁷⇵ｍ↕↕┼╬
+    Ｗ｛¹％］：Ｄ≡｝¹
+  -->
+  <textarea id="inputs" placeholder="Enter inputs in each line" spellcheck="false" style="width:100%"
+></textarea>
+  <textarea id="result" placeholder="Output will be here" spellcheck="false" style="width:100%; background-color: #333333;" readonly></textarea>
+  <button id="run" onclick="runUI()">run</button>
+  <script>
+    async function runUI() {
+      run(program.value, inputs.value.split("\n").map(
+        (s) => {
+          var ev;
+          try {
+            ev = eval(s);
+          } catch (e) {
+            ev = undefined;
+          }
+          if (typeof ev == "number") ev = new Big(s);
+          return ev == undefined? s : ev
+        })
+      );
+    }
+    function updater() {
+      setTimeout (update, 0);
+      setTimeout (update, 10);
+    }
+    function update() {
+      var bytecount = program.value.length;
+      var startPos = program.selectionStart;
+      var endPos = program.selectionEnd;
+      var co = bytecount +" byte"+ (bytecount==1? "" : "s");
+      if (endPos != startPos)
+        co+= " ("+ (endPos-startPos) +" byte"+ (endPos-startPos==1? "" : "s") +" selected)"
+      document.getElementById("bytecount").innerHTML = co;
+      //console.log(startPos+" "+endPos);
+    }
+    document.addEventListener ("keydown", e=> {
+      if (e.ctrlKey && e.code === "KeyB") {
+        bpS = document.getElementById("program").selectionStart;
+        bpE = document.getElementById("program").selectionEnd;
+      }
+      //console.log(e.code);
+      if (e.ctrlKey && e.code === "Enter") {
+        runUI();
+      }
+    });
+    document.onkeydown = updater;
+  </script>
+</body>
+</html>
