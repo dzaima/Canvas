@@ -5,7 +5,6 @@
   <title>Canvas</title>
   <script src="bigDecimal.js"></script>
   <script src="asciiart.js"></script>
-  <script src="main.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <link rel="stylesheet" href="style.css"></link>
 </head>
@@ -22,7 +21,7 @@
   </div>
   <textarea id="result" placeholder="Output will be here" spellcheck="false" style="width:100%; background-color: #333333;" readonly></textarea>
   <div style="width:120px" class="left">
-    <button id="run"      onclick="runUI()"    style="width:100%">run (ctrl+enter) </button>
+    <button id="runBtn"   onclick="runUI()"    style="width:100%">run (ctrl+enter) </button>
     <button id="loadFile" onclick="loadFile()" style="width:100%">load encoded file</button>
     <button id="saveFile" onclick="saveFile()" style="width:100%">save encoded file</button>
   </div>
@@ -32,10 +31,11 @@
     <button id="toCMC"     onclick="CMCify()"   style="width:100%">CMCify   </button>
   </div>
   
-  
   <input id="fakeFileInp" type="file" style="display:none" />
   <a id="fakeLink" style="display:none" />
   <script>
+    var usedVersion = -1;
+    var latestVersion = 0;
     // loading initial permalinked data
     var args = location.search.substring(1).split(",");
     for (var i = 0; i < args.length; i++) {
@@ -46,7 +46,7 @@
       if (parts[0]=='i')
         inputs.value = unescape(atob(parts[1].replace(/_/g, "=")));
       if (parts[0]=='v')
-        if (parts[1] != version) console.log("version differs. Problems may occur.");
+        usedVersion = +parts[1];
     }
     // saving to encoded file
     function saveFile() {
@@ -145,6 +145,21 @@
     });
     document.onkeydown = updater;
     update();
+    // loading the appropriate version JS file
+    var JSname = latestVersion === usedVersion? "main.js" : "old/main"+usedVersion+".js";
+    $.ajax({
+      url: JSname,
+      success: function (JScode) {
+        try {
+          eval("async()=>{}")
+        } catch(e) {
+          JScode = JScode.replace(/\b(async|await)\b/g, "");
+          console.log("Looks like async isn't supported. Removing it from the code with Regex. Programs which run indefinitely can (and should) hang the page.");
+        }
+        Jst=JScode
+        window.eval(JScode);
+      }
+    });
   </script>
 </body>
 </html>
