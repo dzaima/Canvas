@@ -6,6 +6,7 @@
   <script src="bigDecimal.js"></script>
   <script src="asciiart.js"></script>
   <script src="main.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <link rel="stylesheet" href="style.css"></link>
 </head>
 <body style="background: #333;">
@@ -20,25 +21,91 @@
     </div>
   </div>
   <textarea id="result" placeholder="Output will be here" spellcheck="false" style="width:100%; background-color: #333333;" readonly></textarea>
-  <button id="run" onclick="runUI()">run</button>
-  <!--
-    9873｛62｛851｝5｝999991＋＋＋＋［o
-    ９８７６５４３２１０１［３４｝９［ｏ
-    ５｛[]＊Ｏ
-    ６５４（（console.log([1,2,3,4,5,6].map(npop).map(c=>c+""))＃
-    ８｛）┐：（╵］）
-    abc∙def∙ghi３［-＋｝
-    ⇵｛*＊］⤢┼
-    >｛⇵-＊|；＋╬│Ｐ
-    -＊>＋＋
-    __ /|２ｎ╶┤ｒ⇵｛├⁸¹⁸｝ｊ*＋↔│
-    ⇵-＊/；＋╶⇵|×∔╬┼
-    abc¶def¶ghi∙a＋∙12¶3∙a＋２２╋
-    |×╶_××/×««╶⇵［»：］⁷⇵ｍ↕↕┼╬
-    Ｗ｛¹％］：Ｄ≡｝¹
-  -->
+  <div style="width:120px" class="left">
+    <button id="run"      onclick="runUI()"    style="width:100%">run (ctrl+enter) </button>
+    <button id="loadFile" onclick="loadFile()" style="width:100%">load encoded file</button>
+    <button id="saveFile" onclick="saveFile()" style="width:100%">save encoded file</button>
+  </div>
+  <div style="width:80px" class="left">
+    <button id="permalink" onclick="permalink()"style="width:100%">permalink</button>
+    <button id="topost"    onclick="postify()"  style="width:100%">postify  </button>
+    <button id="toCMC"     onclick="CMCify()"   style="width:100%">CMCify   </button>
+  </div>
+  
+  
+  <input id="fakeFileInp" type="file" style="display:none" />
+  <a id="fakeLink" style="display:none" />
   <script>
-    async function runUI() {
+    // loading initial permalinked data
+    var args = location.search.substring(1).split(",");
+    for (var i = 0; i < args.length; i++) {
+      var carg = args[i];
+      var parts = carg.split("=")
+      if (parts[0]=='u')
+        program.value = unescape(atob(parts[1].replace(/_/g, "=")));
+      if (parts[0]=='i')
+        inputs.value = unescape(atob(parts[1].replace(/_/g, "=")));
+      if (parts[0]=='v')
+        if (parts[1] != version) console.log("version differs. Problems may occur.");
+    }
+    // saving to encoded file
+    function saveFile() {
+      var prog = program.value;
+      fakeLink.download = "encoded.canvas";
+      var binary = "";
+      for (var i = 0; i < prog.length; i++) {
+        binary+= String.fromCodePoint(codepage.indexOf(prog.charAt(i)));
+      }
+      fakeLink.href = 'data:text/plain;base64,' + btoa(binary);
+      fakeLink.click();
+    }
+    // loading from encoded file
+    var fr;
+    function loadFile() {
+      fakeFileInp.click();
+    }
+    $("#fakeFileInp").change(function () {
+      var f = fakeFileInp.files[0];
+      fr = new FileReader();
+      fr.onload = recieved;
+      fr.readAsBinaryString(f);
+    });
+    function recieved() {
+      var binary = fr.result;
+      var newProgram = "";
+      for (var i = 0; i < binary.length; i++) {
+        newProgram+= codepage.charAt(binary.charCodeAt(i));
+      }
+      program.value = newProgram;
+      update();
+    }
+    function postify() {
+      let pl = permalink();
+      let prog = program.value;
+      result.value = `# [Canvas](https://github.com/dzaima/Canvas), ${prog.length} [byte${prog.length===1? "" : "s"}](https://github.com/dzaima/Canvas/blob/master/files/hartable.md)`;
+      for (var cs of program.value.split("\n")) result.value+= "\n    "+cs;
+      result.value+= `\n\n[Try it here!](${pl})`;
+    }
+    function CMCify() {
+      let pl = permalink();
+      let prog = program.value;
+      result.value =   `Canvas, ${prog.length} byte${prog.length===1? "" : "s"}: [\`${prog.replace(/\n/g, "\\n")}\`](${pl})`;
+      result.value+= `\nCanvas, [${prog.length} byte${prog.length===1? "" : "s"}](${pl})`;
+    }
+    
+    // permalink stuff
+    function permalink() {
+      var res = location.href.substring(0,location.href.length-location.search.length)+"?"; // https://dzaima.github.io/Canvas/
+      res+= "u="+ (btoa(escape(program.value)).replace(/=/g, "_"));
+      var inputs = document.getElementById("inputs").value;
+      if (inputs != "")
+        res+= ",i="+ btoa(escape(inputs)).replace(/=/g, "_");
+      res+= ",v="+version
+      result.value = res;
+      return res;
+    }
+    // byte count updating & program running
+    function runUI() {
       run(program.value, inputs.value.split("\n").map(
         (s) => {
           var ev;
@@ -80,3 +147,19 @@
   </script>
 </body>
 </html>
+<!--
+  9873｛62｛851｝5｝999991＋＋＋＋［o
+  ９８７６５４３２１０１［３４｝９［ｏ
+  ５｛[]＊Ｏ
+  ６５４（（console.log([1,2,3,4,5,6].map(npop).map(c=>c+""))＃
+  ８｛）┐：（╵］）
+  abc∙def∙ghi３［-＋｝
+  ⇵｛*＊］⤢┼
+  >｛⇵-＊|；＋╬│Ｐ
+  -＊>＋＋
+  __ /|２ｎ╶┤ｒ⇵｛├⁸¹⁸｝ｊ*＋↔│
+  ⇵-＊/；＋╶⇵|×∔╬┼
+  abc¶def¶ghi∙a＋∙12¶3∙a＋２２╋
+  |×╶_××/×««╶⇵［»：］⁷⇵ｍ↕↕┼╬
+  Ｗ｛¹％］：Ｄ≡｝¹
+-->

@@ -1,5 +1,5 @@
 
-□ = documented  |
+□ = documented  
 ✓ = implemented
 
 if only N exists, it's if it's implemented at all  

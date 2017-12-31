@@ -1,3 +1,7 @@
+var codepage = "⁰¹²³⁴⁵⁶⁷⁸⁹¶\n＋－（）［］｛｝＜＞‰ø▾◂←↑→↓↔↕ !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~┌┐└┘├┤┬┴╴╵╶╷╋↖↗↘↙×÷±«»≤≥≡≠ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ０１２３４５６７８９§‼¼½¾√／＼∑∙‽‾⇵∔：；⟳⤢⌐ŗ“”■？＊↶↷＠＃％！─│┼═║╫╪╬αω";
+
+var version = 0;
+
 var printableAsciiArr=[];
 var sleepUpdate = true;
 for (let i = 32; i < 127; i++) printableAsciiArr.push(String.fromCharCode(i));

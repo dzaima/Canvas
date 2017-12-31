@@ -9,7 +9,7 @@ textarea {
   background: #505C63;
   border-color: #333333;
   color: #D3D3D3;
-  resize: horizontal;
+  resize: vertical;
 }
 
 body {
