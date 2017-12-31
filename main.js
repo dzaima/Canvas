@@ -862,9 +862,7 @@ async function run (program, inputs) {
     return out;
   }
 }
-async function T(){runUI();}
 //https://stackoverflow.com/a/39914235/7528415
 async function sleep (ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
-setTimeout(T,10);
