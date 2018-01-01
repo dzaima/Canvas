@@ -167,7 +167,9 @@ printable ascii+¶: part of strings
 ｂ	
 ｃ	
 ｄ	
-ｅ	
+ｅ	encase in a letter
+    SS: encase the 1st string in the 2nd
+      `hello∙'ｅ` -> "'hello'"
 ｆ	
 ｇ	
 ｈ	

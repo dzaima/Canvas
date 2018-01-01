@@ -239,7 +239,7 @@ function Canvas (preset) {
       for (let x = 0; x < orepr[0].length; x++) {
         let cline = [];
         for (let y = 0; y < orepr.length; y++) {
-          cline.push(smartRotate(orepr[orepr.length-y-1][x]));
+          cline.push(rotateMode(orepr[orepr.length-y-1][x]));
         }
         newrepr.push(cline);
       }

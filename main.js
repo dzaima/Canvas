@@ -347,7 +347,6 @@ async function run (program, inputs) {
       s: (s) => a.replace(/\n.*$/, ""),
       a: (a) => (a.repr.pop(), a.ey--, a),
     },
-    "Ｂ": cpo.break, // TEMP: maybe
     "Ｄ": {
       A: (a) => {
         let out = [];
@@ -357,6 +356,11 @@ async function run (program, inputs) {
         return out;
       },
     },
+    "ｅ": {
+      SS: (s, c) => c+s+c,
+    },
+    
+    "Ｂ": cpo.break, // TEMP: maybe
     //palindromizators
     "─": {
       a: (a) => a.palindromize(V, smartOverlapBehind, 1, smartOverlap),
@@ -477,6 +481,14 @@ async function run (program, inputs) {
     "ø": () => new Canvas(),
     "ｚ": () => "abcdefghijklmnopqrstuvwxyz",
     "Ｚ": () => "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    "＼": {
+      S: (s) => new Canvas(Array.from(s).map((c, i) => " ".repeat(i)+c)),
+      N: (n, ex) => ex("S", "\\".repeat(n)),
+    },
+    "／": {
+      S: (s) => new Canvas(Array.from(s).map((c, i) => " ".repeat(s.length-i-1)+c)),
+      N: (n, ex) => ex("S", "/".repeat(n)),
+    },
     
     "ｌ": {
       _S: (a) => a.length,
