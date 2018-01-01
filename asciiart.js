@@ -92,6 +92,10 @@ function Canvas (preset) {
     return this;
   }
   
+  this.included = function (x, y) {
+    return y>this.ey && x>this.ex;
+  }
+  
   this.translate = function (x, y) {
     this.sx+= x;
     this.sy+= y;

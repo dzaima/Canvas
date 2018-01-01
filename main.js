@@ -263,6 +263,15 @@ async function run (program, inputs) {
         return na;
       },
       Na: (n, a, ex) => ex("aN", a, n),
+      aNN: (a, w, h) => {
+        let na = new Canvas();
+        a.forEach((chr, x, y) => {
+          for (let xp = 0; xp < w; xp++)
+            for (let yp = 0; yp < w; yp++)
+              na.set(x*w + xp, y*h + yp, chr);
+        });
+        return na;
+      },
     },
     "÷" : (a,b) => a.divide(b),
     "％": (a,b) => a.remainder(b),
