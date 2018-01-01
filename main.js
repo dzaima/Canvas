@@ -221,7 +221,6 @@ async function run (program, inputs) {
     "α": () => push(lastArgs.slice(-2)[0]),
     "⁰": () => stack = [stack],
     "（": () => push(new Break(0)),
-    "∙": () => {},
     "＃": () => {
       let res = eval(pop());
       if (res != undefined) push(res);
@@ -282,6 +281,12 @@ async function run (program, inputs) {
     "≠": (a, b) => +!equal(a,b),
     
     // array & ascii-art manipulation
+    "＠": {
+      AN: (a, n) => a[n.intValue()+1;
+      NA: (n, a, ex) => ex("AN", a, n);
+      NS: (n, s, ex) => ex("AN", s, n);
+      SN: (s, n, ex) => ex("AN", s, n);
+    }
     "±": {
       S: (s) => new Canvas(s).horizReverse().toString(), // [...s].reduce((a,b)=>b+a)
       N: (n) => -n,
@@ -304,7 +309,12 @@ async function run (program, inputs) {
     },
     "ｍ": {
       SN: (s, n) => s.substring(0, +n),
+      AN: (a, n) => a.slice(0, n),
       aN: (a, n) => a.subsection(0, 0, +n),
+      
+      NS: (n, s, ex) => ex("SN", s, n),
+      NA: (n, a, ex) => ex("AN", a, n),
+      Na: (n, a, ex) => ex("aN", a, n),
     },
     "ｎ": {
       AN: (a, n) => {
@@ -458,12 +468,15 @@ async function run (program, inputs) {
     
     
     // generators
+    "∙": () => {},
     "ｒ": (a) => lrange(a),
     "Ｒ": (a) => urange(a),
     "╶": nextInp,
     "╴": () => currInp(),
     "Ａ": () => 10,
     "ø": () => new Canvas(),
+    "ｚ": () => "abcdefghijklmnopqrstuvwxyz",
+    "Ｚ": () => "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
     
     "ｌ": {
       _S: (a) => a.length,

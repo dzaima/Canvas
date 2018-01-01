@@ -162,7 +162,7 @@ printable ascii+¶: part of strings
   ｝: do..while(pop)
 Ｘ	
 Ｙ	
-Ｚ	
+Ｚ	push the uppercase alphabet
 ａ	
 ｂ	
 ｃ	
@@ -188,7 +188,7 @@ printable ascii+¶: part of strings
 ｗ	
 ｘ	
 ｙ	
-ｚ	
+ｚ	push the lowercase alphabet
 //   newline   pop   disable auto output
 // Ｏ	  x       x                       
 // Ｐ	  x       x        x              
@@ -229,11 +229,10 @@ printable ascii+¶: part of strings
     `（（ab∙cd）（ef∙gh））∑` -> "abcdefgh"
   N, S: join the stack until `（` or end into a string
 ∙	NOOP/space
-  NOOP if both sides are ASCII
+  NOOP if both or no sides are ASCII
     `abc∙def┐` -> "def"
   if ASCII is only on one side, pushes a space
     `abc∙×` -> "a b c"
-  if ASCII is on neither side, TODO
 ‽	if not / switch
     `‽false!｝` - if POP is falsy 
     `‽N］north｝S］south｝E］east｝west｝We're going ＊` - input [NSEW] and the output will expand the direction name and prepend "We're going "
@@ -275,8 +274,8 @@ printable ascii+¶: part of strings
   a: rotate clockwise, rotating characters that make sense to be rotated
   aN: rotate clockwise that many times
 ＠	get item
-  AN, NA: get from the array the item with that index
-  SN, SA: get the character from the string with that index
+  AN, NA: push that item (1-indexed) from the array
+  SN, SA: push that char (1-indexed) from the string
 ＃	execute as JS
     `"Hello, "+"JS!"＃` -> "Hello, JS!"
 ％	modulo
@@ -297,4 +296,6 @@ printable ascii+¶: part of strings
 ╫	quad-palindzomize with 1 overlap vertically and 0 horizontally
 ╪	quad-palindzomize with 0 overlap vertically and 1 horizontally
 two of the same palindromizators next to each other disable character mirroring
+if after a double-line there's a character with that as a single line, it's replaced by a remainder.
+So ╫│ is vertical palindromization with overlap 1 and horizontal with overlap of the remainder
 
