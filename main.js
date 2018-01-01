@@ -397,6 +397,19 @@ async function run (program, inputs) {
     "┼╬": {
       a: (a) => a.palindromize(H, "mirror", remainders[remainders.length-1], smartOverlap, V, smartOverlapBehind, remainders[remainders.length-2], smartOverlap)
     },
+    // rotators
+    "⟳": {
+      a: (a) => a.rotate(1),
+      aN: (a, n) => a.rotate(n),
+    },
+    "↶": {
+      a: (a) => a.rotate(1, smartRotate),
+    },
+    "↷": {
+      a: (a) => a.rotate(1, smartRotate),
+      aN: (a, n) => a.rotate(n, smartRotate),
+    },
+    
     // useful shorter math stuff
     "«": {
       N: (n) => n.multiply(2),

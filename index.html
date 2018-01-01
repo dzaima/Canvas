@@ -82,7 +82,7 @@
     function postify() {
       let pl = permalink();
       let prog = program.value;
-      result.value = `# [Canvas](https://github.com/dzaima/Canvas), ${prog.length} [byte${prog.length===1? "" : "s"}](https://github.com/dzaima/Canvas/blob/master/files/hartable.md)`;
+      result.value = `# [Canvas](https://github.com/dzaima/Canvas), ${prog.length} [byte${prog.length===1? "" : "s"}](https://github.com/dzaima/Canvas/blob/master/files/chartable.md)`;
       for (var cs of program.value.split("\n")) result.value+= "\n    "+cs;
       result.value+= `\n\n[Try it here!](${pl})`;
     }
@@ -157,6 +157,7 @@
           console.log("Looks like async isn't supported. Removing it from the code with Regex. Programs which run indefinitely can (and should) hang the page.");
         }
         window.eval(JScode);
+        if (args.includes("run")) runUI();
       }
     });
   </script>

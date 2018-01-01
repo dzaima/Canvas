@@ -181,7 +181,7 @@ printable ascii+¶: part of strings
   NA, AN: split the array into arrays of length N. If there aren't enough items, just leave as-is.
     `１２３４５６）４ｎ` -> [[1,2,3,4],[5,6]]
   NN: push the result of floor division and then modulo
-ｒ	
+ｒ	lowered range
   N: range from 0 to N-1, inclusive
 ｓ	
 ｖ	
@@ -248,9 +248,10 @@ printable ascii+¶: part of strings
   `la：＋` -> "lala"
 ；	swap top two stack items
   `４９；－` -> 5
-⟳	rotate clockwise
+⟳	rotate clockwise w/o character changing
   a: rotate clockwise once
   aN: rotate clockwise that many times
+  A, AN: rotate the items so that it looks rotated if printed
 ⤢	transpose
 ∔	add vertically / reverse subtract
   NN: reverse subtract
@@ -268,8 +269,11 @@ printable ascii+¶: part of strings
     `？falsy］truthy!｝` outputs "truthy" if the input is truthy
     `？zero］one］not zero nor one｝` self explanatory
 
-↶	
-↷	
+↶	rotate anticlockwise
+  a: rotate counter clockwise, rotating characters that make sense to be rotated
+↷	rotate clockwise
+  a: rotate clockwise, rotating characters that make sense to be rotated
+  aN: rotate clockwise that many times
 ＠	get item
   AN, NA: get from the array the item with that index
   SN, SA: get the character from the string with that index

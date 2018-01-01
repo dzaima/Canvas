@@ -218,6 +218,32 @@ function Canvas (preset) {
     return this;
   }
   
+  this.rotate = function (times, rotateMode) {
+    if (!rotateMode) rotateMode = c=>c;
+    for (let i = 0; i < (times%4 + 4)%4; i++) {
+      let osx = this.sx,
+          osy = this.sy,
+          oex = this.ex,
+          oey = this.ey;
+          
+      let newrepr = []
+      let orepr = this.repr;
+      this.sy = osx;
+      this.sx = orepr.length-oey;
+      this.ex = this.sx + oey-osy;
+      this.ey = this.sy + oex-osx;
+      for (let x = 0; x < orepr[0].length; x++) {
+        let cline = [];
+        for (let y = 0; y < orepr.length; y++) {
+          cline.push(smartRotate(orepr[orepr.length-y-1][x]));
+        }
+        newrepr.push(cline);
+      }
+      this.repr = newrepr;
+    }
+    return this;
+  }
+  
   this.palindromize = function (...args) {
     for (let i = 0; i < args.length; i+= 4) {
       let mode = args[i];
@@ -297,6 +323,14 @@ var smartOverlapDef = function (a, b, def) {
     case "": return "";
     default: return def;
   }
+}
+
+// NOTE: rotates clockwise
+var smartRotate = function (chr) {
+  var cycles = ["-|", "/\\", "<^>v", "_|"];
+  var found = cycles.find(c=>c.includes(chr));
+  if (found) return found[(found.indexOf(chr)+1) % found.length];
+  return chr;
 }
 
 // var canvas0 = new Canvas(["/-\\",["|",[undefined,[[[["|"]]]]]],"+-+"]);
