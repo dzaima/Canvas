@@ -282,11 +282,11 @@ async function run (program, inputs) {
     
     // array & ascii-art manipulation
     "＠": {
-      AN: (a, n) => a[n.intValue()+1;
-      NA: (n, a, ex) => ex("AN", a, n);
-      NS: (n, s, ex) => ex("AN", s, n);
-      SN: (s, n, ex) => ex("AN", s, n);
-    }
+      AN: (a, n) => a[n.intValue()+1],
+      NA: (n, a, ex) => ex("AN", a, n),
+      NS: (n, s, ex) => ex("AN", s, n),
+      SN: (s, n, ex) => ex("AN", s, n),
+    },
     "±": {
       S: (s) => new Canvas(s).horizReverse().toString(), // [...s].reduce((a,b)=>b+a)
       N: (n) => -n,
