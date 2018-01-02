@@ -92,20 +92,20 @@ printable ascii+¶: part of strings
 ↙	
 ×	multiply horizontally / prepend
   NN: multiply the numbers
-    `６７＊` -> 42
+    `６７×` -> 42
   NA, AN, SN, NS: repeat horizontally
-    `string３＊` -> "stringstringstring"
-    `hello¶world!2＊` -> "hello hello ¶world!world!"
-    `hello∙world!）2＊` -> ["hello hello ", "world!world!"]
+    `string３×` -> "stringstringstring"
+    `hello¶world!2×` -> "hello hello ¶world!world!"
+    `hello∙world!）2×` -> ["hello hello ", "world!world!"]
   aa: reverse add / prepend
-    `World!∙Hello, ＊` -> "Hello, World!"
+    `World!∙Hello, ×` -> "Hello, World!"
 ＊	multiply vertically
   SN, NS: repeat the string vertically that many times
-    `foo¶bar３×` -> "foo¶bar¶foo¶bar¶foo¶bar"
+    `foo¶bar３＊` -> "foo¶bar¶foo¶bar¶foo¶bar"
   NA, AN: multiply the array vertically that many times
-    `a∙b）２×` -> ["a","b","a","b"]
+    `a∙b）２＊` -> ["a","b","a","b"]
   *NN: expand the ascii-art by the numbers
-    `foo¶bar２３×` -> "ffoooo¶bbaarr¶ffoooo¶bbaarr¶ffoooo¶bbaarr"
+    `foo¶bar２３＊` -> "ffoooo¶bbaarr¶ffoooo¶bbaarr¶ffoooo¶bbaarr"
   AS, SA: join the array with the string
     `3Ｒ:＊` -> "1:2:3"
   SS: insert the second string between the firsts chars
@@ -126,7 +126,7 @@ printable ascii+¶: part of strings
   N: shift right by 1 bit / floor divide by 2, storing the remainder
     `7»` -> 3
   S: put the last char at the beginning
-    `hello»` -> 
+    `hello»` -> "ohell"
   A: put the last item at the beginning
 ≤	
 ≥	
@@ -236,8 +236,8 @@ printable ascii+¶: part of strings
   if ASCII is only on one side, pushes a space
     `abc∙×` -> "a b c"
 ‽	if not / switch
-    `‽false!｝` - if POP is falsy 
-    `‽N］north｝S］south｝E］east｝west｝We're going ＊` - input [NSEW] and the output will expand the direction name and prepend "We're going "
+  `‽false!｝` - if POP is falsy 
+  `‽N］north｝S］south｝E］east｝west｝We're going ＊` - input [NSEW] and the output will expand the direction name and prepend "We're going "
 ‾	
 ⇵	reverse vertically
   N: ceiling divide by 2, storing the remainder
@@ -300,4 +300,6 @@ printable ascii+¶: part of strings
 two of the same palindromizators next to each other disable character mirroring
 if after a double-line there's a character with that as a single line, it's replaced by a remainder.
 So ╫│ is vertical palindromization with overlap 1 and horizontal with overlap of the remainder
+
+
 
