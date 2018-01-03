@@ -59,12 +59,12 @@ $.ajax({
               cols.forEach((impl, index) => {
                 dataItem.types.forEach((type) => {
                   if (type.t.toUpperCase().match(new RegExp("\\b" + tarr[index] + "\\b"))) {
-                    type.impl = impl===" "? "⨯" : impl;
+                    type.impl = (impl===" "||impl==="□")? "⨯" : impl;
                   }
                 });
               });
             } else {
-              dataItem.impl = cols[0]===" "? "⨯" : cols[0];
+              dataItem.impl = (cols[0]===" "||cols[0]==="□")? "⨯" : cols[0];
             }
           }else
           console.log(" ignoring",chr);
