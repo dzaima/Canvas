@@ -266,7 +266,7 @@ async function run (program, inputs) {
         let na = new Canvas();
         a.forEach((chr, x, y) => {
           for (let xp = 0; xp < w; xp++)
-            for (let yp = 0; yp < w; yp++)
+            for (let yp = 0; yp < h; yp++)
               na.set(x*w + xp, y*h + yp, chr);
         });
         return na;
@@ -290,7 +290,7 @@ async function run (program, inputs) {
     "±": {
       S: (s) => new Canvas(s).horizReverse().toString(), // [...s].reduce((a,b)=>b+a)
       N: (n) => -n,
-      A: (a) => a.horizReverse().toArr(),
+      A: (a) => new Canvas(a).horizReverse().toArr(),
       a: (a) => a.horizReverse(),
     },
     "╋": {

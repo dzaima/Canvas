@@ -104,7 +104,7 @@ printable ascii+¶: part of strings
     `foo¶bar３＊` -> "foo¶bar¶foo¶bar¶foo¶bar"
   NA, AN: multiply the array vertically that many times
     `a∙b）２＊` -> ["a","b","a","b"]
-  *NN: expand the ascii-art by the numbers
+  aNN: expand the ascii-art by the numbers
     `foo¶bar２３＊` -> "ffoooo¶bbaarr¶ffoooo¶bbaarr¶ffoooo¶bbaarr"
   AS, SA: join the array with the string
     `3Ｒ:＊` -> "1:2:3"
@@ -117,7 +117,7 @@ printable ascii+¶: part of strings
   N: negate
   a: reverse horizontally
     `\abc/±` -> "/cba\"
-    `abc∙(def)）±` -> ["  cba", ")fed("]
+    `abc∙(def)）±` -> ["  cba", ")fed("]
 «	shift left
   N: shift left by 1 bit / multiply by 2
   S: put the first char at the end

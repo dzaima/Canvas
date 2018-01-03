@@ -1,25 +1,38 @@
 <!DOCTYPE html>
-<meta charset="UTF-8">
 <html>
 <head>
   <title>Canvas</title>
+  <meta charset="UTF-8" />
   <script src="bigDecimal.js"></script>
   <script src="asciiart.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-  <link rel="stylesheet" href="style.css"></link>
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body style="background: #333;">
+<body>
   <center><H1 style="height:10px; margin-top:0;"><a href=https://github.com/dzaima/Canvas>Canvas</a></H1></center>
   <div id="p" style="width:40%;"><span id="bytecount" style="font-size:12px">0 bytes</span></div>
-  <div>
-    <div class="left">
+  <div id="textareas">
+    <div class="left" id="progdiv">
       <textarea id="program" placeholder="Enter code..." spellcheck="false" onclick="setTimeout(updater, 0);" oninput="setTimeout(updater, 0);"></textarea>
     </div>
-    <div align="right" class="right">
+    <div align="left" class="right" id="inpdiv">
       <textarea id="inputs" placeholder="Enter inputs in each line" spellcheck="false" style="width:100%"></textarea>
+      <div id="docs" style="display:none" align="left">
+        <input id="search" style="width:99%" onclick="setTimeout(updater, 0);" oninput="setTimeout(updater, 0);" placeholder="search for chars, descriptions, types, ect."> </input>
+        <table id="docstable" style="width:99%" align="left">
+          <col width="3%" />
+          <col width="95%" />
+          <thead>
+            <tr>
+              <th>chr</th>
+              <th>description</th>
+            </tr>
+          </thead>
+        </table>
+      </div>
     </div>
+    <textarea id="result" placeholder="Output will be here" spellcheck="false" style="width:100%; background-color: #333333;" readonly></textarea>
   </div>
-  <textarea id="result" placeholder="Output will be here" spellcheck="false" style="width:100%; background-color: #333333;" readonly></textarea>
   <div style="width:120px" class="left">
     <button id="runBtn"   onclick="runUI()"    style="width:100%">run (ctrl+enter) </button>
     <button id="loadFile" onclick="loadFile()" style="width:100%">load encoded file</button>
@@ -30,12 +43,17 @@
     <button id="topost"    onclick="postify()"  style="width:100%">postify  </button>
     <button id="toCMC"     onclick="CMCify()"   style="width:100%">CMCify   </button>
   </div>
+  <input id="devChk" type="checkbox" onClick="devUpdate()">dev mode</input>
+  
   
   <input id="fakeFileInp" type="file" style="display:none" />
   <a id="fakeLink" style="display:none" />
   <script>
     var latestVersion = 0;
     var usedVersion = latestVersion;
+    var devMode = false;
+    var devLoaded = false;
+    var lastSearch = "";
     // loading initial permalinked data
     var args = location.search.substring(1).split(",");
     for (var i = 0; i < args.length; i++) {
@@ -47,7 +65,32 @@
         inputs.value = unescape(atob(parts[1].replace(/_/g, "=")));
       if (parts[0]=='v')
         usedVersion = +parts[1];
+      if (parts[0]=='dev') {
+        devChk.click();
+      }
     }
+    
+    // dev mode
+    function devUpdate() {
+      
+      devMode^= true;
+      if (devMode) {
+        if (!devLoaded) {
+          $.getScript("docs.js");
+          devLoaded = true;
+        }
+        progdiv.appendChild(inputs);
+        progdiv.appendChild(result);
+        inputs.style.width="99%";
+        docs.style.display = "block";
+      } else {
+        inpdiv.appendChild(inputs);
+        textareas.appendChild(result);
+        inputs.style.width="100%";
+        docs.style.display = "none";
+      }
+    }
+    
     // saving to encoded file
     function saveFile() {
       var prog = program.value;
@@ -80,22 +123,24 @@
       update();
     }
     function postify() {
-      let pl = permalink();
+      let pl = permalink(true);
       let prog = program.value;
       result.value = `# [Canvas](https://github.com/dzaima/Canvas), ${prog.length} [byte${prog.length===1? "" : "s"}](https://github.com/dzaima/Canvas/blob/master/files/chartable.md)`;
       for (var cs of program.value.split("\n")) result.value+= "\n    "+cs;
       result.value+= `\n\n[Try it here!](${pl})`;
     }
     function CMCify() {
-      let pl = permalink();
+      let pl = permalink(true);
       let prog = program.value;
       result.value =   `Canvas, ${prog.length} byte${prog.length===1? "" : "s"}: [\`${prog.replace(/\n/g, "\\n")}\`](${pl})`;
       result.value+= `\nCanvas, [${prog.length} byte${prog.length===1? "" : "s"}](${pl})`;
     }
     
     // permalink stuff
-    function permalink() {
-      var res = location.href.substring(0,location.href.length-location.search.length)+"?"; // https://dzaima.github.io/Canvas/
+    function permalink(forceOnline) {
+      if (forceOnline) var res = "https://dzaima.github.io/Canvas/?";
+      else var res = location.href.substring(0,location.href.length-location.search.length)+"?";
+      
       res+= "u="+ (btoa(escape(program.value)).replace(/=/g, "_"));
       var inputs = document.getElementById("inputs").value;
       if (inputs != "")
@@ -131,6 +176,7 @@
       if (endPos != startPos)
         co+= " ("+ (endPos-startPos) +" byte"+ (endPos-startPos==1? "" : "s") +" selected)"
       document.getElementById("bytecount").innerHTML = co;
+      if (search.value != lastSearch) searched(search.value);
       //console.log(startPos+" "+endPos);
     }
     document.addEventListener ("keydown", e=> {

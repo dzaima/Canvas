@@ -1,6 +1,6 @@
 textarea {
   overflow: auto;
-  width: 98%;
+  width: 99%;
   font-family: Consolas, DejaVu Sans Mono, Monaco, Lucida Console, Liberation Mono, Bitstream Vera Sans Mono, Courier New, monospace;
   font-size: 14px;
   text-align: left;
@@ -43,5 +43,55 @@ button {
 }
 
 a:hover {
-  text-decoration: underline
+  text-decoration: underline;
+}
+
+/* docs CSS */
+input {
+  background-color: #505C63;
+  border-color: #666;
+  color: #D3D3D3;
+}
+  
+#docstable > * > tr.sdesc {
+  border-bottom: 1px solid #555;
+  padding-bottom: 110px;
+    background-color: #3D3D3D;
+}
+.dtypetable > tbody > tr > th, .dex > tbody > tr > .ln {
+  border-right: 1px solid #555;
+}
+.dtypetable > tbody > tr > .typecellmid {
+  border-top: 1px solid #555;
+}
+.dindent {
+  border-right: 1px solid #555;
+  width:12px;
+}
+.di-t {
+  border-top: 1px solid #555;
+}
+table {
+  border-collapse: collapse;
+}
+#docs {
+  overflow-y: scroll;
+  height: 600px;
+  width: 95%;
+  padding: 10px;
+}
+code.cv {
+  background-color: #42484b;
+  border-radius: 2px;
+  padding: 2px;
+}
+
+::-webkit-scrollbar-button, ::-webkit-scrollbar-track {
+  display:none;
+}
+::-webkit-scrollbar-thumb {
+  background-color:#666;
+}
+::-webkit-scrollbar {
+  background-color:#444 !important;
 }
