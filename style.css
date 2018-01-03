@@ -47,6 +47,7 @@ a:hover {
 }
 
 /* docs CSS */
+
 input {
   background-color: #505C63;
   border-color: #666;
@@ -74,7 +75,7 @@ input {
 table {
   border-collapse: collapse;
 }
-#docs {
+#docs-scroll {
   overflow-y: scroll;
   height: 600px;
   width: 95%;

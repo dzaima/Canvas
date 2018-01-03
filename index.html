@@ -18,17 +18,19 @@
     <div align="left" class="right" id="inpdiv">
       <textarea id="inputs" placeholder="Enter inputs in each line" spellcheck="false" style="width:100%"></textarea>
       <div id="docs" style="display:none" align="left">
-        <input id="search" style="width:99%" onclick="setTimeout(updater, 0);" oninput="setTimeout(updater, 0);" placeholder="search for chars, descriptions, types, ect."> </input>
-        <table id="docstable" style="width:99%" align="left">
-          <col width="3%" />
-          <col width="95%" />
-          <thead>
-            <tr>
-              <th>chr</th>
-              <th>description</th>
-            </tr>
-          </thead>
-        </table>
+        <input id="search" style="width:93%" onclick="setTimeout(updater, 0);" oninput="setTimeout(updater, 0);" placeholder="search for chars, descriptions, types, ect."> </input>
+        <div id="docs-scroll">
+          <table id="docstable" style="width:99%" align="left">
+            <col width="3%" />
+            <col width="95%" />
+            <thead>
+              <tr>
+                <th>chr</th>
+                <th>description</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
       </div>
     </div>
     <textarea id="result" placeholder="Output will be here" spellcheck="false" style="width:100%; background-color: #333333;" readonly></textarea>
