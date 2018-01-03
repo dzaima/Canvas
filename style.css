@@ -79,6 +79,8 @@ table {
   overflow-y: scroll;
   height: 600px;
   width: 95%;
+}
+#docs {
   padding: 10px;
 }
 code.cv {
