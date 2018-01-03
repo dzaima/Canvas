@@ -97,7 +97,7 @@ if 5 columns exist, it's a loop(ish thing) starter they correspond to `NSA｝］
 |`Ｗ` | ✓ | ✓ | ✓ | ✓ |   |
 |`Ｘ` |
 |`Ｙ` |
-|`Ｚ` |
+|`Ｚ` | ✓ |
 |`ａ` |
 |`ｂ` |
 |`ｃ` |
@@ -123,7 +123,7 @@ if 5 columns exist, it's a loop(ish thing) starter they correspond to `NSA｝］
 |`ｗ` |
 |`ｘ` |
 |`ｙ` |
-|`ｚ` |
+|`ｚ` | ✓ |
 |０-９| ✓ |
 |`¶`  |
 |`§`  |
