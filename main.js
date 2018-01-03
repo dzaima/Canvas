@@ -472,7 +472,9 @@ async function run (program, inputs) {
     
     
     // generators
-    "∙": () => {},
+    "∙": () => {
+      if (cPA.includes(program[cpo.ptr-1]) ^ cPA.includes(program[cpo.ptr+1])) return " ";
+    },
     "ｒ": (a) => lrange(a),
     "Ｒ": (a) => urange(a),
     "╶": nextInp,

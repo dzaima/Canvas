@@ -19,11 +19,11 @@
   aa: add the two items together horizontally
 －	subtract
 （	start an array wrapping
-）	end array wrapping. （ can be implicit TODO fix for `］`
+）	end array wrapping. （ can be implicit //TODO fix for `］`
 ［	loop
   N: repeat that many times (not pushing anything)
     `６７２［!＋Ｐ` -> "7!¶6!"
-  S: for each prefix TODO this and v better ideas?
+  S: for each prefix //TODO this and v better ideas?
   A: for each prefix
 ］	close a loop, collecting the results and pushing them after, so `｛...］` would be a `.map` function
 ｛	loop

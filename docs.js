@@ -15,7 +15,7 @@ $.ajax({
       let typearr = [];
       let examples = [];
       for (let lid = 0; lid < larr.length; lid++) {
-        let line = larr[lid];
+        let line = larr[lid].replace(/\/\/TODO.+$/, "");
         if (cmatch = line.match(exampleRegex)) {
           examples.push({c:cmatch[1], r:cmatch[2]});
         } else if (cmatch = line.match(/  ([NSAa, ]+): (.+)/)) {
@@ -52,25 +52,28 @@ $.ajax({
         while (match = regex.exec(implemented)) {
           let chr = match[1];
           let cols = match[2].substring(1,match[2].length-2).split(" | ");
-          if (cols.length == 3 || cols.length == 1 || cols.length > 5) {
+          if (cols.length == 3 || cols.length == 1 || cols.length > 4) {
+            if (cols.length == 5) cols.splice(3);
             let dataItem = data.find((item) => item.c === chr);
+            dataItem.impl = {};
             if (cols.length > 1) {
-              let tarr = cols.length == 3? ["N", "S", "A"] : ["NN", "SS", "AA", "NS", "NA", "SA"];
+              let tarr = cols.length == 3? ["N", "S", "A"] : ["NN", "SS", "AA", "NS", "AN", "AS"];
               cols.forEach((impl, index) => {
-                dataItem.types.forEach((type) => {
-                  if (type.t.toUpperCase().match(new RegExp("\\b" + tarr[index] + "\\b"))) {
-                    type.impl = (impl===" "||impl==="□")? "⨯" : impl;
-                  }
-                });
+                if (impl.length == 1) dataItem.impl[tarr[index]] = impl==="✓";
+                else {
+                  let parts = impl.split(" ");
+                  dataItem.impl[parts[0].toUpperCase()] = parts[1]==="✓";
+                }
               });
             } else {
-              dataItem.impl = (cols[0]===" "||cols[0]==="□")? "⨯" : cols[0];
+              dataItem.impl[""] = cols[0]==="✓";
             }
           }else
           console.log(" ignoring",chr);
         }
         console.log("implementation data added!");
         createTable();
+        if (search.value != lastSearch && searched) searched(search.value);
       }
     });
   }
@@ -123,7 +126,9 @@ function createTable() {
     desc.classList.add("sdesc", "chrinf");
     desc.chr = item.c;
     desc.innerHTML = '<th><a class="chr" href=""><code>' + item.c + '</code></a></th>';
-    desc.insertCell(1).innerHTML = (item.impl? "<code>"+item.impl+"</code> " : " ") + item.desc;
+    desc.insertCell(1).innerHTML = item.desc;
+    let el = desc.children[0].children[0].children[0];
+    if (item.impl != undefined) el.style.color = Object.values(item.impl).includes(true)? "#55bb55" : "#bb5555";
     // simple examples
     if (item.examples.length > 0) {
       let examplesRow = docstable.insertRow(-1);
@@ -151,25 +156,25 @@ function createTable() {
       typesRow.chr = item.c;
       let typesCell = typesRow.insertCell(0);
       typesCell.colSpan = 2;
-      typesCell.innerHTML = '<table class="dtypetable" style="width:100%"> <col width=40px /> <col width=5px /> <tbody></tbody> </table>';
+      typesCell.innerHTML = '<table class="dtypetable" style="width:100%"> <col width=40px /> <tbody></tbody> </table>';
       let typesTable = typesCell.children[0];
       // type list
       let first = true;
       for (let typeObj of item.types) {
         let typeRow = typesTable.insertRow(-1);
         typeRow.innerHTML = '<th' + (first? '>' : ' class="typecellmid">') + typeObj.t.split(/, ?/).map(c=> '<code>'+c+'</code>').join('<br>') + '</th>';
-        let typeImpl = typeRow.insertCell(1);
-        typeImpl.innerHTML = typeObj.impl? '<code>' + typeObj.impl + '</code>' : "";
-        let typeDesc = typeRow.insertCell(2);
+        if (item.impl != undefined) {
+          for (let el of typeRow.children[0].children) {
+            let key = item.impl[[...el.innerText.toUpperCase()].sort().join("")];
+            if (key != undefined) el.style.color = key? "#55bb55" : "#bb5555";
+          }
+        }
+        let typeDesc = typeRow.insertCell(1);
         typeDesc.innerHTML = '<code> ' + typeObj.desc + '</code>'
         // type examples
         
-        let examplesRow = typesTable.insertRow(-1);
-        examplesRow.innerHTML = '<th></th>';
-        let examplesCell = examplesRow.insertCell(1);
-        examplesCell.colSpan = 2;
-        examplesCell.innerHTML = '<table class="dex"><tbody></tbody></table>';
-        let examplesTable = examplesCell.children[0];
+        typeDesc.innerHTML+= '<table class="dex"><tbody></tbody></table>';
+        let examplesTable = typeDesc.children[1];
         let first2 = true;
         for (let example of typeObj.e) {
           let exampleRow = examplesTable.insertRow(-1);
