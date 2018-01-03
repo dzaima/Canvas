@@ -95,8 +95,8 @@ printable ascii+¶: part of strings
     `６７×` -> 42
   NA, AN, SN, NS: repeat horizontally
     `string３×` -> "stringstringstring"
-    `hello¶world!2×` -> "hello hello ¶world!world!"
-    `hello∙world!）2×` -> ["hello hello ", "world!world!"]
+    `hello¶world!２×` -> "hello hello ¶world!world!"
+    `hello∙world!）２×` -> ["hello hello ", "world!world!"]
   aa: reverse add / prepend
     `World!∙Hello, ×` -> "Hello, World!"
 ＊	multiply vertically
