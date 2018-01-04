@@ -4,21 +4,22 @@ $.ajax({
   url: "files/chars.txt",
   success: function (chars) {
     console.log("chars.txt loaded!");
-    var regex = /^([^\t\n ]{1,3})\t(.+)\n(( {2,}.+\n)*)/gm;
+    let charRegex = /^([^\t\n ]{1,3})\t(.+)\n(( {2,}.+\n)*)/gm;
+    let exampleRegex = / {2,4}`([^`]*)` (.+)/;
+    let commentRegex = /\/\/(TODO|KEYW).+$/;
     
-    let exampleRegex = / {2,4}`([^`]*)` -> (.+)/;
     var match, cmatch;
     // parsing chars.txt
-    while (match = regex.exec(chars)) {
-      let obj = {c: match[1], desc:match[2], raw: match[0]};
+    while (match = charRegex.exec(chars)) {
+      let obj = {c: match[1], desc:match[2].replace(commentRegex, ""), raw: match[0]};
       let larr = match[3].split("\n");
       let typearr = [];
       let examples = [];
       for (let lid = 0; lid < larr.length; lid++) {
-        let line = larr[lid].replace(/\/\/TODO.+$/, "");
+        let line = larr[lid].replace(commentRegex, "");
         if (cmatch = line.match(exampleRegex)) {
           examples.push({c:cmatch[1], r:cmatch[2]});
-        } else if (cmatch = line.match(/  ([NSAa, ]+): (.+)/)) {
+        } else if (cmatch = line.match(/  ([NSAa,¹²³⁴⁵⁶⁷⁸⁹｝］ ]+): (.+)/)) {
           
           let texamples = [];
           let exm;
@@ -45,7 +46,7 @@ $.ajax({
       url: "files/implemented.md",
       success: function (implemented) {
         console.log("implemented.md loaded!");
-        var regex = /^\|`([^`])+`\s+\|(.+)$/gm;
+        var regex = /^\|`([^`])+`\s*\|(.+)$/gm;
         var match;
         
         // parsing
@@ -85,13 +86,14 @@ function searched (sv) {
   var chararr = [];
   for (let item of data) {
     let score = 0;
-    if (!item.raw.includes(sv)) {
+    if (!item.raw.toLowerCase().includes(sv.toLowerCase())) {
       score = -Infinity;
     }
     if (item.c.includes(sv)) score+= 1e15;
     if (item.desc.includes(sv)) score+= 1e14;
-    score-= 100*(item.c.length - 1);
-    score-= item.desc.length;
+    score-= 1000000*(item.c.length - 1);
+    score-= 10000*item.desc.length;
+    score+= codepage.indexOf(item.c);
     scores[item.c] = score;
     chararr.push(item.c);
   }
@@ -107,6 +109,8 @@ function searched (sv) {
     }
     return 0
   });
+  t=order;
+  t2=scores;
   for (let el of order) {
     if (scores[el.chr] > -Infinity) {
       el.style.display = "table-row";
@@ -126,7 +130,7 @@ function createTable() {
     desc.classList.add("sdesc", "chrinf");
     desc.chr = item.c;
     desc.innerHTML = '<th><a class="chr" href=""><code>' + item.c + '</code></a></th>';
-    desc.insertCell(1).innerHTML = item.desc;
+    desc.insertCell(1).innerHTML = item.desc.replace(/`([^`]+)`/g, '<code class="cv">$1</code>');
     let el = desc.children[0].children[0].children[0];
     if (item.impl != undefined) el.style.color = Object.values(item.impl).includes(true)? "#55bb55" : "#bb5555";
     // simple examples
@@ -145,7 +149,7 @@ function createTable() {
         let code = exampleRow.insertCell(1);
         code.innerHTML = '<code class="cv">' + example.c + '</code>'
         let result = exampleRow.insertCell(2);
-        result.innerHTML = ' → <code> ' + example.r + '</code>'
+        result.innerHTML = ' <code> ' + example.r + '</code>'
       }
     }
     // typed descs & examples
@@ -182,9 +186,9 @@ function createTable() {
           indent.classList.add("dindent");
           if (first2) indent.classList.add("di-t");
           let code = exampleRow.insertCell(1);
-          code.innerHTML = '<code class="cv">' + example.c + '</code>'
+          code.innerHTML = '<code class="cv ex">' + example.c + '</code>'
           let result = exampleRow.insertCell(2);
-          result.innerHTML = ' → <code> ' + example.r + '</code>'
+          result.innerHTML = ' <code> ' + example.r + '</code>'
           first2 = false;
         }
         first = false;
@@ -201,7 +205,7 @@ function createTable() {
     program.focus();
     update();
   });
-  $(".cv").wrap('<a class="example" href=""> </a>');
+  $(".ex").wrap('<a class="example" href=""> </a>');
   $(".example").click(function (e) {
     e.preventDefault();
     program.value = e.target.innerText;

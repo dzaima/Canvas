@@ -1,10 +1,5 @@
 ⁰	wrap the stack in an array
-¹-⁹	context & input & program dependant variables
-  ⁹ - x: the program lines. ⁹ is the main program, ⁸ is the first helper, ⁷ - 2nd, ect.
-  after those, come the inputs. So for a program with 1 helper line the 1st input would be ⁷, the second ⁶, ect.
-  ¹-x: loop counters & stuff
-    the current loops item is it's depth, and optionally the next superscript may be something. The ones before gat saved from previous loops, but only 1 value is accessible.
-  if the above don't set a value, then this table shows each items value:
+¹-⁹	context & input & program dependant variables. Defaults: //KEYW ¹²³⁴⁵⁶⁷⁸⁹
   ¹: Infinity
   ²: 256
   ³: 13
@@ -13,6 +8,11 @@
   ⁶: 12
   ⁷: 16
   ⁸: 128
+  ⁹ - x: the program lines. ⁹ is the main program, ⁸ is the first helper, ⁷ - 2nd, ect.
+  after those, come the inputs. So for a program with 1 helper line the 1st input would be ⁷, the second ⁶, ect.
+  ¹-x: loop counters & stuff
+    the current loops item is it's depth, and optionally the next superscript may be something. The ones before gat saved from previous loops, but only 1 value is accessible.
+  if the above don't set a value, then this table shows each items value:
   
 ＋	add / join horizontally
   NN: add the numbers
@@ -22,23 +22,23 @@
 ）	end array wrapping. （ can be implicit //TODO fix for `］`
 ［	loop
   N: repeat that many times (not pushing anything)
-    `６７２［!＋Ｐ` -> "7!¶6!"
+    `６７２［!＋Ｐ` → "7!¶6!"
   S: for each prefix //TODO this and v better ideas?
   A: for each prefix
 ］	close a loop, collecting the results and pushing them after, so `｛...］` would be a `.map` function
 ｛	loop
   N: repeat from 1 to that number, pushing the counter
-    `３｛a＊Ｐ` -> "a¶aa¶aaa"
+    `３｛a＊Ｐ` → "a¶aa¶aaa"
   S: for each character, pushing it
-    `abc｛-ｐｐ` -> "-a-b-c"
+    `abc｛-ｐｐ` → "-a-b-c"
   A: for each item, pushing it
 ｝	close a loop
 ＜	less than
   NN: less than
-    `４６＜` -> 1
+    `４６＜` → 1
 ＞	greater than
   NN: greater than
-    `２７＞` -> 0
+    `２７＞` → 0
 ‰	
 ø	push an empty art object
 ▾	
@@ -62,13 +62,13 @@ printable ascii+¶: part of strings
 ┘	
 ├	double increment / uppercase first letter
   N: increase by 2
-    `７├` -> 9
+    `７├` → 9
   S: uppercase the first letter of the first word
-    `   hello, world!┤` -> "   Hello, world!"
+    `   hello, world!┤` → "   Hello, world!"
   A: vectorize
 ┤	double decrement
   N: decrease by 2
-    `０┤` -> -2
+    `０┤` → -2
   A: put all the elements on the stack
 ┬	decode from base 10
 ┴	encode into base 10
@@ -76,13 +76,13 @@ printable ascii+¶: part of strings
 ╵	increment / sentence case
   N: increase by 1
   S: uppercase every letter after any of ".?!" and in the beginning
-    `  hello, world! goodbye, world!╵` -> "  Hello, world! Goodbye, world!"
+    `  hello, world! goodbye, world!╵` → "  Hello, world! Goodbye, world!"
   A: vectorize
 ╶	next input
 ╷	decrement / title case
   N: decrease by 1
   S: uppercase the first letter of every word
-    `hello, world!╵` -> "Hello, World!"
+    `hello, world!╵` → "Hello, World!"
   A: vectorize
 ╋	overlap
   aaNN: overlap the 2nd art over the 1st at x;y using smartOverlap
@@ -92,41 +92,41 @@ printable ascii+¶: part of strings
 ↙	
 ×	multiply horizontally / prepend
   NN: multiply the numbers
-    `６７×` -> 42
+    `６７×` → 42
   NA, AN, SN, NS: repeat horizontally
-    `string３×` -> "stringstringstring"
-    `hello¶world!２×` -> "hello hello ¶world!world!"
-    `hello∙world!）２×` -> ["hello hello ", "world!world!"]
-  aa: reverse add / prepend
-    `World!∙Hello, ×` -> "Hello, World!"
+    `string３×` → "stringstringstring"
+    `hello¶world!２×` → "hello hello ¶world!world!"
+    `hello∙world!）２×` → ["hello hello ", "world!world!"]
+  aa: reverse join / prepend //KEYW reverse add
+    `World!∙Hello, ×` → "Hello, World!"
 ＊	multiply vertically
   SN, NS: repeat the string vertically that many times
-    `foo¶bar３＊` -> "foo¶bar¶foo¶bar¶foo¶bar"
+    `foo¶bar３＊` → "foo¶bar¶foo¶bar¶foo¶bar"
   NA, AN: multiply the array vertically that many times
-    `a∙b）２＊` -> ["a","b","a","b"]
+    `a∙b）２＊` → ["a","b","a","b"]
   aNN: expand the ascii-art by the numbers
-    `foo¶bar２３＊` -> "ffoooo¶bbaarr¶ffoooo¶bbaarr¶ffoooo¶bbaarr"
+    `foo¶bar２３＊` → "ffoooo¶bbaarr¶ffoooo¶bbaarr¶ffoooo¶bbaarr"
   AS, SA: join the array with the string
-    `3Ｒ:＊` -> "1:2:3"
+    `3Ｒ:＊` → "1:2:3"
   SS: insert the second string between the firsts chars
-    `2xy∙^＊` -> "2^x^y"
+    `2xy∙^＊` → "2^x^y"
 ÷	divide
   NN: divide the numbers
     `３∙４÷`
 ±	horizontal reverse / negate
   N: negate
   a: reverse horizontally
-    `\abc/±` -> "/cba\"
-    `abc∙(def)）±` -> ["  cba", ")fed("]
+    `\abc/±` → "/cba\"
+    `abc∙(def)）±` → ["  cba", ")fed("]
 «	shift left
   N: shift left by 1 bit / multiply by 2
   S: put the first char at the end
   A: put the first item at the end
 »	shift right
   N: shift right by 1 bit / floor divide by 2, storing the remainder
-    `7»` -> 3
+    `7»` → 3
   S: put the last char at the beginning
-    `hello»` -> "ohell"
+    `hello»` → "ohell"
   A: put the last item at the beginning
 ≤	
 ≥	
@@ -169,7 +169,7 @@ printable ascii+¶: part of strings
 ｄ	
 ｅ	encase in a letter
     SS: encase the 1st string in the 2nd
-      `hello∙'ｅ` -> "'hello'"
+      `hello∙'ｅ` → "'hello'"
 ｆ	
 ｇ	
 ｈ	
@@ -181,7 +181,7 @@ printable ascii+¶: part of strings
 ｎ	split into chunks / divmod
   NS, SN: split the string into chunks of length N, padding with spaces if necessary.
   NA, AN: split the array into arrays of length N. If there aren't enough items, just leave as-is.
-    `１２３４５６）４ｎ` -> [[1,2,3,4],[5,6]]
+    `１２３４５６）４ｎ` → [[1,2,3,4],[5,6]]
   NN: push the result of floor division and then modulo
 ｒ	lowered range
   N: range from 0 to N-1, inclusive
@@ -217,7 +217,7 @@ printable ascii+¶: part of strings
 ¾	
 √	square root
   N: get the square root
-    `９２√＊Ｕ` -> 13
+    `９２√＊Ｕ` → 13
 ／	create an antidiagonal
   N: create a antidiagonal of that length
   S: create a antidiagonal of the characters of that string
@@ -228,29 +228,30 @@ printable ascii+¶: part of strings
   a: prepend each line with one more space than the last, the first having 0 spaces
 ∑	join together
   A: join the array together
-    `（（ab∙cd）（ef∙gh））∑` -> "abcdefgh"
+    `（（ab∙cd）（ef∙gh））∑` → "abcdefgh"
   N, S: join the stack until `（` or end into a string
-∙	NOOP/space
+∙	NOP / separator / space
   NOOP if both or no sides are ASCII
-    `abc∙def┐` -> "def"
+    `abc∙def┐` → "def"
   if ASCII is only on one side, pushes a space
-    `abc∙×` -> "a b c"
+    `abc∙×` → "a b c"
 ‽	if not / switch
   `‽false!｝` - if POP is falsy 
   `‽N］north｝S］south｝E］east｝west｝We're going ＊` - input [NSEW] and the output will expand the direction name and prepend "We're going "
 ‾	
 ⇵	reverse vertically
   N: ceiling divide by 2, storing the remainder
-    `７⇵` -> 4
+    `７⇵` → 4
   A: reverse the items
-    `１２）hello（７world））⇵` -> [[7,"world"], "hello", [1,2]]
+    `１２）hello（７world））⇵` → [[7,"world"], "hello", [1,2]]
   a: reverse vertically
 ：	duplicate ToS
-  `la：＋` -> "lala"
+  `la：＋` → "lala"
 ；	swap top two stack items
-  `４９；－` -> 5
+  `４９；－` → 5
 ⟳	rotate clockwise w/o character changing
   a: rotate clockwise once
+    `i∙h!∔⟳` → `hi¶!`
   aN: rotate clockwise that many times
   A, AN: rotate the items so that it looks rotated if printed
 ⤢	transpose
@@ -265,10 +266,12 @@ printable ascii+¶: part of strings
 “	
 ”	
 ■	
-？	if/case. `if` if ending with `｝`, and `case` for numbers 0..x if followed by `］` and ended with `｝`. The last is also default - `？c0］c1］def｝` will push c0/c1. If only cases 0 & 1 are used, non-numbers map to truthy/falsy of them, not the default/last case to make it work like if-else (well, else-if)
-    `？truthy!｝` outputs "truthy" if the input is truthy
-    `？falsy］truthy!｝` outputs "truthy" if the input is truthy
-    `？zero］one］not zero nor one｝` self explanatory
+？	if/case. and `case` for numbers 0..x if followed by `］` and ended with `｝`
+  ｝: if
+    `？truthy!｝` pushes "truthy" if the input is truthy
+  ］｝: `case` for numbers 0..x. first is default, next is 0, next - 1, next - 2, ect.<br>If only 2 blocks are used, this is basically if/else.
+    `？truthy!］falsy｝` outputs "truthy" if the input is truthy
+    `？not zero nor one］zero］one｝` self explanatory
 
 ↶	rotate anticlockwise
   a: rotate counter clockwise, rotating characters that make sense to be rotated
@@ -279,15 +282,15 @@ printable ascii+¶: part of strings
   AN, NA: push that item (1-indexed) from the array
   SN, SA: push that char (1-indexed) from the string
 ＃	execute as JS
-    `"Hello, "+"JS!"＃` -> "Hello, JS!"
+    `"Hello, "+"JS!"＃` → "Hello, JS!"
 ％	modulo
   NN: modulo
-    `８３％` -> 2
+    `８３％` → 2
 ！	
 α	get the second to last argument used in a simpleFunction
-    `７３÷１％α；－` -> 2 (floor division implementation)
+    `７３÷１％α；－` → 2 (floor division implementation)
 ω	get the last argument used in a simpleFunction
-    `７３÷αω％ω÷－` -> 2 (floor division implementation)
+    `７３÷αω％ω÷－` → 2 (floor division implementation)
 
 ─	palindzomize vertically with 1 overlap
 ═	palindzomize vertically with 0 overlap

@@ -632,12 +632,6 @@ async function run (program, inputs) {
     gotoNextIns = false;
   }
   function executeHere (newPr) {
-    // ptr:0,
-    // startpt:0,
-    // endpt:program.length,
-    // continue: () => {layerDown(cpo.endpt)},
-    // moveTo: function (where) {cpo.ptr = where; if (cpo.ptr >= cpo.endpt) return cpo.continue();},
-    // toString: () => "{mptr}",
     addPtr(new (function (myPr, oldPr) {
       this.ptr = 0;
       this.moveTo = function (where) {
@@ -700,13 +694,17 @@ async function run (program, inputs) {
   function execAt (index) {
     var exc = program.slice(index, nextIns(index));
     if (exc.length > 0 && exc.split("").every(c=>cPA.includes(c))) {
-      push(program.substring(index, nextIns(index)).replace(/¶/g,"\n"));
+      push(prepareStr(program.substring(index, nextIns(index)).replace(/¶/g,"\n")));
       return;
     }
-    error = `the function ${exc}@${index} doesn't exist`;
-    let func = functions[exc];
-    error = `call to ${exc}@${index} failed`;
-    func();
+    if (functions[exc] == undefined) {
+      console.log(`the function ${exc}@${index} doesn't exist`);
+      push(exc);
+    } else {
+      let func = functions[exc];
+      error = `call to ${exc}@${index} failed`;
+      func();
+    }
   }
   
   function outputFS (shouldPop, newline, noImpOut) { // output from stack
