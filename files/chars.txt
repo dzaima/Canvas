@@ -1,4 +1,4 @@
-⁰	wrap the stack in an array
+⁰	wrap the top same type items on the stack in an array
 ¹-⁹	context & input & program dependant variables. Defaults: //KEYW ¹²³⁴⁵⁶⁷⁸⁹
   ¹: Infinity
   ²: 256
@@ -213,7 +213,7 @@ printable ascii+¶: part of strings
 §	
 ‼	
 ¼	
-½	
+½	divide by 2
 ¾	
 √	square root
   N: get the square root

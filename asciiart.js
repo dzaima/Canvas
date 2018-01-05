@@ -13,7 +13,12 @@ function Canvas (preset) {
     preset = preset.split("\n");
   }
   if (preset instanceof Canvas) {
-    preset = preset.repr;
+    this.repr = preset.repr.slice().map(c => c.slice());
+    this.sx = preset.sx;
+    this.sy = preset.sy;
+    this.ex = preset.ex;
+    this.ey = preset.ey;
+    this.background = preset.background;
   }
   if (Array.isArray(preset)) {
     this.ey = preset.length;
@@ -54,7 +59,7 @@ function Canvas (preset) {
     if (this.background == ' ') this.background = '∙'
     var out = this.toString();
     this.background = temp;
-    return out+`<${this.sy};${this.ey}>`;
+    return out+`<${this.sx};${this.sy},${this.ex};${this.ey}>`;
   }
   
   this.toArr = function () {

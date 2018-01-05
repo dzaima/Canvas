@@ -219,7 +219,14 @@ async function run (program, inputs) {
     })(pop())),
     "ω": () => push(lastArgs.slice(-1)[0]),
     "α": () => push(lastArgs.slice(-2)[0]),
-    "⁰": () => stack = [stack],
+    "⁰": () => {
+      let utype = type(get(1));
+      let res = [];
+      while (type(get(1)) == utype) {
+        res.splice(0, 0, pop());
+      }
+      push(res);
+    },
     "（": () => push(new Break(0)),
     "＃": () => {
       let res = eval(pop());
@@ -289,12 +296,14 @@ async function run (program, inputs) {
     },
     "±": {
       S: (s) => new Canvas(s).horizReverse().toString(), // [...s].reduce((a,b)=>b+a)
-      N: (n) => -n,
+      N: (n) => B(0).minus(n),
       A: (a) => new Canvas(a).horizReverse().toArr(),
       a: (a) => a.horizReverse(),
     },
     "╋": {
       aaNN: (a, b, x, y) => a.overlap(b, x.minus(1), y.minus(1), smartOverlap),
+      length: 4,
+      default: (a, b, c, d, ex) => ex("aaNN", ...orderAs("aaNN", a, b, c, d)),
     },
     "⇵": {
       N: (n) => (a=n.divideAndRemainder(2), remainders.push(a[1]), a[0].plus(a[1])),
@@ -461,11 +470,15 @@ async function run (program, inputs) {
         for (let item of a) push(item);
       },
     },
+    "½": {
+      N: (n) => n.divide(2),
+    },
     
     // stack manipulation
     "）": collectToArray,
     "；": (a,b) => {push(b); push(a);},
     "：": () => {push(get(1));},
+    "⌐": () => {push(get(1));push(get(1));},
     "┌": () => (push(get(2))),
     "┐": (_) => {},
     
@@ -576,7 +589,7 @@ async function run (program, inputs) {
       let params = [];
       let popCtr = 1;
       let toRemove = [];
-      for (let i = 0; i < (matchingKey || fn).length; i++) {
+      for (let i = 0; i < (ofn.length || ((matchingKey || fn).length)); i++) {
         let item = get(popCtr);
         if (matchingKey && matchingKey[i] == "_") i++;
         else toRemove.splice(0, 0, popCtr);
@@ -602,17 +615,20 @@ async function run (program, inputs) {
   var gotoNextIns = true;
   while (ptrs.length > 0 && program.length > 0) {
     if (sleepUpdate) await sleep(0);
+    let executeNow = cpo.ptr < program.length;
     error = "";
-    try {
-      if (debug > 2) console.log("before exec: ptr", cpo.ptr, "endpt", cpo.endpt);
-      if (debug) var pptr = cpo.ptr; // previous pointer
-      execAt(cpo.ptr);
-    } catch (e) {
-      console.log(error+":");
-      console.log(e);
+    if (executeNow) {
+      try {
+        if (debug > 2) console.log("before exec: ptr", cpo.ptr, "endpt", cpo.endpt);
+        if (debug) var pptr = cpo.ptr; // previous pointer
+        execAt(cpo.ptr);
+      } catch (e) {
+        console.log(error+":");
+        console.log(e);
+      }
     }
     if (gotoNextIns) toNextIns();
-    if (debug) console.log(`${program[pptr]} @${pptr}${pptr+1 != cpo.ptr? `-${cpo.ptr-1}` : ""}: ${arrRepr(stack, true)}`+(debug>1? `    depth = ${ptrs.length} current pointer: ${cpo.startpt}-${cpo.endpt}` : ""));
+    if (executeNow && debug) console.log(`${program[pptr]} @${pptr}${pptr+1 != cpo.ptr? `-${cpo.ptr-1}` : ""}: ${arrRepr(stack, true)}`+(debug>1? `    depth = ${ptrs.length} current pointer: ${cpo.startpt}-${cpo.endpt}` : ""));
     if (cpo.afterDebug) cpo.afterDebug();
     gotoNextIns = true;
   }
@@ -778,7 +794,7 @@ async function run (program, inputs) {
     return stack.splice(ptr,1)[0];
   }
   function push (...item) {
-    stack.push(...item);
+    stack.push(...item.map(copy));
   }
   function collectToArray() {
     var collected = [];
@@ -815,6 +831,35 @@ async function run (program, inputs) {
     if (rt == 'S') return rt.toString();
     throw `cast error from ${type(item)} to ${rt}: ${item} (probably casting to array which is strange & unsupported)`;
   }
+  function copy (item) {
+    if (isArr(item)) {
+      return item.map((c) => copy(c));
+    }
+    if (isArt(item)) {
+      return new Canvas(item);
+    }
+    if (isNum(item)) {
+      return new Big(item);
+    }
+    return item;
+  }
+  function orderAs (order, ...params) {
+    let ppt = params.map((c) => [c, type(c)]); //params plus type
+    for (let i = 0; i < ppt.length; i++) {
+      let curType = ppt[1];
+      let resType = order[i];
+      if (!subType(curType, resType)) {
+        let index = i + ppt.slice(i).findIndex(c=>subType(c[1], resType));
+        ppt.splice(i,0,ppt.splice(index,1)[0]);
+      }
+    }
+    return ppt.map((c) => c[0])
+  }
+  function subType (a, b) { // is `a` a subtype of `b`?
+    if (a==b) return true;
+    if (b=="a" && "AS".includes(a)) return true;
+    return false;
+  }
   
   function irange (s, e) {//inclusive range
     var out = [];
@@ -842,6 +887,7 @@ async function run (program, inputs) {
   function isNum (item) {
     return item instanceof Big;
   }
+  
   
   function isJSNum (item) {
     return typeof item === "number";
