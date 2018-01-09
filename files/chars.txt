@@ -41,7 +41,8 @@
     `２７＞` → 0
 ‰	
 ø	push an empty art object
-▾	
+＾	power
+    `Ａ３＾` -> 1000
 ◂	
 ←	
 ↑	
@@ -141,8 +142,8 @@ printable ascii+¶: part of strings
 Ｇ	
 Ｈ	
 Ｉ	
-Ｊ	
-Ｋ	
+Ｊ	pop the first item / first line
+Ｋ	pop the last item / last line
 Ｌ	get length, popping the item
 Ｍ	
 Ｎ	

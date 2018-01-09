@@ -182,6 +182,29 @@ async function run (program, inputs) {
       this.init = () => truthy(this.obj)? this.continue() : this.break();
       this.toString = () => `?if "[${program[this.endpt]=="］"? "]" : "}"}"@${this.ptr} ${this.startpt}-${this.endpt}}`
     })(pop())),
+    "‽": () => addPtr(new (function (init) {
+      this.ptr = cpo.ptr; 
+      this.moveTo = function (where) {
+        // console.log("moveTo",JSON.stringify(this.obj),this.iterptr,this.obj.length);
+        this.ptr = where;
+        if (this.ptr >= this.endpt) {
+          this.break();
+          this.ptr++;
+        }
+      }
+      this.obj = init;
+      this.endpt = endPt(this.ptr);
+      this.startpt = this.ptr;
+      this.continue = function() {
+        this.ptr = this.startpt;
+      }
+      this.break = function() {
+        if (debug > 1) console.log("`[` break to", this.endpt+1, JSON.stringify(ptrs));
+        layerDown(this.endpt+1);
+      }
+      this.init = () => falsy(this.obj)? this.continue() : this.break();
+      this.toString = () => `?if "[${program[this.endpt]=="］"? "]" : "}"}"@${this.ptr} ${this.startpt}-${this.endpt}}`
+    })(pop())),
     
     "Ｗ": () => addPtr(new (function (init) {
       this.ptr = cpo.ptr;
@@ -289,6 +312,16 @@ async function run (program, inputs) {
     "≠": (a, b) => +!equal(a,b),
     
     // array & ascii-art manipulation
+    "∑": {
+      A: (a) => {
+        checkIsNums = (a) => isArr(a)? a.every(checkIsNums) : isNum(a);
+        let reduceType;
+        if (checkIsNums(a)) reduceType = (a,b) => a.plus(b);
+        else reduceType = (a,b) => a+""+b;
+        sumArr = (a) => a.map(c => isArr(c)? sumArr(c) : c).reduce(reduceType);
+        return sumArr(a);
+      }
+    },
     "＠": {
       AN: (a, n) => a[n.intValue()+1],
       NA: (n, a, ex) => ex("AN", a, n),
@@ -350,12 +383,30 @@ async function run (program, inputs) {
       a: (a) => a.horizMirror().vertMirror(),
     },
     "ｊ": {
+      _A: (a) => {a.splice(0, 1)},
+      S: (s) => s.slice(0, -1),
       a: (a) => (a.repr.splice(0, 1), a.ey--, a),
-      s: (s) => a.replace(/^.*\n/, ""),
     },
     "ｋ": {
-      s: (s) => a.replace(/\n.*$/, ""),
+      _A: (a) => {a.pop()},
+      S: (s) => s.slice(1),
       a: (a) => (a.repr.pop(), a.ey--, a),
+    },
+    "Ｊ": {
+      _A: (a) => (a.splice(0, 1)[0]),
+      S: (s) => {
+        res = a.slice(0, 1);
+        push(s.slice(1));
+        push(...res);
+      },
+    },
+    "Ｋ": {
+      _A: (a) => (a.pop()),
+      S: (s) => {
+        res = a.slice(-1);
+        push(s.slice(0, -1));
+        push(res);
+      },
     },
     "Ｄ": {
       A: (a) => {
@@ -541,7 +592,7 @@ async function run (program, inputs) {
       N: (a) => a.round(0, Big.ROUND_FLOOR),
     },
   }
-  if (debug > 1) console.log("simple functions:",Object.keys(simpleFunctions).map(c=>c+":"+simpleFunctions[c].length));
+  // if (debug > 1) console.log("simple functions:",Object.keys(simpleFunctions).map(c=>c+":"+simpleFunctions[c].length));
   
   //add numbers to simple functions
   for (let i = 0; i < 10; i++)
@@ -590,11 +641,13 @@ async function run (program, inputs) {
       let params = [];
       let popCtr = 1;
       let toRemove = [];
+      let rawTypes;
+      if (matchingKey) rawTypes = matchingKey.replace(/_/g, "");
       for (let i = 0; i < (ofn.length || ((matchingKey || fn).length)); i++) {
         let item = get(popCtr);
         if (matchingKey && matchingKey[i] == "_") i++;
         else toRemove.splice(0, 0, popCtr);
-        if (matchingKey) item = cast(item, matchingKey[matchingKey.length-i-1]);
+        if (matchingKey) item = cast(item, rawTypes[popCtr-1]);
         params.splice(0, 0, item);
         popCtr++;
       }
@@ -812,7 +865,7 @@ async function run (program, inputs) {
     while (lvl > 0) {
       ind = nextIns(ind);
       if (program[ind] == "｝" || program[ind] == "］") lvl--;
-      if (program[ind] == "［" || program[ind] == "｛" || program[ind] == "？") lvl++;
+      if (program[ind] == "［" || program[ind] == "｛" || program[ind] == "？" || program[ind] == "‽") lvl++;
       if (ind >= program.length) return program.length;
     }
     return ind;
