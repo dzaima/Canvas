@@ -19,6 +19,7 @@ var debug = 1; // 0 - no debug; 1 - program debug; 2 - interpreter debug
 async function run (program, inputs) {
   // program state variables
   var output = "";
+  var vars = {};
   var inpCtr = 0;
   var remainders = [];
   var error;
@@ -91,7 +92,7 @@ async function run (program, inputs) {
           if (this.collect && !this.collectOne) push(new Break(1));
           push(this.obj[this.iterptr]);
           setSup(ptrs.length-2, this.obj[this.iterptr]);
-          setSup(ptrs.length-1, this.iterptr);
+          setSup(ptrs.length-1, this.iterptr+1);
           this.ptr = this.startpt;
         }
       }
@@ -570,6 +571,15 @@ async function run (program, inputs) {
       a: (a) => a.height,
     },
     
+    //variables
+    "ｘ": () => vars['x'],
+    "ｙ": () => vars['y'],
+    "ｚ": () => vars['z'],
+    "Ｘ": (a) => {vars['x'] = a},
+    "Ｙ": (a) => {vars['y'] = a},
+    "Ｚ": (a) => {vars['z'] = a},
+    
+    
     // outputing
     "Ｏ": () => outputFS(true, true, false),
     "ｏ": () => outputFS(true, false, false),
@@ -591,6 +601,9 @@ async function run (program, inputs) {
       S: (a) => a.toLowerCase(),
       N: (a) => a.round(0, Big.ROUND_FLOOR),
     },
+    "ｒａｗ": (a) => {
+      println(arrRepr(a));
+    }
   }
   // if (debug > 1) console.log("simple functions:",Object.keys(simpleFunctions).map(c=>c+":"+simpleFunctions[c].length));
   
