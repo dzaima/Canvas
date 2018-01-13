@@ -365,7 +365,7 @@ async function run (program, inputs) {
         var out = [];
         var curr = [];
         for (let i = 0; i < a.length; i++) {
-          if (i%n == 0 && i != 0) {
+          if (i%n === 0 && i !== 0) {
             out.push(curr);
             curr = [];
           }
@@ -574,10 +574,8 @@ async function run (program, inputs) {
     //variables
     "ｘ": () => vars['x'],
     "ｙ": () => vars['y'],
-    "ｚ": () => vars['z'],
     "Ｘ": (a) => {vars['x'] = a},
     "Ｙ": (a) => {vars['y'] = a},
-    "Ｚ": (a) => {vars['z'] = a},
     
     
     // outputing
@@ -660,10 +658,11 @@ async function run (program, inputs) {
         let item = get(popCtr);
         if (matchingKey && matchingKey[i] == "_") i++;
         else toRemove.splice(0, 0, popCtr);
-        if (matchingKey) item = cast(item, rawTypes[popCtr-1]);
-        params.splice(0, 0, item);
+        if (matchingKey) item = cast(item, rawTypes[rawTypes.length-popCtr]);
+        params.push(item);
         popCtr++;
       }
+      params.reverse();
       for (let fromTop of toRemove) {
         remove(fromTop);
       }
@@ -671,7 +670,7 @@ async function run (program, inputs) {
       let ex = (which, ...newParams) => ofn[which](...newParams);
       let res = fn(...params, ex);
       if (isJSNum(res)) res = B(res);
-      if (res != undefined) push(res);
+      if (res !== undefined) push(res);
     }
   }
   if (debug > 1) console.log("functions:",Object.keys(functions));
@@ -710,7 +709,7 @@ async function run (program, inputs) {
     ptrs.pop();
     if (ptrs.length === 0) return;
     cpo = ptrs[ptrs.length-1];
-    if (ptr != undefined) cpo.moveTo(ptr);
+    if (ptr !== undefined) cpo.moveTo(ptr);
     if (debug > 1) console.log("layer down to layer",ptrs.length,"@"+cpo.ptr);
     gotoNextIns = false;
   }
@@ -780,7 +779,7 @@ async function run (program, inputs) {
       push(prepareStr(program.substring(index, nextIns(index)).replace(/¶/g,"\n")));
       return;
     }
-    if (functions[exc] == undefined) {
+    if (functions[exc] === undefined) {
       console.log(`the function ${exc}@${index} doesn't exist`);
       push(exc);
     } else {
@@ -874,11 +873,34 @@ async function run (program, inputs) {
   
   function endPt (sindex) {
     var ind = sindex;
+    var bstk = [];
     var lvl = 1;
     while (lvl > 0) {
       ind = nextIns(ind);
-      if (program[ind] == "｝" || program[ind] == "］") lvl--;
-      if (program[ind] == "［" || program[ind] == "｛" || program[ind] == "？" || program[ind] == "‽") lvl++;
+      if (program[ind] == "［" || program[ind] == "｛" || program[ind] == "？" || program[ind] == "‽") {
+        bstk.push(program[ind]);
+        lvl++;
+      }
+      if (program[ind] == "｝" || program[ind] == "］") {
+        let echr = program[ind];
+        let back = false;
+        switch(bstk[bstk.length-1]) {
+          case "［":
+          case "｛":
+          case "‽":
+            back = true;
+          break;
+          case "？":
+            if (echr === "｝") back = true;
+          break;
+          default:
+            back = true;
+        }
+        if (back) {
+          lvl--;
+          bstk.pop();
+        }
+      }
       if (ind >= program.length) return program.length;
     }
     return ind;
