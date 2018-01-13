@@ -474,13 +474,13 @@ async function run (program, inputs) {
     },
     
     "╬│": {
-      a: (a) => a.palindromize(H, "mirror", remainders[remainders.length-1], smartOverlap, V, smartOverlapBehind, 0, smartOverlap)
+      a: (a) => a.palindromize(H, "mirror", getRemainder(0), smartOverlap, V, smartOverlapBehind, 0, smartOverlap),
     },
     "╬┼": {
-      a: (a) => a.palindromize(H, "mirror", remainders[remainders.length-2], smartOverlap, V, smartOverlapBehind, remainders[remainders.length-1], smartOverlap)
+      a: (a) => a.palindromize(H, "mirror", getRemainder(1), smartOverlap, V, smartOverlapBehind, getRemainder(0), smartOverlap)
     },
     "┼╬": {
-      a: (a) => a.palindromize(H, "mirror", remainders[remainders.length-1], smartOverlap, V, smartOverlapBehind, remainders[remainders.length-2], smartOverlap)
+      a: (a) => a.palindromize(H, "mirror", getRemainder(0), smartOverlap, V, smartOverlapBehind, getRemainder(1), smartOverlap)
     },
     // rotators
     "⟳": {
@@ -908,6 +908,9 @@ async function run (program, inputs) {
   
   function printableOut() { // output with 2 trailing and leading newlines removed
     return output.replace(/^\n{0,2}|\n{0,2}$/g,"");
+  }
+  function getRemainder (ift) {
+    return remainders[remainders.length-1 - (ift%remainders.length)];
   }
   
   function prepareStr (str) {
