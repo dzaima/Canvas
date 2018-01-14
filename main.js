@@ -284,6 +284,7 @@ async function run (program, inputs) {
     },
     "＊": {
       // TODO: AN, NA
+      SS: (a, b) => [...a].join(b),
       aN: (a, n) => {
         let na = new Canvas();
         for (let i = 0; i < n; i++) {
@@ -384,12 +385,12 @@ async function run (program, inputs) {
     },
     "ｊ": {
       _A: (a) => {a.splice(0, 1)},
-      S: (s) => s.slice(0, -1),
+      S: (s) => s.slice(1),
       a: (a) => (a.repr.splice(0, 1), a.ey--, a),
     },
     "ｋ": {
       _A: (a) => {a.pop()},
-      S: (s) => s.slice(1),
+      S: (s) => s.slice(0, -1),
       a: (a) => (a.repr.pop(), a.ey--, a),
     },
     "Ｊ": {
