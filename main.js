@@ -25,7 +25,6 @@ async function run (program, inputs) {
   var error;
   inputs = bigify(inputs);
   var programs = program.split("\n");
-  program = programs[programs.length-1];
   var supVals = bigify([Infinity, 256, 13, 64, 11, 12, 16, 128, 0]);
   // the lines of a program go in items x-8, so main program is ⁹, ect.
   // inputs go below that, in reverse order - if there's only 1 line of program, the 1st input is ⁸ second - ⁷, ect.
@@ -677,6 +676,18 @@ async function run (program, inputs) {
   
   
   
+  // PREPROCESSING
+  
+  programs = programs.map((cl) => {
+    program = cl;
+    while (endPt(-1, true) !== undefined) program = "｛"+program;
+    return program;
+  });
+  
+  if (debug) console.log("programs: ",programs);
+  
+  program = programs[programs.length-1];
+  
   //===================================================PROGRAM EXECUTION===================================================
   var gotoNextIns = true;
   while (ptrs.length > 0 && program.length > 0) {
@@ -871,20 +882,20 @@ async function run (program, inputs) {
     return collected;
   }
   
-  function endPt (sindex) {
+  function endPt (sindex, undefinedOnProgramEnd) {
     var ind = sindex;
     var bstk = [];
     var lvl = 1;
-    while (lvl > 0) {
+    while (lvl > 0) { // console.log(lvl, ind, program[ind], bstk);
       ind = nextIns(ind);
-      if (program[ind] == "［" || program[ind] == "｛" || program[ind] == "？" || program[ind] == "‽") {
+      if (program[ind] === "［" || program[ind] === "｛" || program[ind] === "？" || program[ind] === "‽") {
         bstk.push(program[ind]);
         lvl++;
       }
-      if (program[ind] == "｝" || program[ind] == "］") {
+      if (program[ind] === "｝" || program[ind] === "］") {
         let echr = program[ind];
         let back = false;
-        switch(bstk[bstk.length-1]) {
+        switch (bstk[bstk.length-1]) {
           case "［":
           case "｛":
           case "‽":
@@ -901,7 +912,7 @@ async function run (program, inputs) {
           bstk.pop();
         }
       }
-      if (ind >= program.length) return program.length;
+      if (ind >= program.length) return undefinedOnProgramEnd? undefined : program.length;
     }
     return ind;
   }
