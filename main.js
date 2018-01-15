@@ -135,10 +135,13 @@ async function run (program, inputs) {
         if (debug > 1) console.log("`[` continue obj",this.obj.toString(), "iptr", this.iterptr.toString());
         if (isArr(this.obj) || isStr(this.obj)) {
           if (this.iterptr.gte(this.obj.length)) {
-           this.break();
+            this.break();
           } else {
-            push(this.obj[this.iterptr]);
+            push(this.obj.slice(0,+this.iterptr + 1));
             this.ptr = this.startpt;
+            setSup(ptrs.length-2, this.obj[this.iterptr]);
+            setSup(ptrs.length-1, this.obj.slice(0,+this.iterptr + 1));
+            setSup(ptrs.length, this.iterptr.plus(1));
           }
         } else {
           if (this.iterptr.gt(this.obj)) {
@@ -147,6 +150,8 @@ async function run (program, inputs) {
             if (this.collect && !this.collectOne) push(new Break(1));
             //push(this.obj[this.iterptr]);
             this.ptr = this.startpt;
+            setSup(ptrs.length-2, this.iterptr);
+            setSup(ptrs.length-1, this.iterptr.minus(1));
           }
         }
       }
@@ -285,6 +290,7 @@ async function run (program, inputs) {
     "＊": {
       // TODO: AN, NA
       SS: (a, b) => [...a].join(b),
+      aa: (a, b, ex) => ex("SS", a.toString(), b.toString()),
       aN: (a, n) => {
         let na = new Canvas();
         for (let i = 0; i < n; i++) {
@@ -404,7 +410,7 @@ async function run (program, inputs) {
     "Ｋ": {
       _A: (a) => (a.pop()),
       S: (s) => {
-        res = a.slice(-1);
+        res = s.slice(-1);
         push(s.slice(0, -1));
         push(res);
       },
