@@ -620,7 +620,7 @@ async function run (program, inputs) {
       else push(supVals[i]);
     };
   
-  for (let key of Object.keys(simpleFunctions)) {
+  for (let key in simpleFunctions) {
     functions[key] = function (mode) {
       // mode 1 = return function TODO
       // mode 2 = is non-default function available
@@ -635,7 +635,7 @@ async function run (program, inputs) {
           paramTypes = type(item)+paramTypes;
         }
         let newfn;
-        for (let currentKey of Object.keys(fn)) {
+        for (let currentKey in fn) {
           let regkey = currentKey.replace(/a/g, "[aAS]").replace(/[tT]/g, "[aASN]").replace(/_/g, "")+"$";
           if (debug > 2) console.log(regkey, "tested on", paramTypes);
           if (new RegExp(regkey).test(paramTypes)) {

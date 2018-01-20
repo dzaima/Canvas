@@ -28,7 +28,7 @@
 ］	close a loop, collecting the results and pushing them after, so `｛...］` would be a `.map` function
 ｛	loop
   N: repeat from 1 to that number, pushing the counter
-    `３｛a＊Ｐ` → "a¶aa¶aaa"
+    `３｛a×Ｐ` → "a¶aa¶aaa"
   S: for each character, pushing it
     `abc｛-ｐｐ` → "-a-b-c"
   A: for each item, pushing it
