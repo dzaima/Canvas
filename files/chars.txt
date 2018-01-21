@@ -91,7 +91,7 @@ printable ascii+¶: part of strings
 ↗	
 ↘	
 ↙	
-×	multiply horizontally / prepend
+×	repeat horizontally / prepend
   NN: multiply the numbers
     `６７×` → 42
   NA, AN, SN, NS: repeat horizontally
@@ -100,7 +100,7 @@ printable ascii+¶: part of strings
     `hello∙world!）２×` → ["hello hello ", "world!world!"]
   aa: reverse join / prepend //KEYW reverse add
     `World!∙Hello, ×` → "Hello, World!"
-＊	multiply vertically
+＊	repeat vertically / join string
   SN, NS: repeat the string vertically that many times
     `foo¶bar３＊` → "foo¶bar¶foo¶bar¶foo¶bar"
   NA, AN: multiply the array vertically that many times
