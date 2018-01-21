@@ -212,7 +212,10 @@ printable ascii+¶: part of strings
 ｔ	output in the current line, disabling implicit output
 ０１２３４５６７８９ push that number
 §	
-‼	
+‼	normalize
+  N: 1 if the number isn't 0, otherwise 0
+  S: 0 if the string is empty, otherwise 1
+  a: move the [1;1] point to the top-left of the visible art
 ¼	
 ½	divide by 2
 ¾	

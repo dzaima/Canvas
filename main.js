@@ -132,31 +132,28 @@ async function run (program, inputs) {
         }
         
         this.iterptr = this.iterptr.plus(1);
-        if (debug > 1) console.log("`[` continue obj",this.obj.toString(), "iptr", this.iterptr.toString());
+        if (debug > 1) console.log(`\`[${this.collect? "]": "}"}\` continue obj`,this.obj.toString(), "iptr", this.iterptr.toString());
         if (isArr(this.obj) || isStr(this.obj)) {
-          if (this.iterptr.gte(this.obj.length)) {
-            this.break();
-          } else {
+          if (this.iterptr.lt(this.obj.length)) {
+            if (this.collect && !this.collectOne) push(new Break(1));
             push(this.obj.slice(0,+this.iterptr + 1));
             this.ptr = this.startpt;
             setSup(ptrs.length-2, this.obj[this.iterptr]);
             setSup(ptrs.length-1, this.obj.slice(0,+this.iterptr + 1));
             setSup(ptrs.length, this.iterptr.plus(1));
-          }
+          } else this.break();
         } else {
-          if (this.iterptr.gt(this.obj)) {
-           this.break();
-          } else {
+          if (this.iterptr.lte(this.obj)) {
             if (this.collect && !this.collectOne) push(new Break(1));
             //push(this.obj[this.iterptr]);
             this.ptr = this.startpt;
             setSup(ptrs.length-2, this.iterptr);
             setSup(ptrs.length-1, this.iterptr.minus(1));
-          }
+          } else this.break();
         }
       }
       this.break = function() {
-        if (debug > 1) console.log("`[` break to", this.endpt+1, JSON.stringify(ptrs));
+        if (debug > 1) console.log(`\`[${this.collect? "]": "}"}\` break to`, this.endpt+1, JSON.stringify(ptrs));
         layerDown(this.endpt+1);
         
         if (this.collect) push(this.collection); // collection end
@@ -428,6 +425,11 @@ async function run (program, inputs) {
     },
     "ｅ": {
       SS: (s, c) => c+s+c,
+    },
+    "‼": {
+      N: (n) => n.ne(0),
+      S: (s) => s.length != 0,
+      a: (a) => new Canvas(a.repr),
     },
     
     "Ｂ": cpo.break, // TEMP: maybe
