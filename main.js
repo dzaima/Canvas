@@ -260,6 +260,8 @@ async function run (program, inputs) {
       let res = eval(pop());
       if (res != undefined) push(res);
     },
+    "｝": () => {},
+    "］": () => {},
   }
   //simple functions
   var simpleFunctions = {
