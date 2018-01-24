@@ -41,15 +41,8 @@ async function run (program, inputs) {
     setSup(8-programs.length-i,inputs[i]);
   }
   
-  var ptrs = [{
-    ptr:0,
-    startpt:0,
-    endpt:program.length,
-    continue: () => {layerDown(cpo.endpt)},
-    moveTo: function (where) {cpo.ptr = where; if (cpo.ptr >= cpo.endpt) return cpo.continue();},
-    toString: () => "{mptr}",
-  }];
-  var cpo = ptrs[0]; // current pointer object
+  var ptrs;
+  var cpo;
   
   var implicitOut = true;
   var stack = [];
@@ -432,7 +425,6 @@ async function run (program, inputs) {
       a: (a) => new Canvas(a.repr),
     },
     
-    "Ｂ": cpo.break, // TEMP: maybe
     //palindromizators
     "─": {
       a: (a) => a.palindromize(V, smartOverlapBehind, 1, smartOverlap),
@@ -699,6 +691,15 @@ async function run (program, inputs) {
   
   program = programs[programs.length-1];
   
+  ptrs = [{
+    ptr:0,
+    startpt:0,
+    endpt:program.length,
+    continue: () => {layerDown(cpo.endpt)},
+    moveTo: function (where) {cpo.ptr = where; if (cpo.ptr >= cpo.endpt) return cpo.continue();},
+    toString: () => "{mptr}",
+  }];
+  cpo = ptrs[0];
   //===================================================PROGRAM EXECUTION===================================================
   var gotoNextIns = true;
   while (ptrs.length > 0 && program.length > 0) {
