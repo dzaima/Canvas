@@ -275,8 +275,14 @@ async function run (program, inputs) {
     "－": (a, b) => a.minus(b),
     "×": {
       NN: (a, b) => a.multiply(b),
-      SN: (s, n) => s.repeat(n),
-      NS: (n, s) => s.repeat(n),
+      aN: (a, n) => {
+        let na = new Canvas();
+        for (let i = 0; i < n; i++) {
+          na.appendHorizontally(a);
+        }
+        return na;
+      },
+      Na: (n, a, ex) => ex("aN", a, n),
       aa: (a, b) => b.appendHorizontally(a),
     },
     "＊": {
