@@ -380,6 +380,7 @@ async function run (program, inputs) {
     "⤢": {
       // TODO: A:
       a: (a) => a.horizMirror().vertMirror(),
+      N: (n) => n.abs(),
     },
     "ｊ": {
       _A: (a) => {a.splice(0, 1)},

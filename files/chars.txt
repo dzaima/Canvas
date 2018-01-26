@@ -179,6 +179,7 @@ printable ascii+¶: part of strings
 ｋ	remove last item / last line
 ｌ	get length, without popping the number
 ｍ	mold to length / reshape
+    aN: reshape to the width of the number
 ｎ	split into chunks / divmod
   NS, SN: split the string into chunks of length N, padding with spaces if necessary.
   NA, AN: split the array into arrays of length N. If there aren't enough items, just leave as-is.
@@ -258,7 +259,9 @@ printable ascii+¶: part of strings
     `i∙h!∔⟳` → `hi¶!`
   aN: rotate clockwise that many times
   A, AN: rotate the items so that it looks rotated if printed
-⤢	transpose
+⤢	transpose / absolute value
+  a: transpose
+  N: absolute value
 ∔	add vertically / reverse subtract
   NN: reverse subtract
   SS: add the two together with a separating newline
