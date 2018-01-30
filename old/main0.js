@@ -436,49 +436,49 @@ async function run (program, inputs) {
       a: (a) => a.palindromize(V, smartOverlapBehind, 1, smartOverlap),
     },
     "──": {
-      a: (a) => a.palindromize(V, "reverse", 1, simpleOverlap),
+      a: (a) => a.palindromize(V, smartOverlapBehind, 1, simpleOverlap),
     },
     "═": {
       a: (a) => a.palindromize(V, smartOverlapBehind, 0, smartOverlap),
     },
     "══": {
-      a: (a) => a.palindromize(V, "reverse", 0, simpleOverlap),
+      a: (a) => a.palindromize(V, smartOverlapBehind, 0, simpleOverlap),
     },
     "│": {
       a: (a) => a.palindromize(H, "mirror", 1, smartOverlap),
     },
     "││": {
-      a: (a) => a.palindromize(H, "reverse", 1, simpleOverlap),
+      a: (a) => a.palindromize(H, "mirror", 1, simpleOverlap),
     },
     "║": {
       a: (a) => a.palindromize(H, "mirror", 0, smartOverlap),
     },    
     "║║": {
-      a: (a) => a.palindromize(H, "reverse", 0, simpleOverlap),
+      a: (a) => a.palindromize(H, "mirror", 0, simpleOverlap),
     },    
     "┼": {
       a: (a) => a.palindromize(H, "mirror", 1, smartOverlap, V, smartOverlapBehind, 1, smartOverlap),
     },
     "┼┼": {
-      a: (a) => a.palindromize(H, "reverse", 1, simpleOverlap, V, "reverse", 1, simpleOverlap),
+      a: (a) => a.palindromize(H, "mirror", 1, simpleOverlap, V, smartOverlapBehind, 1, simpleOverlap),
     },
     "╫": {
       a: (a) => a.palindromize(H, "mirror", 0, smartOverlap, V, smartOverlapBehind, 1, smartOverlap),
     },
     "╫╫": {
-      a: (a) => a.palindromize(H, "reverse", 0, simpleOverlap, V, "reverse", 1, simpleOverlap),
+      a: (a) => a.palindromize(H, "mirror", 0, simpleOverlap, V, smartOverlapBehind, 1, simpleOverlap),
     },
     "╪": {
       a: (a) => a.palindromize(H, "mirror", 1, smartOverlap, V, smartOverlapBehind, 0, smartOverlap),
     },
     "╪╪": {
-      a: (a) => a.palindromize(H, "reverse", 1, simpleOverlap, V, "reverse", 0, simpleOverlap),
+      a: (a) => a.palindromize(H, "mirror", 1, simpleOverlap, V, smartOverlapBehind, 0, simpleOverlap),
     },
     "╬": {
       a: (a) => a.palindromize(H, "mirror", 0, smartOverlap, V, smartOverlapBehind, 0, smartOverlap),
     },
     "╬╬": {
-      a: (a) => a.palindromize(H, "reverse", 0, simpleOverlap, V, "reverse", 0, simpleOverlap),
+      a: (a) => a.palindromize(H, "mirror", 0, simpleOverlap, V, smartOverlapBehind, 0, simpleOverlap),
     },
     
     
