@@ -437,50 +437,51 @@ async function run (program, inputs) {
       a: (a) => a.palindromize(V, smartOverlapBehind, 1, smartOverlap),
     },
     "──": {
-      a: (a) => a.palindromize(V, smartOverlapBehind, 1, basicOverlap),
+      a: (a) => a.palindromize(V, smartOverlapBehind, 1, simpleOverlap),
     },
     "═": {
       a: (a) => a.palindromize(V, smartOverlapBehind, 0, smartOverlap),
     },
     "══": {
-      a: (a) => a.palindromize(V, smartOverlapBehind, 0, basicOverlap),
+      a: (a) => a.palindromize(V, smartOverlapBehind, 0, simpleOverlap),
     },
     "│": {
       a: (a) => a.palindromize(H, "mirror", 1, smartOverlap),
     },
     "││": {
-      a: (a) => a.palindromize(H, "mirror", 1, basicOverlap),
+      a: (a) => a.palindromize(H, "mirror", 1, simpleOverlap),
     },
     "║": {
       a: (a) => a.palindromize(H, "mirror", 0, smartOverlap),
     },    
     "║║": {
-      a: (a) => a.palindromize(H, "mirror", 0, basicOverlap),
+      a: (a) => a.palindromize(H, "mirror", 0, simpleOverlap),
     },    
     "┼": {
       a: (a) => a.palindromize(H, "mirror", 1, smartOverlap, V, smartOverlapBehind, 1, smartOverlap),
     },
     "┼┼": {
-      a: (a) => a.palindromize(H, "mirror", 1, basicOverlap, V, smartOverlapBehind, 1, basicOverlap),
+      a: (a) => a.palindromize(H, "mirror", 1, simpleOverlap, V, smartOverlapBehind, 1, simpleOverlap),
     },
     "╫": {
       a: (a) => a.palindromize(H, "mirror", 0, smartOverlap, V, smartOverlapBehind, 1, smartOverlap),
     },
     "╫╫": {
-      a: (a) => a.palindromize(H, "mirror", 0, basicOverlap, V, smartOverlapBehind, 1, basicOverlap),
+      a: (a) => a.palindromize(H, "mirror", 0, simpleOverlap, V, smartOverlapBehind, 1, simpleOverlap),
     },
     "╪": {
       a: (a) => a.palindromize(H, "mirror", 1, smartOverlap, V, smartOverlapBehind, 0, smartOverlap),
     },
     "╪╪": {
-      a: (a) => a.palindromize(H, "mirror", 1, basicOverlap, V, smartOverlapBehind, 0, basicOverlap),
+      a: (a) => a.palindromize(H, "mirror", 1, simpleOverlap, V, smartOverlapBehind, 0, simpleOverlap),
     },
     "╬": {
       a: (a) => a.palindromize(H, "mirror", 0, smartOverlap, V, smartOverlapBehind, 0, smartOverlap),
     },
     "╬╬": {
-      a: (a) => a.palindromize(H, "mirror", 0, basicOverlap, V, smartOverlapBehind, 0, basicOverlap),
+      a: (a) => a.palindromize(H, "mirror", 0, simpleOverlap, V, smartOverlapBehind, 0, simpleOverlap),
     },
+    
     
     "╬│": {
       a: (a) => a.palindromize(H, "mirror", getRemainder(0), smartOverlap, V, smartOverlapBehind, 0, smartOverlap),
