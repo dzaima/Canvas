@@ -15,7 +15,7 @@ function Break (id) {
   this.id = id;
   this.toString = () => "("+ "⁰¹²³⁴⁵⁶⁷⁸⁹"[id];
 }
-var debug = 1; // 0 - no debug; 1 - program debug; 2 - interpreter debug
+var debug = 3; // 0 - no debug; 1 - program debug; 2 - interpreter debug
 async function run (program, inputs) {
   // program state variables
   var output = "";
@@ -341,6 +341,11 @@ async function run (program, inputs) {
     },
     "╋": {
       aaNN: (a, b, x, y) => a.overlap(b, x.minus(1), y.minus(1), smartOverlap),
+      length: 4,
+      default: (a, b, c, d, ex) => ex("aaNN", ...orderAs("aaNN", a, b, c, d)),
+    },
+    "╋╋": {
+      aaNN: (a, b, x, y) => a.overlap(b, x.minus(1), y.minus(1), simpleOverlap),
       length: 4,
       default: (a, b, c, d, ex) => ex("aaNN", ...orderAs("aaNN", a, b, c, d)),
     },
@@ -714,6 +719,7 @@ async function run (program, inputs) {
     if (sleepUpdate) await sleep(0);
     let executeNow = cpo.ptr < program.length;
     error = "";
+    var nextInsPtr = nextIns(cpo.ptr);
     if (executeNow) {
       try {
         if (debug > 2) console.log("before exec: ptr", cpo.ptr, "endpt", cpo.endpt);
@@ -724,7 +730,8 @@ async function run (program, inputs) {
         console.log(e);
       }
     }
-    if (gotoNextIns) toNextIns();
+    if (gotoNextIns) cpo.moveTo(nextInsPtr);
+    else if (debug > 2) console.log("gotoNextIns skipped");
     if (executeNow && debug) console.log(`${program[pptr]} @${pptr}${pptr+1 != cpo.ptr? `-${cpo.ptr-1}` : ""}: ${arrRepr(stack, true)}`+(debug>1? `    depth = ${ptrs.length} current pointer: ${cpo.startpt}-${cpo.endpt}` : ""));
     if (cpo.afterDebug) cpo.afterDebug();
     gotoNextIns = true;
@@ -735,7 +742,7 @@ async function run (program, inputs) {
   
   
   //helper functions
-  
+  console.log(program[25], program[26], nextIns(25));
   function layerDown(ptr) {
     ptrs.pop();
     if (ptrs.length === 0) return;
