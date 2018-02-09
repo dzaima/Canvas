@@ -15,7 +15,7 @@ function Break (id) {
   this.id = id;
   this.toString = () => "("+ "⁰¹²³⁴⁵⁶⁷⁸⁹"[id];
 }
-var debug = 3; // 0 - no debug; 1 - program debug; 2 - interpreter debug
+var debug = 0; // 0 - no debug; 1 - program debug; 2 - interpreter debug
 async function run (program, inputs) {
   // program state variables
   var output = "";
