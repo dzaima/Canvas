@@ -681,7 +681,8 @@ async function run (program, inputs) {
       for (let fromTop of toRemove) {
         remove(fromTop);
       }
-      lastArgs.push(...params);
+      lastArgs.push(...params.map(copy));
+      //console.log("simpleFunction params: ",params,lastArgs);
       let ex = (which, ...newParams) => ofn[which](...newParams);
       let res = fn(...params, ex);
       if (isJSNum(res)) res = B(res);
@@ -962,15 +963,9 @@ async function run (program, inputs) {
     throw `cast error from ${type(item)} to ${rt}: ${item} (probably casting to array which is strange & unsupported)`;
   }
   function copy (item) {
-    if (isArr(item)) {
-      return item.map((c) => copy(c));
-    }
-    if (isArt(item)) {
-      return new Canvas(item);
-    }
-    if (isNum(item)) {
-      return new Big(item);
-    }
+    if (isArr(item)) return item.map((c) => copy(c));
+    if (isArt(item)) return new Canvas(item);
+    if (isNum(item)) return new Big(item);
     return item;
   }
   function orderAs (order, ...params) {

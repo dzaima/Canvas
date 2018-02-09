@@ -47,8 +47,12 @@
     <button id="topost"    onclick="postify()"  style="width:100%">postify  </button>
     <button id="toCMC"     onclick="CMCify()"   style="width:100%">CMCify   </button>
   </div>
-  <input id="devChk" type="checkbox" onClick="devUpdate()">dev mode</input>
-  
+  <div class="left" style="width:100px">
+    <input id="devChk" type="checkbox" onClick="devUpdate()">dev mode</input><br>
+    <div class="left" style="width:60px">
+      <button id="loadpermalink" onclick="loadPermalink()"style="width:100%">reload</button>
+    </div>
+  </div>
   
   <input id="fakeFileInp" type="file" style="display:none" />
   <a id="fakeLink" style="display:none" />
@@ -58,6 +62,7 @@
     var devMode = false;
     var devLoaded = false;
     var lastSearch = "";
+    if (devChk.checked) devUpdate(); // for Firefox-ish reloads that keep checked
     // loading initial permalinked data
     var args = location.search.substring(1).split(",");
     for (var i = 0; i < args.length; i++) {
@@ -91,12 +96,18 @@
         progdiv.appendChild(result);
         inputs.style.width="99%";
         docs.style.display = "block";
+        loadpermalink.style.display = "block";
       } else {
         inpdiv.appendChild(inputs);
         textareas.appendChild(result);
         inputs.style.width="100%";
         docs.style.display = "none";
+        loadpermalink.style.display = "none";
       }
+    }
+    
+    function loadPermalink(forceOnline) {
+      window.location = permalink(forceOnline) + ",dev,run";
     }
     
     // saving to encoded file
