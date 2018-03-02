@@ -83,7 +83,7 @@ printable ascii+¶: part of strings
 ╷	decrement / title case
   N: decrease by 1
   S: uppercase the first letter of every word
-    `hello, world!╵` → "Hello, World!"
+    `hello, world!╷` → "Hello, World!"
   A: vectorize
 ╋	overlap
   aaNN: overlap the 2nd art over the 1st at x;y using smartOverlap
