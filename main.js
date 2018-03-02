@@ -525,6 +525,7 @@ async function run (program, inputs) {
     },
     "╵": {
       N: (n) => n.plus(1),
+      S: (s) => s.replace(/(^|\W)(\w)/g, (a,b,c)=>b+c.toUpperCase()),
     },
     "╷": {
       N: (n) => n.minus(1),
