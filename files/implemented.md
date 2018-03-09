@@ -134,7 +134,7 @@ if 5 columns exist, it's a loop(ish thing) starter they correspond to `NSA｝］
 |`；` | ✓ |
 |`⟳` | ✓ | ✓ | ✓ |
 |`⤢` | ✓ | ✓ | ✓ |
-|`⌐`  |
+|`⌐`  | ✓ |
 |`═`  | ✓ |
 |`║`  | ✓ |
 |`╬`  | ✓ |

@@ -252,6 +252,8 @@ printable ascii+¶: part of strings
   a: reverse vertically
 ：	duplicate ToS
   `la：＋` → "lala"
+⌐	duplicate POP twice //KEYW triplicate
+  `la⌐）∑` → "lalala"
 ；	swap top two stack items
   `４９；－` → 5
 ⟳	rotate clockwise w/o character changing
