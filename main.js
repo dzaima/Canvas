@@ -568,10 +568,12 @@ async function run (program, inputs) {
     "Ｚ": () => "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
     "＼": {
       S: (s) => new Canvas(Array.from(s).map((c, i) => " ".repeat(i)+c)),
+      a: (a, ex) => ex("S", a.repr.map(c=>c.join("")).join("")),
       N: (n, ex) => ex("S", "\\".repeat(n)),
     },
     "／": {
       S: (s) => new Canvas(Array.from(s).map((c, i) => " ".repeat(s.length-i-1)+c)),
+      a: (a, ex) => ex("S", a.repr.map(c=>c.join("")).join("")),
       N: (n, ex) => ex("S", "/".repeat(n)),
     },
     
