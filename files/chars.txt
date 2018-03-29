@@ -144,7 +144,7 @@ printable ascii+¶: part of strings
 Ｉ	
 Ｊ	pop the first item / first line
 Ｋ	pop the last item / last line
-Ｌ	
+Ｌ	get length
     S, A, N: get length and pop the item
     a: get height, don't pop
 Ｍ	
@@ -179,7 +179,7 @@ printable ascii+¶: part of strings
 ｉ	
 ｊ	remove first item / first line
 ｋ	remove last item / last line
-ｌ	
+ｌ	get length
     S, A, N: get length, without popping
     a: get height, don't pop
 ｍ	mold to length / reshape
