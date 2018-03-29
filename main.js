@@ -581,13 +581,13 @@ async function run (program, inputs) {
       _S: (a) => a.length,
       _A: (a) => a.length,
       _N: (a) => a.toString().length,
-      _a: (a) => a.height,
+      _a: (a) => a.height(),
     },
     "Ｌ": {
       S: (a) => a.length,
       A: (a) => a.length,
       N: (a) => a.toString().length,
-      a: (a) => a.height,
+      _a: (a) => a.width(),
     },
     
     //variables
