@@ -444,6 +444,16 @@ async function run (program, inputs) {
       a: (a) => new Canvas(a.repr),
     },
     
+    // string manipulation
+    "Ｓ": {
+      S: (s) => s.split(" "),
+    },
+    "ｓ": {
+      SS: (a, b) => a.split(b),
+      SN: (a, b) => a.split(b),
+    },
+    
+    
     //palindromizators
     "─": {
       a: (a) => a.palindromize(V, smartOverlapBehind, 1, smartOverlap),

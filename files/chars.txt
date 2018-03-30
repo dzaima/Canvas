@@ -151,7 +151,8 @@ printable ascii+¶: part of strings
 Ｎ	
 Ｒ	range
   N: range from 1 to N, inclusive
-Ｓ	
+Ｓ	split on spaces
+  S: split on spaces
 Ｕ	uppercase/ceiling
   S: uppercase the string
   N: get the ceiling of the number
@@ -191,7 +192,9 @@ printable ascii+¶: part of strings
   NN: push the result of floor division and then modulo
 ｒ	lowered range
   N: range from 0 to N-1, inclusive
-ｓ	
+ｓ	split
+  SS: split the 1st string on the 2nd
+  SN: split the string on the number
 ｖ	
 ｗ	
 ｘ	
