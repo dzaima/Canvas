@@ -596,8 +596,42 @@ async function run (program, inputs) {
     "∙": () => {
       if (cPA.includes(program[cpo.ptr-1]) ^ cPA.includes(program[cpo.ptr+1])) return " ";
     },
-    "ｒ": (a) => lrange(a),
-    "Ｒ": (a) => urange(a),
+    "ｒ": {
+      n: (a) => lrange(a),
+      a: (a) => {
+        var res = new Canvas();
+        var longest = 0;
+        var start = Infinity;
+        for (let y = a.sy; y < a.ey; y++) {
+          var ln = a.trimmedLine(y);
+          if (ln.length > longest) longest = ln.length;
+          var s = a.repr[y-a.sy];
+          var st = 0;
+          while (st < s.length && s[st] === undefined) st++;
+          if (start > st) start = st;
+        }
+        for (let y = a.sy; y < a.ey; y++) {
+          var ln = a.trimmedLine(y);
+          for (let x = 0; x < ln.length; x++) {
+            res.set(Math.floor((longest-ln.length)/2)+x, y, ln[x]);
+          }
+        }
+        return res;
+      },
+    },
+    "Ｒ": {
+      N: (a) => urange(a),
+      a: (a) => {
+        var res = new Canvas();
+        for (let x = a.sx; x < a.ex; x++) {
+          for (let y = a.sy; y < a.ey; y++) {
+            let chr = a.get(x, y);
+            res.set(x+y, y, chr);
+          }
+        }
+        return res;
+      },
+    },
     "╶": nextInp,
     "╴": () => currInp(),
     "Ａ": () => 10,

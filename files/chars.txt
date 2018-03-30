@@ -151,6 +151,7 @@ printable ascii+¶: part of strings
 Ｎ	
 Ｒ	range
   N: range from 1 to N, inclusive
+  a: prepend each line with the line number spaces
 Ｓ	split on spaces
   S: split on spaces
 Ｕ	uppercase/ceiling
@@ -192,6 +193,7 @@ printable ascii+¶: part of strings
   NN: push the result of floor division and then modulo
 ｒ	lowered range
   N: range from 0 to N-1, inclusive
+  a: center the art, preferring to go left
 ｓ	split
   SS: split the 1st string on the 2nd
   SN: split the string on the number

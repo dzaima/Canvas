@@ -182,6 +182,12 @@ function Canvas (preset) {
     return this;
   }
   
+  this.trimmedLine = function(y) {
+    var res = this.repr[y-this.sy];
+    while (res.length > 0 && res[0] === undefined) res.unshift();
+    while (res.length > 0 && res[res.length-1] === undefined) res.pop();
+    return res;
+  }
   
   this.horizReverse = function () {
     this.repr.forEach((line) => line.reverse());
