@@ -436,7 +436,7 @@ async function run (program, inputs) {
       },
     },
     "ｅ": {
-      SS: (s, c) => c+s+c,
+      aa: (a, s) => s.copy().appendHorizontally(a).appendHorizontally(s),
     },
     "‼": {
       N: (n) => n.ne(0),
