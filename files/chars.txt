@@ -59,7 +59,7 @@ printable ascii+¶: part of strings
 
 ┌	duplicate the item 2nd from top
 ┐	pop & remove an item
-└	
+└	swap the two items below ToS
 ┘	
 ├	double increment / uppercase first letter
   N: increase by 2

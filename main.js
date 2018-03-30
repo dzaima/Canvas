@@ -584,11 +584,12 @@ async function run (program, inputs) {
     
     // stack manipulation
     "）": collectToArray,
-    "；": (a,b) => {push(b); push(a);},
+    "；": (a,b) => {push(b); push(a)},
     "：": () => {push(get(1));},
-    "⌐": () => {push(get(1));push(get(1));},
+    "⌐": () => {push(get(1)); push(get(1))},
     "┌": () => (push(get(2))),
     "┐": (_) => {},
+    "└": (a,b,c) => {push(b); push(a); push(c)},
     
     
     
