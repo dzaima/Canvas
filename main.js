@@ -40,6 +40,12 @@ async function run (program, inputs) {
   for (let i = 0; i < Math.min(inputs.length, 9); i++) {
     setSup(8-programs.length-i,inputs[i]);
   }
+  function remainderPalindromize (art, x, y) {
+    var xa = [], ya = [];
+    if (x!=9) xa = [H, "mirror", x==2? getRemainder(0) : x, smartOverlap];
+    if (y!=9) ya = [V, smartOverlapBehind, y==2? getRemainder(0) : y, smartOverlap];
+    return art.palindromize(...xa, ...ya);
+  }
   
   var ptrs;
   var cpo;
@@ -253,6 +259,7 @@ async function run (program, inputs) {
     "｝": () => {},
     "］": () => {},
   }
+  
   //simple functions
   var simpleFunctions = {
     // math
@@ -497,6 +504,27 @@ async function run (program, inputs) {
     "┼╬": {
       a: (a) => a.palindromize(H, "mirror", getRemainder(0), smartOverlap, V, smartOverlapBehind, getRemainder(1), smartOverlap)
     },
+    
+    
+    "║│": {
+      a: (a) => remainderPalindromize(a, 2,9),
+    },
+    "═─": {
+      a: (a) => remainderPalindromize(a, 9,2),
+    },
+    "╬─": {
+      a: (a) => remainderPalindromize(a, 0,2),
+    },
+    "╪─": {
+      a: (a) => remainderPalindromize(a, 1,2),
+    },
+    "╬│": {
+      a: (a) => remainderPalindromize(a, 2,0),
+    },
+    "╫│": {
+      a: (a) => remainderPalindromize(a, 2,1),
+    },
+    
     // rotators
     "⟳": {
       a: (a) => a.rotate(1),
