@@ -168,16 +168,16 @@ table of the palindromizators
 ### palindromizator defs
 
 - Hx = horizontal palindromization with x overlap  
- - mH = mirror horizontal - the reverse part gets characters swapped  
- - Hr = overlap = remainder  
+  - mH = mirror horizontal - the reverse part gets characters swapped  
+  - Hr = overlap = remainder  
 - Vx = vertical palindromization with x overlap  
- - mV = mirror vertical - the reverse part gets mirrored vertically  
- - sV = smart vertical - mV, but underscores get moved around to look better  
- - Vr = overlap = remainder  
+  - mV = mirror vertical - the reverse part gets mirrored vertically  
+  - sV = smart vertical - mV, but underscores get moved around to look better  
+  - Vr = overlap = remainder  
 - xO = overlap mode  
- - bO = basic overlap - simpleOverlap (aka just choose the 2nd)  
- - gO = background overlap - noBGOverlap (aka basic overlap, but spaces get deprioritized)  
- - sO = smart overlap - smartOverlap (aka overlap smartly (e.g. \ + / -> X))
+  - bO = basic overlap - simpleOverlap (aka just choose the 2nd)  
+  - gO = background overlap - noBGOverlap (aka basic overlap, but spaces get deprioritized)  
+  - sO = smart overlap - smartOverlap (aka overlap smartly (e.g. \ + / -> X))
 
 
 |  1st  |     ─     |     ═     |     │     |     ║     |     ╫     |     ╪     |     ┼     |     ╬     |
@@ -194,19 +194,19 @@ table of the palindromizators
 
 overlap table:
 
- H | V |code
-:-:|:-:|:-:
- r |   | ║│
-   | r | ═─
- 0 | 0 | ╬
- 0 | 1 | ╫
- 1 | 0 | ╪
- 1 | 1 | ┼
- 0 | r | ╬─
- 1 | r | ╪─
- r | 0 | ╬│
- r | 1 | ╫│
- r | r | ╬┼ | or ┼╬ with reversed usage of remainders
+| H | V |code
+|:-:|:-:|:-:
+| r |   | ║│
+|   | r | ═─
+| 0 | 0 | ╬
+| 0 | 1 | ╫
+| 1 | 0 | ╪
+| 1 | 1 | ┼
+| 0 | r | ╬─
+| 1 | r | ╪─
+| r | 0 | ╬│
+| r | 1 | ╫│
+| r | r | ╬┼ | or ┼╬ with reversed usage of remainders
 
 
 loop starters: `‽？［｛`
