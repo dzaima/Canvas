@@ -150,28 +150,30 @@ if 5 columns exist, it's a loop(ish thing) starter they correspond to `NSA｝］
 |`！` |
 |`α`  | ✓ |
 |`ω`  | ✓ |
+
 table of the palindromizators
 
-1st| ─ | ═ | │ | ║ | ┼ | ╫ | ╪ | ╬ 
-:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|   
-2nd| ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ 
- ─ | ✓ | □ |   |   |   | □ |   | □ 
- ═ |   | ✓ |   |   |   |   |   |   
- │ |   |   | ✓ | □ | □ |   |   | ✓ 
- ║ |   |   |   | ✓ |   |   |   |   
- ┼ |   |   |   |   | ✓ |   |   |   
- ╫ |   |   |   |   |   | ✓ |   |   
- ╪ |   |   |   |   |   |   | ✓ | ✓ 
- ╬ |   |   |   |   |   |   | ✓ | ✓ 
+
+|1st| ─ | ═ | │ | ║ | ┼ | ╫ | ╪ | ╬ |
+|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+|2nd| ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| ─ | ✓ | □ |   |   |   | □ |   | □ |
+| ═ |   | ✓ |   |   |   |   |   |   |
+| │ |   |   | ✓ | □ | □ |   |   | ✓ |
+| ║ |   |   |   | ✓ |   |   |   |   |
+| ┼ |   |   |   |   | ✓ |   |   |   |
+| ╫ |   |   |   |   |   | ✓ |   |   |
+| ╪ |   |   |   |   |   |   | ✓ | ✓ |
+| ╬ |   |   |   |   |   |   | ✓ | ✓ |
 ### palindromizator defs
 
-- Hx = horizontal palindromization with x overlap
+- Hx = horizontal palindromization with x overlap  
  - mH = mirror horizontal - the reverse part gets characters swapped  
- - Hr = overlap = remainder
-- Vx = vertical palindromization with x overlap
+ - Hr = overlap = remainder  
+- Vx = vertical palindromization with x overlap  
  - mV = mirror vertical - the reverse part gets mirrored vertically  
  - sV = smart vertical - mV, but underscores get moved around to look better  
- - Vr = overlap = remainder
+ - Vr = overlap = remainder  
 - xO = overlap mode  
  - bO = basic overlap - simpleOverlap (aka just choose the 2nd)  
  - gO = background overlap - noBGOverlap (aka basic overlap, but spaces get deprioritized)  
