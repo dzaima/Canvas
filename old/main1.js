@@ -1,6 +1,6 @@
 var codepage = "⁰¹²³⁴⁵⁶⁷⁸⁹¶\n＋－（）［］｛｝＜＞‰ø＾◂←↑→↓↔↕ !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~┌┐└┘├┤┬┴╴╵╶╷╋↖↗↘↙×÷±«»≤≥≡≠ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ０１２３４５６７８９§‼¼½¾√／＼∑∙‽‾⇵∔：；⟳⤢⌐ŗ“”■？＊↶↷＠＃％！─│┼═║╫╪╬αω";
 
-var version = 2;
+var version = 1;
 
 var printableAsciiArr=[];
 var sleepUpdate = true;
@@ -622,15 +622,6 @@ async function run (program, inputs) {
     },
     "Ｒ": {
       N: (a) => urange(a),
-    },
-    "╶": nextInp,
-    "╴": () => currInp(),
-    "Ａ": () => 10,
-    "ø": () => new Canvas(),
-    "ｚ": () => "abcdefghijklmnopqrstuvwxyz",
-    "Ｚ": () => "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-    "＼": {
-      S: (s) => new Canvas(Array.from(s).map((c, i) => " ".repeat(i)+c)),
       a: (a) => {
         var res = new Canvas();
         for (let x = a.sx; x < a.ex; x++) {
@@ -641,20 +632,21 @@ async function run (program, inputs) {
         }
         return res;
       },
+    },
+    "╶": nextInp,
+    "╴": () => currInp(),
+    "Ａ": () => 10,
+    "ø": () => new Canvas(),
+    "ｚ": () => "abcdefghijklmnopqrstuvwxyz",
+    "Ｚ": () => "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    "＼": {
+      S: (s) => new Canvas(Array.from(s).map((c, i) => " ".repeat(i)+c)),
+      a: (a, ex) => ex("S", a.repr.map(c=>c.join("")).join("")),
       N: (n, ex) => ex("S", "\\".repeat(n)),
     },
     "／": {
       S: (s) => new Canvas(Array.from(s).map((c, i) => " ".repeat(s.length-i-1)+c)),
-      a: (a) => {
-        var res = new Canvas();
-        for (let x = a.sx; x < a.ex; x++) {
-          for (let y = a.sy; y < a.ey; y++) {
-            let chr = a.get(x, y);
-            res.set(x+y, a.height()-y-1, chr);
-          }
-        }
-        return res;
-      },
+      a: (a, ex) => ex("S", a.repr.map(c=>c.join("")).join("")),
       N: (n, ex) => ex("S", "/".repeat(n)),
     },
     

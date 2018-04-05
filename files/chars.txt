@@ -151,7 +151,6 @@ printable ascii+¶: part of strings
 Ｎ	
 Ｒ	range
   N: range from 1 to N, inclusive
-  a: prepend each line with the line number spaces
 Ｓ	split on spaces
   S: split on spaces
 Ｕ	uppercase/ceiling

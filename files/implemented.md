@@ -106,7 +106,7 @@ if 5 columns exist, it's a loop(ish thing) starter they correspond to `NSA｝］
 |`ｏ` | ✓ |
 |`ｐ` | ✓ |
 |`ｑ` | ✓ |
-|`ｒ` | ✓ |   |   |
+|`ｒ` | ✓ |   | ✓ |
 |`ｓ` |   | ✓ |   |
 |`ｔ` | ✓ |
 |`ｕ` | ✓ | ✓ | ✓ |
@@ -122,8 +122,8 @@ if 5 columns exist, it's a loop(ish thing) starter they correspond to `NSA｝］
 |`½`  |
 |`¾`  |
 |`√`  | ✓ |   |   |
-|`／` | ✓ | ✓ | □ |
-|`＼` | ✓ | ✓ | □ |
+|`／` | ✓ | ✓ | ✓ |
+|`＼` | ✓ | ✓ | ✓ |
 |`∑`  | □ | □ | ✓ |
 |`∙`  | ✓ |
 |`‽`  | □ | □ | □ | □ | □ |
