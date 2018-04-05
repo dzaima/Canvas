@@ -541,7 +541,7 @@ async function run (program, inputs) {
       aN: (a, n) => a.rotate(n),
     },
     "↶": {
-      a: (a) => a.rotate(1, smartRotate),
+      a: (a) => a.rotate(-1, smartRotate),
     },
     "↷": {
       a: (a) => a.rotate(1, smartRotate),
