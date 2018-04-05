@@ -629,16 +629,13 @@ async function run (program, inputs) {
     "ø": () => new Canvas(),
     "ｚ": () => "abcdefghijklmnopqrstuvwxyz",
     "Ｚ": () => "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    "◂": () => "0123456789",
+    "◂◂": () => ["1234567890","qwertyuiop","asdfghjkl","zxcvbnm"],
     "＼": {
       S: (s) => new Canvas(Array.from(s).map((c, i) => " ".repeat(i)+c)),
       a: (a) => {
         var res = new Canvas();
-        for (let x = a.sx; x < a.ex; x++) {
-          for (let y = a.sy; y < a.ey; y++) {
-            let chr = a.get(x, y);
-            res.set(x+y, y, chr);
-          }
-        }
+        a.forEachChar((chr, x, y) => res.set(x+y, y, chr));
         return res;
       },
       N: (n, ex) => ex("S", "\\".repeat(n)),
@@ -647,12 +644,7 @@ async function run (program, inputs) {
       S: (s) => new Canvas(Array.from(s).map((c, i) => " ".repeat(s.length-i-1)+c)),
       a: (a) => {
         var res = new Canvas();
-        for (let x = a.sx; x < a.ex; x++) {
-          for (let y = a.sy; y < a.ey; y++) {
-            let chr = a.get(x, y);
-            res.set(x+y, a.height()-y-1, chr);
-          }
-        }
+        a.forEachChar((chr, x, y) => res.set(x+y, a.height-y-1, chr));
         return res;
       },
       N: (n, ex) => ex("S", "/".repeat(n)),
@@ -662,13 +654,13 @@ async function run (program, inputs) {
       _S: (a) => a.length,
       _A: (a) => a.length,
       _N: (a) => a.toString().length,
-      _a: (a) => a.height(),
+      _a: (a) => a.height,
     },
     "Ｌ": {
       S: (a) => a.length,
       A: (a) => a.length,
       N: (a) => a.toString().length,
-      _a: (a) => a.width(),
+      _a: (a) => a.width,
     },
     
     //variables

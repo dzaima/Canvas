@@ -43,7 +43,8 @@
 ø	push an empty art object
 ＾	power
     `Ａ３＾` -> 1000
-◂	
+◂	push "0123456789"
+◂◂ push ["1234567890","qwertyuiop","asdfghjkl","zxcvbnm"]
 ←	
 ↑	
 →	
