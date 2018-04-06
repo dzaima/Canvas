@@ -282,6 +282,8 @@ async function run (program, inputs) {
     "－": (a, b) => a.minus(b),
     "×": {
       NN: (a, b) => a.multiply(b),
+      SN: (s, n) => s.repeat(n),
+      NS: (n, s, ex) => ex("SN", s,n),
       aN: (a, n) => {
         let na = new Canvas();
         for (let i = 0; i < n; i++) {
@@ -644,7 +646,7 @@ async function run (program, inputs) {
       S: (s) => new Canvas(Array.from(s).map((c, i) => " ".repeat(s.length-i-1)+c)),
       a: (a) => {
         var res = new Canvas();
-        a.forEachChar((chr, x, y) => res.set(x+y, a.height-y-1, chr));
+        a.forEachChar((chr, x, y) => res.set(a.width-x-1, y, chr));
         return res;
       },
       N: (n, ex) => ex("S", "/".repeat(n)),
