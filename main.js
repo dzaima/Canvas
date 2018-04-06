@@ -646,7 +646,7 @@ async function run (program, inputs) {
       S: (s) => new Canvas(Array.from(s).map((c, i) => " ".repeat(s.length-i-1)+c)),
       a: (a) => {
         var res = new Canvas();
-        a.forEachChar((chr, x, y) => res.set(a.width-x-1, y, chr));
+        a.forEachChar((chr, x, y) => res.set(a.width-y+x-1, y, chr));
         return res;
       },
       N: (n, ex) => ex("S", "/".repeat(n)),
