@@ -1,74 +1,68 @@
-// undefined - background
-// null - wasn't there originally - e.g. edges on a ragged array
-class Canvas {
-  
-  constructor (preset) {
-    this.repr = [];
-    this.possiblyMultiline = false;
-    this.background = Canvas.defaultBackground;
-    this.sx = 0;
-    this.sy = 0;
-    this.ex = 0;
-    this.ey = 0;
-    if (typeof preset === "number" || preset instanceof Big) {
-      preset = preset.toString();
-    }
-    if (typeof preset === "string") {
-      preset = preset.split("\n");
-    }
-    if (preset instanceof Canvas) {
-      this.repr = preset.repr.slice().map(c => c.slice());
-      this.sx = preset.sx;
-      this.sy = preset.sy;
-      this.ex = preset.ex;
-      this.ey = preset.ey;
-      this.background = preset.background;
-    }
-    if (Array.isArray(preset)) {
-      this.ey = preset.length;
-      let longestLine = 0;
-      this.repr = preset.map((line) => {
-        if (typeof line === "string") {
-          if (line.length > longestLine) longestLine = line.length;
-          return line.split("");
-        } else {
-          let out = [];
-          flatten(line).forEach((part) => {
-            if (part == undefined) out.push(undefined);
-            else out = out.concat(part.toString().split(""));
-          });
-          if (out.length > longestLine) longestLine = out.length;
-          return out;
-        }
-      });
-      this.repr = this.repr.map((line) => {
-        while (line.length < longestLine) line.push(null);
-        return line;
-      })
-      this.ex = longestLine;
-    }
+function Canvas (preset) {
+  this.repr = [];
+  this.possiblyMultiline = false;
+  this.background = " ";
+  this.sx = 0;
+  this.sy = 0;
+  this.ex = 0;
+  this.ey = 0;
+  if (typeof preset === "number" || preset instanceof Big) {
+    preset = preset.toString();
   }
-  toString(nullChr = " ") {
+  if (typeof preset === "string") {
+    preset = preset.split("\n");
+  }
+  if (preset instanceof Canvas) {
+    this.repr = preset.repr.slice().map(c => c.slice());
+    this.sx = preset.sx;
+    this.sy = preset.sy;
+    this.ex = preset.ex;
+    this.ey = preset.ey;
+    this.background = preset.background;
+  }
+  if (Array.isArray(preset)) {
+    this.ey = preset.length;
+    let longestLine = 0;
+    this.repr = preset.map((line) => {
+      if (typeof line === "string") {
+        if (line.length > longestLine) longestLine = line.length;
+        return line.split("");
+      } else {
+        let out = [];
+        flatten(line).forEach((part) => {
+          if (part == undefined) out.push(undefined);
+          else out = out.concat(part.toString().split(""));
+        });
+        if (out.length > longestLine) longestLine = out.length;
+        return out;
+      }
+    });
+    this.repr = this.repr.map((line) => {
+      while (line.length < longestLine) line.push(undefined);
+      return line;
+    })
+    this.ex = longestLine;
+  }
+  this.toString = function () {
     var res = "";
     this.repr.forEach((line) => {
       line.forEach((chr) => {
-             if (chr === undefined) res+= this.background; // this probably
-        else if (chr === null     ) res+= nullChr        ; // shouldn't  be
-        else                        res+=     chr        ; // this  aligned
+        if (chr != undefined) res+= chr;
+        else res+= this.background;
       });
       res+= "\n";
     });
     return res.slice(0,-1);
   }
-  toDebugString() {
+  this.toDebugString = function () {
     var temp = this.background;
     if (this.background == ' ') this.background = '∙'
-    var out = this.toString('□');
+    var out = this.toString();
     this.background = temp;
     return out+`<${this.sx};${this.sy},${this.ex};${this.ey}>`;
   }
   
-  toArr() {
+  this.toArr = function () {
     var res = [];
     this.repr.forEach((line) => {
       var cline = "";
@@ -81,10 +75,10 @@ class Canvas {
     return res;
   }
   
-  get width() { return this.ex-this.sx }
-  get height() { return this.ey-this.sy }
+  this.width = () => this.ex-this.sx;
+  this.height = () => this.ey-this.sy;
   
-  copy() {
+  this.copy = function () {
     let res = new Canvas(this.repr);
     res.sx = this.sx;
     res.sy = this.sy;
@@ -95,46 +89,48 @@ class Canvas {
     return res;
   }
   
-  get (x, y) { 
-    return (this.repr[y-this.sy] === undefined || this.repr[y-this.sy][x-this.sx] === undefined)? undefined : (this.repr[y-this.sy][x-this.sx])
-  }
+  this.get = (x, y) => (this.repr[y-this.sy] == undefined || this.repr[y-this.sy][x-this.sx] == undefined)? undefined : (this.repr[y-this.sy][x-this.sx]);
   
-  set (x, y, chr, leaveSize) {
+  this.set = function (x, y, chr, leaveSize) {
     this.allocate(x, y, leaveSize);
     this.repr[y-this.sy][x-this.sx] = chr;
     return this;
   }
   
-  included (x, y) {
+  this.included = function (x, y) {
     return y>this.ey && x>this.ex;
   }
   
-  translate (x, y) {
+  this.translate = function (x, y) {
     this.sx+= x;
     this.sy+= y;
     this.ex+= x;
     this.ey+= y;
   }
   
-  allocate (x, y, leaveSize) {
+  this.allocate = function (x, y, leaveSize) {
     if (x < this.sx) {
-      let spacing = new Array(this.sx - x).fill(null);
+      let spacing = [];
+      for (let i = 0; i < this.sx - x; i++) spacing[i] = undefined;
       this.repr = this.repr.map((line) => spacing.slice().concat(line))
       this.sx = x;
     }
     if (y < this.sy) {
-      let spacing = new Array(this.width - x).fill(null);
+      let spacing = [];
+      for (let i = 0; i < this.width(); i++) spacing[i] = undefined;
       for (let i = 0; i < this.sy - y; i++) this.repr.splice(0,0,spacing.slice());
       this.sy = y;
     }
     
     if (x >= this.ex) {
-      let spacing = new Array(x - this.ex + 1).fill(null);
+      let spacing = [];
+      for (let i = 0; i < x - this.ex + 1; i++) spacing[i] = undefined;
       this.repr = this.repr.map((line) => line.concat(spacing.slice()))
       if (!leaveSize) this.ex = x+1;
     }
     if (y >= this.ey) {
-      let spacing = new Array(this.width).fill(null);
+      let spacing = [];
+      for (let i = 0; i < this.width(); i++) spacing[i] = undefined;
       for (let i = 0; i < y - this.ey + 1; i++) this.repr.push(spacing.slice());
       if (!leaveSize) this.ey = y+1;
     }
@@ -142,22 +138,22 @@ class Canvas {
     return this;
   }
   
-  appendVertically (canvas) {
+  this.appendVertically = function (canvas) {
     this.overlap(canvas, this.sx, this.ey);
     return this;
   }
-  appendHorizontally (canvas) {
+  this.appendHorizontally = function (canvas) {
     this.overlap(canvas, this.ex, this.sy);
     return this;
   }
-  subsection (nsx, nsy, nex, ney) {
+  this.subsection = function (nsx, nsy, nex, ney) {
     if (nsx != undefined) nsx+= this.sx;
     if (nsy != undefined) nsy+= this.sy;
     if (nex != undefined) nex+= this.sx;
     if (ney != undefined) ney+= this.sy;
     return new Canvas(this.repr.slice(nsy, ney).map(c => c.slice(nsx, nex)));
   }
-  forEach (lambda) {
+  this.forEach = function (lambda) {
     for (let x = this.sx; x < this.ex; x++) {
       for (let y = this.sy; y < this.ey; y++) {
         let chr = this.get(x, y);
@@ -165,16 +161,8 @@ class Canvas {
       }
     }
   }
-  forEachChar (lambda) {
-    for (let x = this.sx; x < this.ex; x++) {
-      for (let y = this.sy; y < this.ey; y++) {
-        let chr = this.get(x, y);
-        if (chr !== null) lambda(chr, x, y);
-      }
-    }
-  }
   
-  mapSet (lambda) {
+  this.mapSet = function (lambda) {
     for (let x = this.sx; x < this.ex; x++) {
       for (let y = this.sy; y < this.ey; y++) {
         let chr = this.get(x, y);
@@ -184,7 +172,7 @@ class Canvas {
   }
   
   
-  overlap (canvas, ox, oy, method) {
+  this.overlap = function (canvas, ox, oy, method) {
     if (method == undefined) method = simpleOverlap;
     if (typeof ox !== "number") ox = Number.parseInt(ox);
     if (typeof oy !== "number") oy = Number.parseInt(oy);
@@ -194,26 +182,26 @@ class Canvas {
     return this;
   }
   
-  trimmedLine (y) {
+  this.trimmedLine = function(y) {
     var res = this.repr[y-this.sy];
     while (res.length > 0 && res[0] === undefined) res.unshift();
     while (res.length > 0 && res[res.length-1] === undefined) res.pop();
     return res;
   }
   
-  horizReverse () {
+  this.horizReverse = function () {
     this.repr.forEach((line) => line.reverse());
-    this.sx = this.repr.length-this.height;
+    this.sx = this.repr.length-this.height();
     this.ex = this.repr.length>0? this.repr[0].length : 0;
     return this;
   }
-  vertReverse () {
+  this.vertReverse = function () {
     this.repr.reverse();
     this.sy = this.repr.length-this.ey;
     this.ey = this.repr.length+this.sy;
     return this;
   }
-  horizMirror () {
+  this.horizMirror = function () {
     this.horizReverse();
     this.mapSet((chr) => {
       let mirrorable = "\\/<>(){}[]";
@@ -222,7 +210,7 @@ class Canvas {
     });
     return this;
   }
-  vertMirror (fromSmart) {
+  this.vertMirror = function (fromSmart) {
     this.vertReverse();
     this.mapSet((chr) => {
       let mirrorable = "\\/^v'.`,V^";
@@ -233,7 +221,7 @@ class Canvas {
     return this;
   }
   
-  vertMirrorSmart (overlapMode) {
+  this.vertMirrorSmart = function (overlapMode) {
     this.vertMirror(true);
     this.forEach((chr, x, y) => {
       if (chr === "_") {
@@ -245,7 +233,7 @@ class Canvas {
     return this;
   }
   
-  rotate (times, rotateMode) {
+  this.rotate = function (times, rotateMode) {
     if (!rotateMode) rotateMode = c=>c;
     for (let i = 0; i < (times%4 + 4)%4; i++) {
       let osx = this.sx,
@@ -271,7 +259,7 @@ class Canvas {
     return this;
   }
   
-  palindromize (...args) {
+  this.palindromize = function (...args) {
     for (let i = 0; i < args.length; i+= 4) {
       let mode = args[i];
       let mirrormode = args[i+1];
@@ -282,21 +270,20 @@ class Canvas {
         if (mirrormode === "mirror") reversed.horizMirror();
         else if (mirrormode === "reverse") reversed.horizReverse();
         else if (mirrormode !== "no") throw "invalid mirror mode " + mirrormode;
-        this.overlap(reversed, this.width-overlapSize, 0, overlapMode);
+        this.overlap(reversed, this.width()-overlapSize, 0, overlapMode);
       } else if (mode == V) {
         let reversed = this.copy();
         if (mirrormode === "mirror") reversed.vertMirror();
         else if (mirrormode === "reverse") reversed.vertReverse();
         else if (typeof mirrormode === "function") reversed.vertMirrorSmart(mirrormode);
         else if (mirrormode !== "no") throw "invalid mirror mode " + mirrormode;
-        this.overlap(reversed, 0, this.height-overlapSize, overlapMode);
+        this.overlap(reversed, 0, this.height()-overlapSize, overlapMode);
       } else throw "invalid palindromizing mode " + mode;
     }
     return this;
   }
-  c(a){ console.log(this.toDebugString()) }
+  this.c=a=>console.log(this.toDebugString());
 }
-Canvas.defaultBackground = " ";
 
 function flatten (inp) {
   if (Array.isArray(inp)) {
@@ -314,7 +301,7 @@ var simpleOverlap = (a, b) => {
 }
 
 var noBGOverlap = (a, b) => {
-  if (b === undefined || b === null) return a;
+  if (b == undefined) return a;
   return b;
 }
 
@@ -323,8 +310,8 @@ var H = 1,
 var smartOverlap = (a, b) => smartOverlapDef(a, b, b);
 var smartOverlapBehind = (a, b) => smartOverlapDef(a, b, a);
 var smartOverlapDef = function (a, b, def) {
-  if (a===null || a===undefined || a===" ") return b;
-  if (b===null || b===undefined || b===" ") return a;
+  if (a===undefined || a===" ") return b;
+  if (b===undefined || b===" ") return a;
   switch (a+b) {
     case "/\\": return "X";
     case "\\/": return "X";
@@ -366,5 +353,3 @@ var smartRotate = function (chr) {
 // var canvas2 = canvas1.copy().overlap(canvas1, -2, 0, smcanvasOverlap).overlap(canvas1, -3, 1, smcanvasOverlap)
 // var canvas10 = new Canvas("      _,.-\n   ,-'\\  _\n  /  _ \\  \n ,      \\ \n |-------\\");
 // var canvas11 = canvas10.palindromize(H, "mirror", 1, smcanvasOverlap, V, (a, b) => smcanvasOverlapDef(a, b, a), 1, smcanvasOverlap);
-
-window.Canvas = Canvas;

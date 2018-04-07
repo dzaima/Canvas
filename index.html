@@ -4,7 +4,6 @@
   <title>Canvas</title>
   <meta charset="UTF-8" />
   <script src="bigDecimal.js"></script>
-  <script src="asciiart.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -263,6 +262,7 @@
     update();
     // loading the appropriate version JS file
     var JSname = latestVersion === usedVersion? "main.js" : "old/main"+usedVersion+".js";
+    var doneSteps = 0;
     $.ajax({
       url: JSname,
       success: function (JScode) {
@@ -273,7 +273,20 @@
           console.log("Looks like async isn't supported. Removing it from the code with Regex. Programs which run indefinitely can (and should) hang the page.");
         }
         window.eval(JScode);
-        if (args.includes("run")) runMain();
+        console.log("main.js loaded!");
+        doneSteps++;
+        if (doneSteps == 2 && args.includes("run")) runMain();
+      }
+    });
+    var asciiArtName = usedVersion<2? "old/asciiartB2.js" : "asciiart.js"
+    $.ajax({
+      url: asciiArtName,
+      success: function (JScode) {
+        window.eval(JScode);
+        console.log("Canvas loaded!");
+        console.log(JScode);
+        doneSteps++;
+        if (doneSteps == 2 && args.includes("run")) runMain();
       }
     });
   </script>
