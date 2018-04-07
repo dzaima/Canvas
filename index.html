@@ -42,7 +42,8 @@
           α = <span id="stateAlpha"></span><br>
           ω = <span id="stateOmega"></span><br>
           remainders = <span id="stateRemainders"></span><br>
-          superscripts = <span id="stateSups"></span>
+          superscripts = <span id="stateSups"></span><br>
+          background = <span id="bgState"></span><br>
           <h2>Program stack</h2>
           <span class="code" id="ptrstackState"></span>
           <h2>Stack</h2>
@@ -284,7 +285,6 @@
       success: function (JScode) {
         window.eval(JScode);
         console.log("Canvas loaded!");
-        console.log(JScode);
         doneSteps++;
         if (doneSteps == 2 && args.includes("run")) runMain();
       }
