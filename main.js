@@ -301,6 +301,8 @@ async function run (program, inputs) {
     "＊": {
       // TODO: AN, NA
       SS: (a, b) => [...a].join(b),
+      AS: (a, s) => a.join(s),
+      SA: (s, a) => a.join(s),
       aa: (a, b, ex) => ex("SS", a.toString(), b.toString()),
       aN: (a, n) => {
         let na = new Canvas();
