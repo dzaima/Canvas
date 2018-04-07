@@ -399,7 +399,8 @@ async function run (program, inputs) {
       NA: (n, a, ex) => ex("AN", a, n),
       SN: (s, n, ex) => ex("AN", s.split(""), n).map(c => c.join("")),
       NS: (n, s, ex) => ex("SN", s, n),
-      NN: (a, b) => {push(...a.divideAndRemainder(b));}
+      aa: (a, b) => a.overlap(b, 0, 0, smartOverlap),
+      NN: (a, b) => {push(...a.divideAndRemainder(b));},
     },
     "⤢": {
       // TODO: A:
