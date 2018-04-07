@@ -639,7 +639,12 @@ async function run (program, inputs) {
     "◂": () => "0123456789",
     "◂◂": () => ["1234567890","qwertyuiop","asdfghjkl","zxcvbnm"],
     "＼": {
-      S: (s) => new Canvas(Array.from(s).map((c, i) => " ".repeat(i)+c)),
+      S: (s) => {
+        var res = new Canvas();
+        // new Canvas(Array.from(s).map((c, i) => " ".repeat(s.length-i-1)+c)),
+        for (let i = 0; i < s.length; i++) res.set(i, i, s[i]);
+        return res;
+      },
       a: (a) => {
         var res = new Canvas();
         a.forEachChar((chr, x, y) => res.set(x+y, y, chr));
@@ -648,7 +653,12 @@ async function run (program, inputs) {
       N: (n, ex) => ex("S", "\\".repeat(n)),
     },
     "／": {
-      S: (s) => new Canvas(Array.from(s).map((c, i) => " ".repeat(s.length-i-1)+c)),
+      S: (s) => {
+        var res = new Canvas();
+        // new Canvas(Array.from(s).map((c, i) => " ".repeat(s.length-i-1)+c)),
+        for (let i = 0; i < s.length; i++) res.set(s.length-i-1, i, s[i]);
+        return res;
+      },
       a: (a) => {
         var res = new Canvas();
         a.forEachChar((chr, x, y) => res.set(a.width-y+x-1, y, chr));
@@ -818,7 +828,7 @@ async function run (program, inputs) {
     ptrstackState.innerText = ptrs.map(c=>c.toDebug? c.toDebug() : c.toString()).join("\n");
     var ar, width;
     stackState.innerHTML = stack.map(c => (
-      ar=arrRepr(c),console.log(ar.split("\n")),
+      ar=c instanceof Canvas? c.toDebugString(true) : arrRepr(c),
       width=Math.max(50,
           Math.min(250,
             ar.split("\n").map(

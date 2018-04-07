@@ -34,7 +34,8 @@ class Canvas {
         } else {
           let out = [];
           flatten(line).forEach((part) => {
-            if (part == undefined) out.push(undefined);
+            if (part === undefined) out.push(undefined);
+            if (part === null) out.push(null);
             else out = out.concat(part.toString().split(""));
           });
           if (out.length > longestLine) longestLine = out.length;
@@ -60,12 +61,13 @@ class Canvas {
     });
     return res.slice(0,-1);
   }
-  toDebugString() {
+  toDebugString(descLine) {
     var temp = this.background;
-    if (this.background == ' ') this.background = '∙'
-    var out = this.toString('□');
+    //if (this.background == ' ')
+    this.background = '∙';
+    var out = this.toString('•');
     this.background = temp;
-    return out+`<${this.sx};${this.sy},${this.ex};${this.ey}>`;
+    return out+(descLine? "\n" : "")+`<${this.sx};${this.sy},${this.ex};${this.ey}>`;
   }
   
   toArr() {
@@ -73,8 +75,8 @@ class Canvas {
     this.repr.forEach((line) => {
       var cline = "";
       line.forEach((chr) => {
-        if (chr != undefined) cline+= chr;
-        else cline+= this.background;
+        if (chr === undefined || chr === null) cline+= this.background;
+        else cline+= chr;
       });
       res.push(cline);
     });
