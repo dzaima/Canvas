@@ -16,8 +16,8 @@ textarea {
   resize: vertical;
 }
 
-.code, .codebox {
-  font-family: Consolas, DejaVu Sans Mono, Monaco, Lucida Console, Liberation Mono, Bitstream Vera Sans Mono, Courier New, monospace;
+.code, .codebox, code {
+  font-family: Consolas, inconsolata UFW, DejaVu Sans Mono, Monaco, Lucida Console, Liberation Mono, Bitstream Vera Sans Mono, Courier New, monospace;
   font-size: 14px;
 }
 .codebox > * {
