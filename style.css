@@ -1,7 +1,11 @@
+@font-face {
+  font-family: "inconsolata UFW";
+  src: url("files/Inconsolata-UFW.woff");
+}
 textarea {
   overflow: auto;
   width: 99%;
-  font-family: Consolas, DejaVu Sans Mono, Monaco, Lucida Console, Liberation Mono, Bitstream Vera Sans Mono, Courier New, monospace;
+  font-family: Consolas, inconsolata UFW, DejaVu Sans Mono, Monaco, Lucida Console, Liberation Mono, Bitstream Vera Sans Mono, Courier New, monospace;
   font-size: 14px;
   text-align: left;
   border-radius: 4px;
@@ -11,6 +15,7 @@ textarea {
   color: #D3D3D3;
   resize: vertical;
 }
+
 .code, .codebox {
   font-family: Consolas, DejaVu Sans Mono, Monaco, Lucida Console, Liberation Mono, Bitstream Vera Sans Mono, Courier New, monospace;
   font-size: 14px;
