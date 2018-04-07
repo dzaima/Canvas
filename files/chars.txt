@@ -191,6 +191,7 @@ printable ascii+¶: part of strings
   NA, AN: split the array into arrays of length N. If there aren't enough items, just leave as-is.
     `１２３４５６）４ｎ` → [[1,2,3,4],[5,6]]
   NN: push the result of floor division and then modulo
+  aa: overlap the two
 ｒ	lowered range
   N: range from 0 to N-1, inclusive
   a: center the art, preferring to go left
