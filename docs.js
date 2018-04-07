@@ -211,7 +211,32 @@ function createTable() {
     program.value = e.target.innerText;
     program.focus();
     update();
-    runUI();
+    runMain();
   });
   console.log("table created!");
+}
+var cycles = [
+  
+  "AＡ","BＢ","CＣ","DＤ","EＥ","FＦ","GＧ","HＨ","IＩ","JＪ","KＫ","LＬ","MＭ",
+  "NＮ","OＯ","PＰ","QＱ","RＲ","SＳ","TＴ","UＵ","VＶ","WＷ","XＸ","YＹ","ZＺ",
+  "aａ","bｂ","cｃ","dｄ","eｅ","fｆ","gｇ","hｈ","iｉ","jｊ","kｋ","lｌ","mｍ",
+  "nｎ","oｏ","pｐ","qｑ","rｒ√","sｓ∑","tｔ","uｕ","vｖ","wｗ","xｘ","yｙ","zｚ",
+  
+  "0０⁰","1１¹","2２²","3３³","4４⁴","5５⁵","6６⁶","7７⁷","8８⁸","9９⁹",
+  "!！‼", "@＠", "#＃", "%％", "^＾",
+  "+＋∔", "-－∔", "*×＊", "/／÷", "\\＼", "|｜",
+  ":：", ";；", "?？‽",
+  "(（", ")）", "[［", "]］", "{｛", "}｝", "<＜≤«", ">＞≥»",
+  " ∙",
+]
+program.onkeydown = function (e) {
+  if (e.key === "Tab" && program.selectionStart == program.selectionEnd) {
+    e.preventDefault();
+    var ptr = program.selectionStart;
+    var schr = program.value[ptr-1];
+    var cycle = cycles.find(c=>c.includes(schr));
+    var chr = cycle[(cycle.indexOf(schr) + 1) % cycle.length];
+    program.value = program.value.substring(0,ptr-1)+chr+program.value.substring(ptr);
+    program.selectionStart = program.selectionEnd = ptr;
+  }
 }

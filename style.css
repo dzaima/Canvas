@@ -11,10 +11,32 @@ textarea {
   color: #D3D3D3;
   resize: vertical;
 }
-
+.code, .codebox {
+  font-family: Consolas, DejaVu Sans Mono, Monaco, Lucida Console, Liberation Mono, Bitstream Vera Sans Mono, Courier New, monospace;
+  font-size: 14px;
+}
+.codebox > * {
+  white-space:pre-wrap;
+}
+.code.sel {
+  background-color: #11F;
+}
+dt {
+  float:left;
+}
+h1,h2,h3,h4 {
+  margin-top:3px;
+  margin-bottom: 3px;
+}
 body {
   background-color: #333;
   color: #D3D3D3;
+}
+.stackItem {
+  height: 75px;
+  background-color: #303030;
+  resize: auto;
+  vertical-align: top;
 }
 
 a {

@@ -15,8 +15,9 @@ function Break (id) {
   this.id = id;
   this.toString = () => "("+ "⁰¹²³⁴⁵⁶⁷⁸⁹"[id];
 }
-var debug = 0; // 0 - no debug; 1 - program debug; 2 - interpreter debug
+
 async function run (program, inputs) {
+  running = true;
   // program state variables
   var output = "";
   var vars = {};
@@ -58,11 +59,12 @@ async function run (program, inputs) {
   var functions = {
     "｛": () => addPtr(new (function (init) {
       this.ptr = cpo.ptr;
-      this.moveTo = function (where) { // console.log("moveTo",JSON.stringify(this.obj),this.iterptr,this.obj.length);
+      this.moveTo = function (where) {
         this.ptr = where;
         if (this.ptr >= this.endpt) {
           this.continue();
           this.ptr++;
+          return "{"+(this.collect?"]":"}");
         }
       }
       this.obj = isNum(init)? urange(init) : init;
@@ -101,7 +103,8 @@ async function run (program, inputs) {
         if (this.collect) push(this.collection); // collection end
       }
       this.init = () => this.continue(true);
-      this.toString = () => `{loop "{${program[this.endpt]=="］"? "]" : "}"}"@${this.ptr} ${this.startpt}-${this.endpt}}`
+      this.toString = () => `{loop "{${program[this.endpt]=="］"? "]" : "}"}"@${this.ptr} ${this.startpt}-${this.endpt}}`;
+      this.toDebug = () => `@${this.ptr}, ${this.startpt}-${this.endpt}: loop {...${program[this.endpt]=="］"? "]" : "}"}` + (this.collect? ". Collected "+arrRepr(this.collection) : "");
     })(pop())),
     "［": () => addPtr(new (function (init) {
       this.ptr = cpo.ptr; 
@@ -111,6 +114,7 @@ async function run (program, inputs) {
         if (this.ptr >= this.endpt) {
           this.continue();
           this.ptr++;
+          return "["+(this.collect?"]":"}");
         }
       }
       this.obj = init;
@@ -791,8 +795,55 @@ async function run (program, inputs) {
     continue: () => {layerDown(cpo.endpt)},
     moveTo: function (where) {cpo.ptr = where; if (cpo.ptr >= cpo.endpt) return cpo.continue();},
     toString: () => "{mptr}",
+    toDebug: () => `@${ptrs[0].ptr}, 0-${ptrs[0].endpt}: main program`,
   }];
   cpo = ptrs[0];
+  
+  function redrawDebug(name) {
+    var selStart = pptr;
+    var selEnd = nextIns(pptr);
+    if (cpo.ptr < pptr || !gotoNextIns) { selStart++; selEnd++ }
+    codeState.innerHTML = '<span class="code">' + program.substring(0,selStart) + '</span>'
+                        + '<span class="code sel">' + program.substring(selStart,selEnd) + '</span>'
+                        + '<span class="code">' + program.substring(selEnd) + '</span>';
+    stateX.innerText = arrRepr(vars.x);
+    stateY.innerText = arrRepr(vars.y);
+    var lastOfLA = lastArgs.slice(-2);
+    stateAlpha.innerText = arrRepr(lastOfLA[0]);
+    stateOmega.innerText = arrRepr(lastOfLA[1]);
+    stateRemainders.innerText = arrRepr(remainders.slice(-3));
+    stateSups.innerText = supVals.map((c,i)=>["¹²³⁴⁵⁶⁷⁸⁹"[i] + ":", c]).filter(c=>typeof c[1] !== 'function').map(c=>c[0] + arrRepr(c[1])).join(", ");
+    
+    ptrstackState.innerText = ptrs.map(c=>c.toDebug? c.toDebug() : c.toString()).join("\n");
+    var ar, width;
+    stackState.innerHTML = stack.map(c => (
+      ar=arrRepr(c),console.log(ar.split("\n")),
+      width=Math.max(50,
+          Math.min(250,
+            ar.split("\n").map(
+              c=>c.length
+            ).reduce(
+              (a,b)=>Math.max(a,b), 0
+            )*8.7
+          )
+        ),
+      `<textarea class="stackItem" style="width:${width}px;height:${Math.min(250,Math.max(50,Math.max(ar.split("\n").length*17+30, ar.length/(width/8.7)*17+30)))}px" readonly>${ar}</textarea>`
+    )).join("");
+  }
+  
+  async function debugIns(name) {
+    if (!debug) return;
+    
+    if (stepping) redrawDebug(name);
+    if (!name) name = program[pptr];
+    if (name !== "redraw")
+      console.log(`${name} @${pptr}${(pptr != cpo.ptr && gotoNextIns)? `-${cpo.ptr}` : pptr != nextIns(pptr)-1? `-${nextIns(pptr)-1}` : ""}: ${arrRepr(stack, true)}`+(debug>1? `    depth = ${ptrs.length} current pointer: ${cpo.startpt}-${cpo.endpt}` : ""));
+    if (stepping) {
+      while (!stepNow) await sleep(33);
+      stepNow = false;
+    }
+  }
+  await debugIns("redraw");
   //===================================================PROGRAM EXECUTION===================================================
   var gotoNextIns = true;
   while (ptrs.length > 0 && program.length > 0) {
@@ -810,19 +861,22 @@ async function run (program, inputs) {
         console.log(e);
       }
     }
-    if (gotoNextIns) cpo.moveTo(nextInsPtr);
+    if (executeNow) await debugIns();
+    if (gotoNextIns) {
+      let temp = cpo.moveTo(nextInsPtr);
+      if (temp) await debugIns(temp);
+    }
     else if (debug > 2) console.log("gotoNextIns skipped");
-    if (executeNow && debug) console.log(`${program[pptr]} @${pptr}${pptr+1 != cpo.ptr? `-${cpo.ptr-1}` : ""}: ${arrRepr(stack, true)}`+(debug>1? `    depth = ${ptrs.length} current pointer: ${cpo.startpt}-${cpo.endpt}` : ""));
     if (cpo.afterDebug) cpo.afterDebug();
     gotoNextIns = true;
   }
-  if (implicitOut) outputFS (true,true,true);
+  if (implicitOut) outputFS(true,true,true);
   result.value = printableOut();
   
-  
-  
+  await debugIns("redraw");
+  running = false;
+  if (stepping) stopStepping();
   //helper functions
-  console.log(program[25], program[26], nextIns(25));
   function layerDown(ptr) {
     ptrs.pop();
     if (ptrs.length === 0) return;
@@ -1112,10 +1166,11 @@ async function run (program, inputs) {
     else return item.toString();
   }
   function arrRepr (item) {
+    if (item === undefined) return "---";
     if (isArr(item)) return `[${item.map(arrRepr).join(", ")}]`;
     if (isArt(item)) return quotify(item, "`");
     if (isStr(item)) return quotify(item, `"`);
-    if (isNum(item)) return item;
+    if (isNum(item)) return item+"";
     return item.toString();
   }
   function quotify (what, qt) {
