@@ -152,6 +152,7 @@ printable ascii+¶: part of strings
 Ｎ	
 Ｒ	range
   N: range from 1 to N, inclusive
+  S: set the default background to the string
 Ｓ	split on spaces
   S: split on spaces
 Ｕ	uppercase/ceiling
@@ -194,6 +195,7 @@ printable ascii+¶: part of strings
   aa: overlap the two
 ｒ	lowered range
   N: range from 0 to N-1, inclusive
+  aS: set the arts background character to that
   a: center the art, preferring to go left
 ｓ	split
   SS: split the 1st string on the 2nd

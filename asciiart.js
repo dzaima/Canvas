@@ -5,7 +5,7 @@ class Canvas {
   constructor (preset) {
     this.repr = [];
     this.possiblyMultiline = false;
-    this.background = Canvas.defaultBackground;
+    this.background = Canvas.background;
     this.sx = 0;
     this.sy = 0;
     this.ex = 0;
@@ -49,7 +49,7 @@ class Canvas {
       this.ex = longestLine;
     }
   }
-  toString(nullChr = " ") {
+  toString(nullChr = this.background) {
     var res = "";
     this.repr.forEach((line) => {
       line.forEach((chr) => {
@@ -63,11 +63,10 @@ class Canvas {
   }
   toDebugString(descLine) {
     var temp = this.background;
-    //if (this.background == ' ')
-    this.background = '∙';
+    if (this.background == ' ') this.background = '∙';
     var out = this.toString('•');
     this.background = temp;
-    return out+(descLine? "\n" : "")+`<${this.sx};${this.sy},${this.ex};${this.ey}>`;
+    return out+(descLine? "\n" : "")+`<${this.sx};${this.sy},${this.ex};${this.ey} "${this.background}">`;
   }
   
   toArr() {
@@ -298,7 +297,7 @@ class Canvas {
   }
   c(a){ console.log(this.toDebugString()) }
 }
-Canvas.defaultBackground = " ";
+Canvas.background = " ";
 
 function flatten (inp) {
   if (Array.isArray(inp)) {

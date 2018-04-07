@@ -18,6 +18,7 @@ function Break (id) {
 
 async function run (program, inputs) {
   running = true;
+  Canvas.background = " ";
   // program state variables
   var output = "";
   var vars = {};
@@ -277,7 +278,6 @@ async function run (program, inputs) {
     }, 
     "∔": {
       NN: (a, b) => b.subtract(a),
-      SS: (a, b) => a+"\n"+b,
       AA: (a, b) => a.concat(b),
       AT: (a, b) => (a.push(b), a),
       TA: (a, b) => (a.splice(0, 0, b), a),
@@ -606,6 +606,7 @@ async function run (program, inputs) {
     },
     "ｒ": {
       n: (a) => lrange(a),
+      aS: (a, S) => (a.background=S, a),
       a: (a) => {
         var res = new Canvas();
         var longest = 0;
@@ -629,6 +630,7 @@ async function run (program, inputs) {
     },
     "Ｒ": {
       N: (a) => urange(a),
+      S: (s) => {Canvas.background = s},
     },
     "╶": nextInp,
     "╴": () => currInp(),
@@ -824,6 +826,7 @@ async function run (program, inputs) {
     stateOmega.innerText = arrRepr(lastOfLA[1]);
     stateRemainders.innerText = arrRepr(remainders.slice(-3));
     stateSups.innerText = supVals.map((c,i)=>["¹²³⁴⁵⁶⁷⁸⁹"[i] + ":", c]).filter(c=>typeof c[1] !== 'function').map(c=>c[0] + arrRepr(c[1])).join(", ");
+    bgState.innerText = quotify(Canvas.background, `"`);
     
     ptrstackState.innerText = ptrs.map(c=>c.toDebug? c.toDebug() : c.toString()).join("\n");
     var ar, width;
