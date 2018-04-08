@@ -120,24 +120,28 @@ class Canvas {
   allocate (x, y, leaveSize) {
     if (x < this.sx) {
       let spacing = new Array(this.sx - x).fill(null);
-      this.repr = this.repr.map((line) => spacing.slice().concat(line))
+      this.repr = this.repr.map((line) => spacing.slice().concat(line));
       this.sx = x;
+      // console.log("a<sx");
     }
     if (y < this.sy) {
-      let spacing = new Array(this.width - x).fill(null);
-      for (let i = 0; i < this.sy - y; i++) this.repr.splice(0,0,spacing.slice());
+      let spacing = new Array(this.width).fill(null);
+      for (let i = 0; i < this.sy - y; i++) this.repr.unshift(spacing);
       this.sy = y;
+      // console.log("y<sy");
     }
     
     if (x >= this.ex) {
       let spacing = new Array(x - this.ex + 1).fill(null);
       this.repr = this.repr.map((line) => line.concat(spacing.slice()))
       if (!leaveSize) this.ex = x+1;
+      // console.log("x>=ex");
     }
     if (y >= this.ey) {
       let spacing = new Array(this.width).fill(null);
       for (let i = 0; i < y - this.ey + 1; i++) this.repr.push(spacing.slice());
       if (!leaveSize) this.ey = y+1;
+      // console.log("y>=ey");
     }
     
     return this;
@@ -299,14 +303,14 @@ class Canvas {
 }
 Canvas.background = " ";
 
-function flatten (inp) {
+function flatten (inp, rec) {
   if (Array.isArray(inp)) {
     let out = [];
     for (let item of inp) {
-      out = out.concat(flatten(item));
+      out = out.concat(flatten(item, true));
     }
     return out;
-  } else return inp;
+  } else return rec? ((inp===null || inp===undefined)? inp : inp.toString()) : [...inp.toString()];
 }
 //new Canvas(["/-\\",["|",[" ",[[[["|"]]]]]],"+-+"]).set(-1,-3,'~').set(4,4,'_').get(-1,-3)
 

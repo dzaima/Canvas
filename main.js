@@ -378,7 +378,7 @@ async function run (program, inputs) {
     "ｍ": {
       SN: (s, n) => s.substring(0, +n),
       AN: (a, n) => a.slice(0, n),
-      aN: (a, n) => a.subsection(0, 0, +n),
+      aN: (a, n) => a.subsection(0, 0, +n).toString(),
       
       NS: (n, s, ex) => ex("SN", s, n),
       NA: (n, a, ex) => ex("AN", a, n),
@@ -426,6 +426,13 @@ async function run (program, inputs) {
         push(s.slice(1));
         push(...res);
       },
+      a: (a) => {
+        let i = a.subsection(-a.sx,-a.sy,a.width-a.sx,1-a.sy);
+        a.repr.shift();
+        a.ey--;
+        push(a);
+        push(i.toString());
+      },
     },
     "Ｋ": {
       _A: (a) => (a.pop()),
@@ -433,6 +440,14 @@ async function run (program, inputs) {
         res = s.slice(-1);
         push(s.slice(0, -1));
         push(res);
+      },
+      a: (a) => {
+        let i = a.subsection(-a.sx,a.ey-a.sy,a.width-a.sx,1+a.ey-a.sy);
+        console.log(i);
+        a.repr.pop();
+        a.ey--;
+        push(a);
+        push(i.toString());
       },
     },
     "Ｄ": {
@@ -1048,7 +1063,11 @@ async function run (program, inputs) {
     return stack.splice(ptr,1)[0];
   }
   function push (...item) {
-    stack.push(...item.map(copy));
+    stack.push(...item.map(c=>
+      isStr(c) && c.includes("\n")?
+        new Canvas(c) : copy(c)
+      )
+    );
   }
   function collectToArray() {
     var collected = [];
