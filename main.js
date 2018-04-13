@@ -442,12 +442,11 @@ async function run (program, inputs) {
         push(res);
       },
       a: (a) => {
-        let i = a.subsection(-a.sx,a.ey-a.sy,a.width-a.sx,1+a.ey-a.sy);
-        console.log(i);
+        let i = a.subsection(-a.sx,a.height-1-a.sy,a.width-a.sx,a.height-a.sy).toString();
         a.repr.pop();
         a.ey--;
         push(a);
-        push(i.toString());
+        push(i);
       },
     },
     "Ｄ": {
