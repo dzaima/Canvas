@@ -99,6 +99,9 @@ class Canvas {
   get (x, y) { 
     return (this.repr[y-this.sy] === undefined || this.repr[y-this.sy][x-this.sx] === undefined)? undefined : (this.repr[y-this.sy][x-this.sx])
   }
+  getChr (x,y) {
+    return this.get(x,y) || this.background;
+  }
   
   set (x, y, chr, leaveSize) {
     this.allocate(x, y, leaveSize);

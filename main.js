@@ -189,7 +189,7 @@ async function run (program, inputs) {
       this.toString = () => `?if "[${program[this.endpt]=="］"? "]" : "}"}"@${this.ptr} ${this.startpt}-${this.endpt}}`
     })(pop())),
     "‽": () => addPtr(new (function (init) {
-      this.ptr = cpo.ptr; 
+      this.ptr = cpo.ptr;
       this.moveTo = function (where) {
         // console.log("moveTo",JSON.stringify(this.obj),this.iterptr,this.obj.length);
         this.ptr = where;
@@ -270,12 +270,12 @@ async function run (program, inputs) {
     // math
     "＋": {
       NN: (a, b) => a.plus(b),
+      SS: (a, b) => a+b,
+      NS: (a, b) => a+b,
+      SN: (a, b) => a+b,
       tt: (a, b) => a.appendHorizontally(b),
-      // SS: (a, b) => a+b,
-      // NS: (a, b) => a+b,
-      // SN: (a, b) => a+b,
       // default: (a, b) => (isArr(a)? a : [a]).concat(b),
-    }, 
+    },
     "∔": {
       NN: (a, b) => b.subtract(a),
       AA: (a, b) => a.concat(b),
@@ -343,10 +343,12 @@ async function run (program, inputs) {
       }
     },
     "＠": {
-      AN: (a, n) => a[n.intValue()+1],
+      AN: (a, n) => a[n.intValue()-1],
       NA: (n, a, ex) => ex("AN", a, n),
       NS: (n, s, ex) => ex("AN", s, n),
       SN: (s, n, ex) => ex("AN", s, n),
+      aNN: (a, x, y) => a.getChr(x.intValue()-1, y.intValue()-1),
+      aNNNN: (a, x, y, w, h) => a.subsection(x.intValue()-1, y.intValue()-1, x.intValue()-1+w.intValue(), y.intValue()-1+h.intValue()),
     },
     "±": {
       S: (s) => new Canvas(s).horizReverse().toString(), // [...s].reduce((a,b)=>b+a)
@@ -355,6 +357,7 @@ async function run (program, inputs) {
       a: (a) => a.horizReverse(),
     },
     "╋": {
+      SSS: (a,b,c) => a.split(b).join(c),
       aaNN: (a, b, x, y) => a.overlap(b, x.minus(1), y.minus(1), smartOverlap),
       length: 4,
       default: (a, b, c, d, ex) => ex("aaNN", ...orderAs("aaNN", a, b, c, d)),
@@ -466,7 +469,6 @@ async function run (program, inputs) {
       S: (s) => s.length != 0,
       a: (a) => new Canvas(a.repr),
     },
-    
     // string manipulation
     "Ｓ": {
       S: (s) => s.split(" "),
@@ -498,10 +500,10 @@ async function run (program, inputs) {
     },
     "║": {
       a: (a) => a.palindromize(H, "mirror", 0, smartOverlap),
-    },    
+    },
     "║║": {
       a: (a) => a.palindromize(H, "reverse", 0, simpleOverlap),
-    },    
+    },
     "┼": {
       a: (a) => a.palindromize(H, "mirror", 1, smartOverlap, V, smartOverlapBehind, 1, smartOverlap),
     },
@@ -612,8 +614,8 @@ async function run (program, inputs) {
     "⌐": () => {push(get(1)); push(get(1))},
     "┌": () => (push(get(2))),
     "┐": (_) => {},
-    "└": (a,b,c) => {push(b); push(a); push(c)},
-    
+    "└": (a, b, c) => {push(b); push(a); push(c)},
+    "┘": (a, b, c) => {push(b); push(c); push(a)},
     
     
     // generators
@@ -757,7 +759,7 @@ async function run (program, inputs) {
         }
         let newfn;
         for (let currentKey in fn) {
-          let regkey = currentKey.replace(/a/g, "[aAS]").replace(/[tT]/g, "[aASN]").replace(/_/g, "")+"$";
+          let regkey = currentKey.replace(/a/g, "[aAS]").replace(/[tT]/g, "[aASN]").replace(/s/g, "[SN]").replace(/_/g, "")+"$";
           if (debug > 2) console.log(regkey, "tested on", paramTypes);
           if (new RegExp(regkey).test(paramTypes)) {
             matchingKey = currentKey;
@@ -781,7 +783,7 @@ async function run (program, inputs) {
       let toRemove = [];
       let rawTypes;
       if (matchingKey) rawTypes = matchingKey.replace(/_/g, "");
-      for (let i = 0; i < (ofn.length || ((matchingKey || fn).length)); i++) {
+      for (let i = 0; i < Math.min(ofn.length? ofn.length : 10, ((matchingKey || fn).length)); i++) {
         let item = get(popCtr);
         if (matchingKey && matchingKey[i] == "_") i++;
         else toRemove.splice(0, 0, popCtr);
@@ -1126,7 +1128,7 @@ async function run (program, inputs) {
     if (type(item) == rt || rt == "T") return item;
     if (rt == 'N') return B(item.toString().replace(",","."));
     if (rt == 'a' || rt == 't') return new Canvas(item);
-    if (rt == 'S') return rt.toString();
+    if (rt == 'S' || rt == 's') return rt.toString();
     throw `cast error from ${type(item)} to ${rt}: ${item} (probably casting to array which is strange & unsupported)`;
   }
   function copy (item) {
