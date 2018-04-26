@@ -93,7 +93,7 @@ async function run (program, inputs) {
           if (this.collect && !this.collectOne) push(new Break(1));
           push(this.obj[this.iterptr]);
           setSup(ptrs.length-2, this.obj[this.iterptr]);
-          setSup(ptrs.length-1, this.iterptr+1);
+          setSup(ptrs.length-1, this.iterptr+(isNum(init)? 0 : 1));
           this.ptr = this.startpt;
         }
       }
@@ -477,6 +477,11 @@ async function run (program, inputs) {
       SS: (a, b) => a.split(b),
       SN: (a, b) => a.split(b),
     },
+    "ｃ": {
+      N: (n) => String.fromCodePoint(n),
+      S: (s) => s.length==1? s.charCodeAt(0) : [...s].map(chr=>chr.charCodeAt(0)),
+      a: (a) => a.repr.map(ln=>ln.map(chr=>chr? chr.charCodeAt(0) : 0)),
+    },
     
     
     //palindromizators
@@ -658,6 +663,7 @@ async function run (program, inputs) {
     "Ｚ": () => "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
     "◂": () => "0123456789",
     "◂◂": () => ["1234567890","qwertyuiop","asdfghjkl","zxcvbnm"],
+    "Ｃ": () => " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~",
     "＼": {
       S: (s) => {
         var res = new Canvas();

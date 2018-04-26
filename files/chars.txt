@@ -57,6 +57,7 @@
   S, A: mirror horizontally - reverse & swap chars as required
 ↕	mirror vertically
   S, A: mirror vertically - reverse vertically & swap chars as required
+  N: floor divide by 2 + 1
 
 
 printable ascii+¶: part of strings
@@ -137,7 +138,7 @@ printable ascii+¶: part of strings
 ≠	not equal
 Ａ	push 10
 Ｂ	
-Ｃ	
+Ｃ	push the ASCII characters (' '..'~')
 Ｄ	deduplicate
 Ｅ	
 Ｆ	
@@ -167,16 +168,21 @@ printable ascii+¶: part of strings
 Ｖ	
 Ｗ	while
   ｝: do..while(pop)
-Ｘ	
-Ｙ	
 Ｚ	push the uppercase alphabet
 ａ	
 ｂ	
-ｃ	
+ｃ	convert to/from unicode
+  N: convert from unicode codepoint
+    `Ａ６×ｃ` → "<"
+  S: convert to unicode codepoint
+    `hｃ` → 104
+    `helloｃ` → [104, 101, 108, 108, 111] (note that this only happens if length>1, be careful)
+  A: convert to 2D array of codepoints
+    `ab¶cｃ` → [[97, 98], [99, 0]]
 ｄ	
 ｅ	encase in a letter
-    SS: encase the 1st string in the 2nd
-      `hello∙'ｅ` → "'hello'"
+`hello∙'ｅ` → "'hello'"
+  SS: encase the 1st string in the 2nd
 ｆ	
 ｇ	
 ｈ	
@@ -203,8 +209,10 @@ printable ascii+¶: part of strings
   SN: split the string on the number
 ｖ	
 ｗ	
-ｘ	
-ｙ	
+ｘ	get the value of the variable X
+ｙ	get the value of the variable Y
+Ｘ	set the variable X to POP
+Ｙ	set the variable Y to POP
 ｚ	push the lowercase alphabet
 //   newline   pop   disable auto output
 // Ｏ	  x       x                       
