@@ -60,7 +60,7 @@
       <button id="saveFile" onclick="saveFile()" style="width:100%">save encoded file</button>
     </div>
     <div style="width:80px" class="left">
-      <button id="permalink" onclick="permalink()"style="width:100%">permalink</button>
+      <button id="permalink" onclick="permalink(2)"style="width:100%">permalink</button>
       <button id="topost"    onclick="postify()"  style="width:100%">postify  </button>
       <button id="toCMC"     onclick="CMCify()"   style="width:100%">CMCify   </button>
     </div>
@@ -140,7 +140,7 @@
     }
     
     function loadPermalink(forceOnline) {
-      window.location = permalink(forceOnline) + ",dev,run";
+      window.location = permalink(forceOnline? 1 : 0) + ",dev,run";
     }
     
     function step() {
@@ -191,22 +191,22 @@
       update();
     }
     function postify() {
-      let pl = permalink(true);
+      let pl = permalink(1);
       let prog = program.value;
       result.value = `# [Canvas](https://github.com/dzaima/Canvas), ${prog.length} [byte${prog.length===1? "" : "s"}](https://github.com/dzaima/Canvas/blob/master/files/chartable.md)`;
       for (var cs of program.value.split("\n")) result.value+= "\n    "+cs;
       result.value+= `\n\n[Try it here!](${pl})`;
     }
     function CMCify() {
-      let pl = permalink(true);
+      let pl = permalink(1);
       let prog = program.value;
       result.value =   `Canvas, ${prog.length} byte${prog.length===1? "" : "s"}: [\`${prog.replace(/\n/g, "\\n")}\`](${pl})`;
       result.value+= `\nCanvas, [${prog.length} byte${prog.length===1? "" : "s"}](${pl})`;
     }
     
     // permalink stuff
-    function permalink(forceOnline) {
-      if (forceOnline) var res = "https://dzaima.github.io/Canvas/?";
+    function permalink(param) {
+      if (param == 1) var res = "https://dzaima.github.io/Canvas/?";
       else var res = location.href.substring(0,location.href.length-location.search.length)+"?";
       
       res+= "u="+ (btoa(escape(program.value)).replace(/=/g, "_"));
@@ -215,6 +215,10 @@
         res+= ",i="+ btoa(escape(inputs)).replace(/=/g, "_");
       res+= ",v="+version
       result.value = res;
+      if (param == 2) {
+        result.select();
+        document.execCommand("copy");
+      }
       return res;
     }
     // byte count updating & program running
