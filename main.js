@@ -617,7 +617,7 @@ async function run (program, inputs) {
     },
     "┤": {
       N: (n) => n.minus(2),
-      S: (s) => B(s),
+      S: (s) => new Big(s),
       A: (a) => {
         for (let item of a) push(item);
       },
