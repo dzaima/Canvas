@@ -330,6 +330,18 @@ async function run (program, inputs) {
     "＞": (a, b) => +a.gt(b),
     "≡": (a, b) => + equal(a,b),
     "≠": (a, b) => +!equal(a,b),
+    "┬": (a, b) => {
+      var res = [];
+      while (!a.eq(0)) {
+        res.push(a.mod(b));
+        a = a.divide(b).round(0, Big.ROUND_FLOOR);
+      }
+      return res.length? res.reverse() : [Big.ZERO];
+    },
+    "┴": {
+      AN: (a, b) => a.reduce((crnt,dig)=>crnt.mul(b).add(dig), Big.ZERO),
+      NA: (b, a, ex) => ex("AN", a, b),
+    },
     
     // array & ascii-art manipulation
     "∑": {

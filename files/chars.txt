@@ -78,7 +78,9 @@ printable ascii+¶: part of strings
     `０┤` → -2
   A: put all the elements on the stack
 ┬	decode from base 10
+  NN: convert x from base 10 to an array of digits of it in base y
 ┴	encode into base 10
+  AN: convert the array, interpreted as base y, to a base 10 number
 ╴	previous input
 ╵	increment / sentence case
   N: increase by 1
