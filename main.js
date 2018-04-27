@@ -389,6 +389,7 @@ async function run (program, inputs) {
     },
     "↕": {
       a: (a) => a.vertMirrorSmart(smartOverlapBehind),
+      N: (n) => (a=n.divideAndRemainder(2), remainders.push(a[1]), a[0]),
     },
     "ｍ": {
       SN: (s, n) => s.substring(0, +n),
@@ -615,7 +616,8 @@ async function run (program, inputs) {
       N: (n) =>  n.plus(2),
     },
     "┤": {
-      N: (n) =>  n.minus(2),
+      N: (n) => n.minus(2),
+      S: (s) => B(s),
       A: (a) => {
         for (let item of a) push(item);
       },

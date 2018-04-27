@@ -56,7 +56,7 @@
 ↔	mirror horizontally
   S, A: mirror horizontally - reverse & swap chars as required
 ↕	mirror vertically
-  S, A: mirror vertically - reverse vertically & swap chars as required
+  S, a: mirror vertically - reverse vertically & swap chars as required
   N: floor divide by 2 + 1
 
 
@@ -76,6 +76,7 @@ printable ascii+¶: part of strings
 ┤	double decrement
   N: decrease by 2
     `０┤` → -2
+  S: cast to number
   A: put all the elements on the stack
 ┬	decode from base 10
   NN: convert x from base 10 to an array of digits of it in base y
