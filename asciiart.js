@@ -267,7 +267,8 @@ class Canvas {
       this.sx = orepr.length-oey;
       this.ex = this.sx + oey-osy;
       this.ey = this.sy + oex-osx;
-      for (let x = 0; x < orepr[0].length; x++) {
+      var len = orepr[0]===undefined? 0 : orepr[0].length;
+      for (let x = 0; x < len; x++) {
         let cline = [];
         for (let y = 0; y < orepr.length; y++) {
           cline.push(rotateMode(orepr[orepr.length-y-1][x]));
