@@ -225,18 +225,32 @@
     function runMain() {
       if (running) return;
       running = true;
-      run(program.value, inputs.value.split("\n").map(
-        (s) => {
+      var inputstrs = inputs.value.split("\n");
+      var inputsParsed = [];
+      var cres = "";
+      for (var i = 0; i < inputstrs.length; i++) {
+        var cl = inputstrs[i];
+        if (cl == "```") {
+          var arr = [];
+          i++;
+          while (i < inputstrs.length && inputstrs[i] != "```") {
+            arr.push(inputstrs[i]);
+            i++;
+          }
+          cres = new Canvas(arr.join("\n"));
+        } else {
           var ev;
           try {
-            ev = eval(s);
+            ev = eval(cl);
           } catch (e) {
             ev = undefined;
           }
-          if (typeof ev == "number") ev = new Big(s);
-          return ev == undefined? s : ev
-        })
-      );
+          if (typeof ev == "number") ev = new Big(cl);
+          cres = ev == undefined? cl : ev;
+        }
+        inputsParsed.push(cres);
+      }
+      run(program.value, inputsParsed);
     }
     function updater() {
       setTimeout (update, 0);
