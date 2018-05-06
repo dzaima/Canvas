@@ -322,7 +322,7 @@ async function run (program, inputs) {
         return na;
       },
     },
-    "÷" : (a,b) => a.divide(b),
+    "÷" : (a,b) => b.eq(0)? a : a.divide(b),
     "％": (a,b) => a.remainder(b),
     "√": (a) => a.sqrt(),
     "＾": (a, b) => a.pow(b.floatValue()),
@@ -332,6 +332,7 @@ async function run (program, inputs) {
     "≠": (a, b) => +!equal(a,b),
     "┬": (a, b) => {
       var res = [];
+      if (b.eq(1)) return new Array(+a).fill(Big.ONE);
       while (!a.eq(0)) {
         res.push(a.mod(b));
         a = a.divide(b).round(0, Big.ROUND_FLOOR);
