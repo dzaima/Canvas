@@ -280,7 +280,7 @@ async function run (program, inputs) {
       NN: (a, b) => b.subtract(a),
       AA: (a, b) => a.concat(b),
       AT: (a, b) => (a.push(b), a),
-      TA: (a, b) => (a.splice(0, 0, b), a),
+      TA: (a, b) => (b.splice(0, 0, a), b),
       aa: (a, b) => a.appendVertically(b),
     },
     "－": (a, b) => a.minus(b),
@@ -356,7 +356,7 @@ async function run (program, inputs) {
       }
     },
     "＠": {
-      AN: (a, n) => a[n.intValue()-1],
+      AN: (a, n) => a[((n.intValue()-1)%a.length+a.length)%a.length],
       NA: (n, a, ex) => ex("AN", a, n),
       NS: (n, s, ex) => ex("AN", s, n),
       SN: (s, n, ex) => ex("AN", s, n),
@@ -479,7 +479,7 @@ async function run (program, inputs) {
       aa: (a, s) => s.copy().appendHorizontally(a).appendHorizontally(s),
     },
     "‼": {
-      N: (n) => n.ne(0),
+      N: (n) => +!n.eq(0),
       S: (s) => s.length != 0,
       a: (a) => new Canvas(a.repr),
     },

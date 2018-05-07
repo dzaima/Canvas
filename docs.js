@@ -147,7 +147,7 @@ function createTable() {
         let indent = exampleRow.insertCell(0);
         indent.classList.add("dindent");
         let code = exampleRow.insertCell(1);
-        code.innerHTML = '<code class="cv">' + example.c + '</code>'
+        code.innerHTML = '<code class="cv ex">' + example.c + '</code>'
         let result = exampleRow.insertCell(2);
         result.innerHTML = ' <code> ' + example.r + '</code>'
       }

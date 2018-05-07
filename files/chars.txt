@@ -16,16 +16,20 @@
   
 ＋	add / join horizontally
   NN: add the numbers
+    `７８＋` → 15
   aa: add the two items together horizontally
+    `hello¶worl∙ ¶d!＋` → "hello  ¶worl d!"
 －	subtract
 （	start an array wrapping
-）	end array wrapping. （ can be implicit //TODO fix for `］`
+  `１２（３４５）` → 1, 2, [3, 4, 5]
+）	end array wrapping. （ can be implicit
 ［	loop
   N: repeat that many times (not pushing anything)
     `６７２［!＋Ｐ` → "7!¶6!"
-  S: for each prefix //TODO this and v better ideas?
+  S: for each prefix
   A: for each prefix
 ］	close a loop, collecting the results and pushing them after, so `｛...］` would be a `.map` function
+  `hello｛[ŗ]］∑` -> "[h][e][l][l][o]"
 ｛	loop
   N: repeat from 1 to that number, pushing the counter
     `３｛a×Ｐ` → "a¶aa¶aaa"

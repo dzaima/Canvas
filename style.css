@@ -16,9 +16,10 @@ textarea {
   resize: vertical;
 }
 
-.code, .codebox, code {
+.code, .codebox, code, input {
   font-family: Consolas, inconsolata UFW, DejaVu Sans Mono, Monaco, Lucida Console, Liberation Mono, Bitstream Vera Sans Mono, Courier New, monospace;
   font-size: 14px;
+  white-space:pre-wrap;
 }
 .codebox > * {
   white-space:pre-wrap;
