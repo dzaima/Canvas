@@ -251,7 +251,7 @@ async function run (program, inputs) {
     "⁰": () => {
       let utype = type(get(1));
       let res = [];
-      while (type(get(1)) == utype) {
+      while (type(get(1)) == utype && stack.length > 0) {
         res.splice(0, 0, pop());
       }
       push(res);
