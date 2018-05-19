@@ -1168,7 +1168,7 @@ async function run (program, inputs) {
         ppt.splice(i,0,ppt.splice(index,1)[0]);
       }
     }
-    return ppt.map((c) => c[0])
+    return ppt.map((c, i) => cast(c[0], order[i]))
   }
   function subType (a, b) { // is `a` a subtype of `b`?
     if (a==b) return true;
