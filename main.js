@@ -51,6 +51,7 @@ async function run (program, inputs) {
   
   var ptrs;
   var cpo;
+  var gotoNextIns = true;
   
   var implicitOut = true;
   var stack = [];
@@ -164,19 +165,22 @@ async function run (program, inputs) {
       }
       this.init = () => this.continue(true);
       this.toString = () => `{loop "[${program[this.endpt]=="］"? "]" : "}"}"@${this.ptr} ${this.startpt}-${this.endpt}}`
+      this.toDebug = () => `@${this.ptr}, ${this.startpt}-${this.endpt}: loop [...${program[this.endpt]=="］"? "]" : "}"}` + (this.collect? ". Collected "+arrRepr(this.collection) : "");
     })(pop())),
+    
+    
     "？": () => addPtr(new (function (init) {
       this.ptr = cpo.ptr; 
       this.moveTo = function (where) {
         // console.log("moveTo",JSON.stringify(this.obj),this.iterptr,this.obj.length);
         this.ptr = where;
-        if (this.ptr >= this.endpt) {
+        if (this.ptr >= this.endpt || this.endpts.map(c=>c.i).includes(this.ptr)) {
           this.break();
-          this.ptr++;
         }
       }
       this.obj = init;
-      this.endpt = endPt(this.ptr);
+      this.endpts = endPt(this.ptr, false, true);
+      this.endpt = this.endpts[this.endpts.length-1].i;
       this.startpt = this.ptr;
       this.continue = function() {
         this.ptr = this.startpt;
@@ -185,9 +189,23 @@ async function run (program, inputs) {
         if (debug > 1) console.log("`[` break to", this.endpt+1, JSON.stringify(ptrs));
         layerDown(this.endpt+1);
       }
-      this.init = () => truthy(this.obj)? this.continue() : this.break();
-      this.toString = () => `?if "[${program[this.endpt]=="］"? "]" : "}"}"@${this.ptr} ${this.startpt}-${this.endpt}}`
+      this.init = () => {
+        if (this.endpts.length == 1) return truthy(this.obj)? this.continue() : this.break();
+        else {
+          //console.log(this.obj+"", this.ptr, falsy(this.obj), this.endpts)
+          if (falsy(this.obj)) {
+            this.ptr = this.endpts[0].i;
+            gotoNextIns = false;
+          }
+          else this.continue();
+          //console.log(this.ptr);
+        }
+      }
+      this.toString = () => `{if \`?${this.endpts.map(c=>c.c=="］"? "]" : "}").join("")}\`@${this.ptr}; ${this.startpt}-${this.endpts.map(c=>c.i).join(" ")}}`
+      this.toDebug = () => `@${this.ptr}, ${this.startpt}-${this.endpt}: if ?...${this.endpts.map(c=>c.c=="］"? "]" : "}").join("")}` + (this.collect? ". Collected "+arrRepr(this.collection) : "");
     })(pop())),
+    
+    
     "‽": () => addPtr(new (function (init) {
       this.ptr = cpo.ptr;
       this.moveTo = function (where) {
@@ -209,7 +227,7 @@ async function run (program, inputs) {
         layerDown(this.endpt+1);
       }
       this.init = () => falsy(this.obj)? this.continue() : this.break();
-      this.toString = () => `?if "[${program[this.endpt]=="］"? "]" : "}"}"@${this.ptr} ${this.startpt}-${this.endpt}}`
+      this.toString = () => `{if "‽${program[this.endpt]=="］"? "]" : "}"}"@${this.ptr} ${this.startpt}-${this.endpt}}`
     })(pop())),
     
     "Ｗ": () => addPtr(new (function (init) {
@@ -643,7 +661,7 @@ async function run (program, inputs) {
       if (cPA.includes(program[cpo.ptr-1]) ^ cPA.includes(program[cpo.ptr+1])) return " ";
     },
     "ｒ": {
-      n: (a) => lrange(a),
+      N: (a) => lrange(a),
       aS: (a, S) => (a.background=S, a),
       a: (a) => {
         var res = new Canvas();
@@ -898,7 +916,6 @@ async function run (program, inputs) {
   }
   await debugIns("redraw");
   //===================================================PROGRAM EXECUTION===================================================
-  var gotoNextIns = true;
   while (ptrs.length > 0 && program.length > 0) {
     if (sleepUpdate) await sleep(0);
     let executeNow = cpo.ptr < program.length;
@@ -1100,23 +1117,37 @@ async function run (program, inputs) {
     return collected;
   }
   
-  function endPt (sindex, undefinedOnProgramEnd) {
+  function endPt (sindex, undefinedOnProgramEnd, allEnds) {
     var ind = sindex;
-    var bstk = [];
+    var ends = [];
+    var bstk = [{ c:program[ind], s:0 }];
     var lvl = 1;
     while (lvl > 0) { // console.log(lvl, ind, program[ind], bstk);
       ind = nextIns(ind);
-      if (program[ind] === "［" || program[ind] === "｛" || program[ind] === "？" || program[ind] === "‽") {
-        bstk.push(program[ind]);
+      if ("［｛？‽Ｗ".includes(program[ind])) {
+        bstk.push({ c:program[ind], s:0 });
         lvl++;
       }
-      if (program[ind] === "｝" || program[ind] === "］") {
-        let echr = program[ind];
+      let echr = program[ind];
+      if (echr === "｝" || echr === "］") {
         let back = false;
-        switch (bstk[bstk.length-1]) {
+        let br = bstk[bstk.length-1];
+        switch (br.c) {
           case "［":
           case "｛":
+            back = true;
+          break;
           case "‽":
+            if (br.s === 0) {
+              if (echr === "｝") back = true;
+              else br.s = 2; // case value named
+            } else if (br.s === 2) { // action end; case value named
+              if (echr === "｝") br.s = 1; // case action defined
+              else back = true; // `］］` means no default case
+            } else if (br.s === 1) { // case action defined
+              if (echr === "｝") back = true;
+              else br.s = 2;
+            }
             back = true;
           break;
           case "？":
@@ -1125,14 +1156,15 @@ async function run (program, inputs) {
           default:
             back = true;
         }
+        if (lvl == 1) ends.push({i:ind, c:echr});
         if (back) {
           lvl--;
           bstk.pop();
         }
       }
-      if (ind >= program.length) return undefinedOnProgramEnd? undefined : program.length;
+      if (lvl > 0 && ind >= program.length) return allEnds? (ends.push({i:ind, c:"｝"}), ends) : undefinedOnProgramEnd? undefined : program.length;
     }
-    return ind;
+    return allEnds? ends : ind;
   }
   
   function printableOut() { // output with 2 trailing and leading newlines removed

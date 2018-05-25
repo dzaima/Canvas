@@ -269,8 +269,16 @@ printable ascii+¶: part of strings
   if ASCII is only on one side, pushes a space
     `abc∙×` → "a b c"
 ‽	if not / switch
-  `‽false!｝` - if POP is falsy 
-  `‽N］north｝S］south｝E］east｝west｝We're going ＊` - input [NSEW] and the output will expand the direction name and prepend "We're going "
+  ｝: if not POP
+    `‽false!｝` - if POP is falsy 
+  ］: switch over the results before `］`, calling the one to its right. The last case, without a `］`, is the default result
+    `‽N］north｝S］south｝E］east｝west｝` - expands the direction name of the cardinal
+？	if/switch
+  ｝: if
+    `？truthy!｝` pushes "truthy" if the input is truthy
+  ］｝: switch for numbers 0..x. first is default, next is 0 (or anything falsy), next - 1, next - 2, ect.<br>If only 2 blocks are used, this is basically if/else.
+    `？truthy!］falsy.｝` outputs "truthy" if the input is truthy
+    `？not zero nor one］zero］one｝` self explanatory
 ‾	
 ⇵	reverse vertically
   N: ceiling divide by 2, storing the remainder
@@ -303,12 +311,6 @@ printable ascii+¶: part of strings
 “	
 ”	
 ■	
-？	if/case. and `case` for numbers 0..x if followed by `］` and ended with `｝`
-  ｝: if
-    `？truthy!｝` pushes "truthy" if the input is truthy
-  ］｝: `case` for numbers 0..x. first is default, next is 0, next - 1, next - 2, ect.<br>If only 2 blocks are used, this is basically if/else.
-    `？truthy!］falsy｝` outputs "truthy" if the input is truthy
-    `？not zero nor one］zero］one｝` self explanatory
 
 ↶	rotate anticlockwise
   a: rotate counter clockwise, rotating characters that make sense to be rotated
