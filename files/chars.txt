@@ -1,5 +1,5 @@
 ⁰	wrap the top same type items on the stack in an array
-¹-⁹	context & input & program dependant variables. Defaults: //KEYW ¹²³⁴⁵⁶⁷⁸⁹
+¹-⁹	context & input & program dependant variables.<br>from 1 onwards are loop data. The outermost loop has ¹, inner one - ², ect. Every loop might set other values it uses in further ones.<br>Helper functions are in order below `⁹`<br>before the last helpers superscript come the inputs<br>If unset, defaults:
   ¹: Infinity
   ²: 256
   ³: 13
@@ -8,11 +8,8 @@
   ⁶: 12
   ⁷: 16
   ⁸: 128
-  ⁹ - x: the program lines. ⁹ is the main program, ⁸ is the first helper, ⁷ - 2nd, ect.
-  after those, come the inputs. So for a program with 1 helper line the 1st input would be ⁷, the second ⁶, ect.
+  ⁹: call main program
   ¹-x: loop counters & stuff
-    the current loops item is it's depth, and optionally the next superscript may be something. The ones before gat saved from previous loops, but only 1 value is accessible.
-  if the above don't set a value, then this table shows each items value:
   
 ＋	add / join horizontally
   NN: add the numbers

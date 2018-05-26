@@ -2,10 +2,12 @@
 // null - wasn't there originally - e.g. edges on a ragged array
 class Canvas {
   
-  constructor (preset) {
+  constructor (preset, p = preset.p) {
+    if (p == null) throw new Error("no parent");
+    this.p = p;
     this.repr = [];
     this.possiblyMultiline = false;
-    this.background = Canvas.background;
+    this.background = p.background;
     this.sx = 0;
     this.sy = 0;
     this.ex = 0;
@@ -86,7 +88,7 @@ class Canvas {
   get height() { return this.ey-this.sy }
   
   copy() {
-    let res = new Canvas(this.repr);
+    let res = new Canvas(this);
     res.sx = this.sx;
     res.sy = this.sy;
     res.ex = this.ex;
@@ -163,7 +165,7 @@ class Canvas {
     if (nsy != undefined) nsy+= this.sy;
     if (nex != undefined) nex+= this.sx;
     if (ney != undefined) ney+= this.sy;
-    return new Canvas(this.repr.slice(nsy, ney).map(c => c.slice(nsx, nex)));
+    return new Canvas(this.repr.slice(nsy, ney).map(c => c.slice(nsx, nex)), this.p);
   }
   forEach (lambda) {
     for (let x = this.sx; x < this.ex; x++) {
@@ -305,7 +307,6 @@ class Canvas {
   }
   c(a){ console.log(this.toDebugString()) }
 }
-Canvas.background = " ";
 
 function flatten (inp, rec) {
   if (Array.isArray(inp)) {
