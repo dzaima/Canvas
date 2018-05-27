@@ -172,6 +172,7 @@ printable ascii+¶: part of strings
 Ｖ	
 Ｗ	while
   ｝: do..while(pop)
+  ］: while(ToS)
 Ｚ	push the uppercase alphabet
 ａ	
 ｂ	

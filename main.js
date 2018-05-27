@@ -25,7 +25,6 @@ async function redrawDebug(selStart, selEnd, state) {
   stateRemainders.innerText = arrRepr(state.remainders.slice(-3));
   stateSups.innerText = state.supVals.map((c,i)=>["¹²³⁴⁵⁶⁷⁸⁹"[i] + ":", c]).filter(c=>typeof c[1] !== 'function').map(c=>c[0] + arrRepr(c[1])).join(", ");
   bgState.innerText = quotify(state.background, `"`);
-  console.log(state.ptrs.map(c=>c.toDebug()));
   ptrstackState.innerText = state.ptrs.map(c=>c.toDebug()).join("\n");
   var ar, width;
   stackState.innerHTML = state.stack.map(c => (
@@ -54,28 +53,31 @@ class Pointer {
   // eptr points to last bracket (or program.length)
   // p = parent CanvasCode class instance
   constructor (program, p, sptr, eptr = p.endPt(sptr, false, false, program)) {
+    if (debug>1) console.log(`pointer added ${sptr}-${eptr} of \`${program}\``);
     this.sptr = sptr;
     this.eptr = eptr;
     this.p = p;
     this.program = program;
     this.ptr = sptr + 1;
-    // [{c:i:this.sptr}].concat(p.endPt(this.sptr, false, true, program)).slice(0,-1)
+    this.finished = false;
     if (sptr>=0) {
-      let is = [{i:sptr}].concat(this.p.endPt(this.sptr, false, true, this.program));
+      this.endpts = this.p.endPt(this.sptr, false, true, this.program);
+      let is = [{i:sptr}].concat(this.endpts);
       this.branches = is.slice(0,-1).map((c,i)=>({i: c.i+1, c: is[i+1].c}));
-      // console.log(is,this.branches);
     } else {
+      this.endpts = [{i:eptr, c:undefined}];
       this.branches = [{i:sptr+1, c:undefined}];
     }
-    this.init();
   }
   async next() {
+    if (this.finished) console.error("temp error why");//return this.break();
     await this.exec();
     this.iter();
-    if (this.ptr >= this.eptr) this.p.break();
   }
   iter() {
     this.ptr = this.p.nextIns(this.ptr, this.program);
+    if (this.ptr >= this.eptr) this.continue();
+    if (this.endpts.includes(this.ptr)) this.continue();
   }
   update(newPtr) {
     this.ptr = newPtr;
@@ -88,6 +90,7 @@ class Pointer {
     this.ptr = this.branches[index].i;
   }
   break() {
+    this.finished = true;
     this.onBreak();
     this.p.break(this.eptr+1);
   }
@@ -169,7 +172,7 @@ class CanvasCode {
     
     // function creation
     this.builtins = {
-      "｛": () => this.ptrs.push(new (
+      "｛": () => this.addPtr(new (
         class extends Pointer {
           init() {
             this.level = this.p.ptrs.length-1;
@@ -182,8 +185,7 @@ class CanvasCode {
             this.continue(true);
           }
           
-          async next() {
-            await this.exec();
+          async iter() {
             this.ptr = this.p.nextIns(this.ptr, this.program);
             if (this.ptr >= this.eptr) this.continue();
           }
@@ -199,8 +201,8 @@ class CanvasCode {
             if (this.array) newItem = this.obj[this.index];
             else newItem = this.index+1;
             this.p.push(newItem);
-            this.p.setSup(this.level, newItem); // first
-            this.p.setSup(this.level+1, this.index+(this.array? 1 : 0)); // second
+            this.p.setSup(this.level, newItem);
+            this.p.setSup(this.level+1, this.index+(this.array? 1 : 0));
             
             this.index++;
           }
@@ -213,6 +215,97 @@ class CanvasCode {
           
         }
       )(this.program, this, this.cpo.ptr)),
+      "［": () => this.addPtr(new (
+        class extends Pointer {
+          init() {
+            this.level = this.p.ptrs.length-1;
+            this.obj = this.p.pop();
+            this.prefix = [];
+            this.collect = this.branches.slice(-1)[0].c == "］";
+            this.collected = [];
+            this.array = !isNum(this.obj);
+            this.endCount = this.array? new Big(this.obj.length) : this.obj.round(0, Big.ROUND_FLOOR);
+            this.index = 0;
+            this.continue(true);
+          }
+          
+          async iter() {
+            this.ptr = this.p.nextIns(this.ptr, this.program);
+            if (this.ptr >= this.eptr) this.continue();
+          }
+          
+          continue(first = false) {
+            this.ptr = this.branches[0].i;
+            if (!first && this.collect) this.collected.push(...this.p.collectToArray());
+            if (this.index >= this.endCount) return this.break();
+            
+            if (this.collect) this.p.push(new Break(1));
+            
+            if (this.array) {
+              if (isStr(this.obj)) this.prefix+=this.obj[this.index];
+              else this.prefix.push(this.obj[this.index]);
+              this.p.push(this.prefix);
+              this.p.setSup(this.level, this.obj[this.index]);
+              this.p.setSup(this.level+1, this.prefix);
+              this.p.setSup(this.level+2, this.index+(this.array? 1 : 0));
+            } else {
+            this.p.setSup(this.level, this.index+1);
+            this.p.setSup(this.level+1, this.index);
+            }
+            
+            this.index++;
+          }
+          onBreak() {
+            if (this.collect) this.p.push(this.collected);
+          }
+          toString() {
+            return `@${this.ptr} loop; ${this.sptr}-${this.eptr}`;
+          }
+          
+        }
+      )(this.program, this, this.cpo.ptr)),
+      "Ｗ": () => this.addPtr(new (
+        class extends Pointer {
+          init() {
+            this.doWhile = this.branches.slice(-1)[0].c != "］";
+            this.continue(false);
+          }
+          
+          async iter() {
+            this.ptr = this.p.nextIns(this.ptr, this.program);
+            if (this.ptr >= this.eptr) this.continue();
+          }
+          
+          continue(back = true) {
+            this.ptr = this.branches[0].i;
+            if (!this.doWhile || back) {
+              if (falsy(this.doWhile? this.p.pop() : this.p.get()))
+                return this.break();
+            }
+          }
+          toString() {
+            return `@${this.ptr} loop; ${this.sptr}-${this.eptr}`;
+          }
+        }
+      )(this.program, this, this.cpo.ptr)),
+      
+      "？": () => this.addPtr(new (
+        class extends Pointer {
+          init() {
+            this.level = this.p.ptrs.length-1;
+            this.p.setSup(this.level, this.obj);
+            
+            this.obj = this.p.pop();
+            if(falsy(this.obj)) this.finished = true;
+          }
+          
+          toString() {
+            return `@${this.ptr} ${this.switch? "switch" : "if"}; ${this.sptr}-${this.eptr}`;
+          }
+          
+        }
+      )(this.program, this, this.cpo.ptr)),
+      
       "ω": () => push(this.lastArgs.slice(-1)[0]),
       "α": () => push(this.lastArgs.slice(-2)[0]),
       "⁰": () => {
@@ -225,8 +318,8 @@ class CanvasCode {
       },
       "（": () => push(new Break(0)),
       "＃": () => {
-        let res = eval(pop());
-        if (res != undefined) push(res);
+        let res = eval(this.pop());
+        if (res != undefined) this.push(res);
       },
       "｝": () => {},
       "］": () => {},
@@ -314,11 +407,11 @@ class CanvasCode {
       // array & ascii-art manipulation
       "∑": {
         A: (a) => {
-          checkIsNums = (a) => isArr(a)? a.every(checkIsNums) : isNum(a);
+          var checkIsNums = (a) => isArr(a)? a.every(checkIsNums) : isNum(a);
           let reduceType;
           if (checkIsNums(a)) reduceType = (a,b) => a.plus(b);
           else reduceType = (a,b) => a+""+b;
-          sumArr = (a) => a.map(c => isArr(c)? sumArr(c) : c).reduce(reduceType);
+          var sumArr = (a) => a.map(c => isArr(c)? sumArr(c) : c).reduce(reduceType);
           return sumArr(a);
         }
       },
@@ -689,10 +782,10 @@ class CanvasCode {
       },
       
       //variables
-      "ｘ": () => vars['x'],
-      "ｙ": () => vars['y'],
-      "Ｘ": (a) => {vars['x'] = a},
-      "Ｙ": (a) => {vars['y'] = a},
+      "ｘ": () => this.vars['x'],
+      "ｙ": () => this.vars['y'],
+      "Ｘ": (a) => {this.vars['x'] = a},
+      "Ｙ": (a) => {this.vars['y'] = a},
       
       
       // outputing
@@ -853,6 +946,11 @@ class CanvasCode {
     this.supVals[i] = v;
   }
   
+  addPtr(ptr) {
+    this.ptrs.push(ptr);
+    ptr.init();
+  }
+  
   get blank() {
     return new Canvas(undefined, this);
   }
@@ -946,10 +1044,10 @@ class CanvasCode {
   
   
   break(newPtr) {
+    if (debug > 1) console.log(`break from ${this.ptrs.length} to ${newPtr}`);
     var ptr = this.ptrs.pop();
     if (this.ptrs.length === 0) return;
     this.cpo.update(newPtr);
-    if (debug > 1) console.log(`break from $ptrs.length}@${cpo.ptr}`);
   }
   executeHere (newPr) {
     console.err("TODO executeHere");
@@ -981,8 +1079,7 @@ class CanvasCode {
     this.inpCtr%= this.inputs.length;
     return out;
   }
-  get(ift) { // item from top; 1 = top, 2 = 2nd from top, ect.
-    if (!ift) ift = 1;
+  get(ift = 1) { // item from top; 1 = top, 2 = 2nd from top, ect.
     var ptr = this.stack.length;
     while (ptr > 0 && ift != 0) {
       ptr--;
@@ -991,20 +1088,18 @@ class CanvasCode {
     if (ift == 0) return this.stack[ptr];
     return this.currInp(ift);
   }
-  pop(ift) { // item from top; 1 = top, 2 = 2nd from top, ect.
+  pop(ift = 1) { // item from top; 1 = top, 2 = 2nd from top, ect.
     // var ptr = stack.length-1;
     // while (ptr >= 0) {
     //   if (!(stack[ptr] instanceof Break)) return stack.splice(ptr,1)[0];
     //   ptr--;
     // }
     // return nextInp();
-    if (!ift) ift = 1;
     let item = this.get(ift);
     this.remove(ift);
     return item;
   }
-  remove(ift) {
-    if (!ift) ift = 1;
+  remove(ift = 1) {
     var ptr = this.stack.length;
     while (ptr > 0 && ift > 0) {
       ptr--;
