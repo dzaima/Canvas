@@ -9,11 +9,10 @@ var stringChars;
   stringChars = printableAscii + "¶ŗ";
 }
 
-// includes pausing for 
 async function redrawDebug(selStart, selEnd, state) {
   if (!stepping) return;
-  var cptr = state.ptrs[state.ptrs.length-1];
-  var program = cptr.program;
+  result.value = state.printableOut;
+  var program = state.program;
   codeState.innerHTML = '<span class="code">' + program.substring(0,selStart) + '</span>'
                       + '<span class="code sel">' + program.substring(selStart,selEnd) + '</span>'
                       + '<span class="code">' + program.substring(selEnd) + '</span>';
@@ -62,26 +61,28 @@ class Pointer {
     this.finished = false;
     if (sptr>=0) {
       this.endpts = this.p.endPt(this.sptr, false, true, this.program);
+      this.endpts.forEach((c,i)=>c.index=i);
       let is = [{i:sptr}].concat(this.endpts);
-      this.branches = is.slice(0,-1).map((c,i)=>({i: c.i+1, c: is[i+1].c}));
+      this.branches = is.slice(0,-1).map((c,i)=>({i: c.i+1, c: is[i+1].c, index:i}));
     } else {
-      this.endpts = [{i:eptr, c:undefined}];
-      this.branches = [{i:sptr+1, c:undefined}];
+      this.endpts = [{i:eptr, c:undefined, index:0}];
+      this.branches = [{i:sptr+1, c:undefined, index:0}];
     }
+    this.endptrs = this.endpts.map(c=>c.i);
   }
   async next() {
-    if (this.finished) console.error("temp error why");//return this.break();
+    if (this.finished) return this.break();
     await this.exec();
     this.iter();
   }
   iter() {
     this.ptr = this.p.nextIns(this.ptr, this.program);
-    if (this.ptr >= this.eptr) this.continue();
-    if (this.endpts.includes(this.ptr)) this.continue();
+    var ending = this.endptrs.indexOf(this.ptr);
+    if (ending != -1) this.continue(this.endpts[ending]);
   }
   update(newPtr) {
     this.ptr = newPtr;
-    if (this.ptr >= this.eptr) this.continue();
+    if (this.ptr == this.eptr) this.continue(this.endpts[this.endptrs.indexOf(this.ptr)]);
   }
   continue() {
     this.break();
@@ -89,7 +90,7 @@ class Pointer {
   branch(index) {
     this.ptr = this.branches[index].i;
   }
-  break() {
+  break() {console.log("rip",this);
     this.finished = true;
     this.onBreak();
     this.p.break(this.eptr+1);
@@ -123,6 +124,7 @@ class Pointer {
       }
     }
     console.log(`${instr}@${index}${eindex-index==1?'':"-"+(eindex-1)}: ${arrRepr(this.p.stack)}`);
+    console.log(this.p);
     if (stepping) await redrawDebug(index, eindex, this.p);
   }
 }
@@ -158,7 +160,7 @@ class CanvasCode {
     this.supVals = bigify([Infinity, 256, 13, 64, 11, 12, 16, 128, 0]);
     
     this.inpCtr = 0;
-    this.inputs = inputs;
+    this.inputs = inputs.map(c=>c instanceof Canvas? (c.p = this, c) : c);
     
     this.ptrs = [];
     
@@ -182,15 +184,15 @@ class CanvasCode {
             this.array = !isNum(this.obj);
             this.endCount = this.array? new Big(this.obj.length) : this.obj.round(0, Big.ROUND_FLOOR);
             this.index = 0;
-            this.continue(true);
+            this.continue(undefined, true);
           }
           
-          async iter() {
+          iter() {
             this.ptr = this.p.nextIns(this.ptr, this.program);
             if (this.ptr >= this.eptr) this.continue();
           }
           
-          continue(first = false) {
+          continue(ending, first = false) {
             this.ptr = this.branches[0].i;
             if (!first && this.collect) this.collected.push(...this.p.collectToArray());
             if (this.index >= this.endCount) return this.break();
@@ -210,7 +212,7 @@ class CanvasCode {
             if (this.collect) this.p.push(this.collected);
           }
           toString() {
-            return `@${this.ptr} loop; ${this.sptr}-${this.eptr}`;
+            return `@${this.ptr} loop; ${this.sptr}-${this.eptr}${this.collect? ' '+ arrRepr(this.collected) : ''}`;
           }
           
         }
@@ -226,15 +228,15 @@ class CanvasCode {
             this.array = !isNum(this.obj);
             this.endCount = this.array? new Big(this.obj.length) : this.obj.round(0, Big.ROUND_FLOOR);
             this.index = 0;
-            this.continue(true);
+            this.continue(undefined, true);
           }
           
-          async iter() {
+          iter() {
             this.ptr = this.p.nextIns(this.ptr, this.program);
             if (this.ptr >= this.eptr) this.continue();
           }
           
-          continue(first = false) {
+          continue(ending, first = false) {
             this.ptr = this.branches[0].i;
             if (!first && this.collect) this.collected.push(...this.p.collectToArray());
             if (this.index >= this.endCount) return this.break();
@@ -268,15 +270,15 @@ class CanvasCode {
         class extends Pointer {
           init() {
             this.doWhile = this.branches.slice(-1)[0].c != "］";
-            this.continue(false);
+            this.continue(undefined, false);
           }
           
-          async iter() {
+          iter() {
             this.ptr = this.p.nextIns(this.ptr, this.program);
             if (this.ptr >= this.eptr) this.continue();
           }
           
-          continue(back = true) {
+          continue(ending, back = true) {
             this.ptr = this.branches[0].i;
             if (!this.doWhile || back) {
               if (falsy(this.doWhile? this.p.pop() : this.p.get()))
@@ -293,14 +295,55 @@ class CanvasCode {
         class extends Pointer {
           init() {
             this.level = this.p.ptrs.length-1;
+            this.obj = this.p.pop();
             this.p.setSup(this.level, this.obj);
             
+            this.switch = this.branches[0].c == "］";
+            if (this.switch) {
+              if (falsy(this.obj)) this.branch(1);
+              else if (isNum(this.obj) && this.obj.gt(0) && this.obj.lt(this.branches.length-1)) this.branch(this.obj.round(0, Big.ROUND_FLOOR).plus(1));
+              else this.branch(0);
+            } else if(falsy(this.obj)) this.finished = true;
+          }
+          toString() {
+            return `@${this.ptr} ${this.switch? "switch" : "if"}; ${this.sptr}-${this.eptr}`;
+          }
+          
+        }
+      )(this.program, this, this.cpo.ptr)),
+      
+      "‽": () => this.addPtr(new (
+        class extends Pointer {
+          init() {
+            this.level = this.p.ptrs.length-1;
             this.obj = this.p.pop();
-            if(falsy(this.obj)) this.finished = true;
+            this.p.setSup(this.level, this.obj);
+            
+            this.switch = this.branches[0].c == "］";
+            if (this.switch) {
+              this.branchf(0);
+            } else if(truthy(this.obj)) this.finished = true;
+          }
+          
+          branchf (ending) {
+            console.log("branch to",ending);
+            if (ending%2 == 0 || ending == this.endpts.length-1) this.p.push(new Break(1));
+            this.branch(ending);
+          }
+          
+          continue(ending) {
+            ending = ending.index;
+             if (ending%2 == 1 || ending == this.endpts.length-1) this.break();
+             else {
+               let results = this.p.collectToArray();
+               if (results.some(c=>equal(c, this.obj))) this.branchf(ending+1);
+               else                                     this.branchf(ending+2);
+               //else if (ending == this.endpts.length-3) branchf(ending+2);
+             }
           }
           
           toString() {
-            return `@${this.ptr} ${this.switch? "switch" : "if"}; ${this.sptr}-${this.eptr}`;
+            return `@${this.ptr} ${this.switch? "switch" : "if not"}; ${this.sptr}-${this.eptr}`;
           }
           
         }
@@ -311,7 +354,7 @@ class CanvasCode {
       "⁰": () => {
         let utype = type(get(1));
         let res = [];
-        while (type(get(1)) == utype && stack.length > 0) {
+        while (type(get(1)) == utype && this.stack.length > 0) {
           res.splice(0, 0, pop());
         }
         push(res);
@@ -700,7 +743,7 @@ class CanvasCode {
       
       // generators
       "∙": () => {
-        if (stringChars.includes(program[cpo.ptr-1]) ^ stringChars.includes(program[cpo.ptr+1])) return " ";
+        if (stringChars.includes(this.program[this.cpo.ptr-1]) ^ stringChars.includes(this.program[this.cpo.ptr+1])) return " ";
       },
       "ｒ": {
         N: (a) => lrange(a),
@@ -1006,7 +1049,6 @@ class CanvasCode {
               if (echr === "｝") back = true;
               else br.s = 2;
             }
-            back = true;
           break;
           case "？":
             if (echr === "｝") back = true;

@@ -3,11 +3,11 @@
 class Canvas {
   
   constructor (preset, p = preset.p) {
-    if (p == null) throw new Error("no parent");
+    if (p === undefined) throw new Error("no parent");
     this.p = p;
     this.repr = [];
     this.possiblyMultiline = false;
-    this.background = p.background;
+    this.background = p? p.background : " ";
     this.sx = 0;
     this.sy = 0;
     this.ex = 0;
