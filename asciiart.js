@@ -30,7 +30,8 @@ class Canvas {
       this.ey = preset.length;
       let longestLine = 0;
       this.repr = preset.map((line) => {
-        if (typeof line === "string") {
+        if (typeof line === "string" || isNum(line) || isJSNum(line)) {
+          line = ""+line;
           if (line.length > longestLine) longestLine = line.length;
           return line.split("");
         } else {

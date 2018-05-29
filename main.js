@@ -59,6 +59,7 @@ class Pointer {
     this.program = program;
     this.ptr = sptr + 1;
     this.finished = false;
+    this.inParent = true;
     if (sptr>=0) {
       this.endpts = this.p.endPt(this.sptr, false, true, this.program);
       this.endpts.forEach((c,i)=>c.index=i);
@@ -79,10 +80,11 @@ class Pointer {
     this.ptr = this.p.nextIns(this.ptr, this.program);
     var ending = this.endptrs.indexOf(this.ptr);
     if (ending != -1) this.continue(this.endpts[ending]);
+    else if (this.ptr >= this.eptr) this.continue(this.endpts[this.endpts.length]);
   }
   update(newPtr) {
     this.ptr = newPtr;
-    if (this.ptr == this.eptr) this.continue(this.endpts[this.endptrs.indexOf(this.ptr)]);
+    if (this.ptr >= this.eptr) this.continue(this.endpts[this.endptrs.indexOf(this.ptr)]);
   }
   continue() {
     this.break();
@@ -90,10 +92,10 @@ class Pointer {
   branch(index) {
     this.ptr = this.branches[index].i;
   }
-  break() {console.log("rip",this);
+  break() {
     this.finished = true;
     this.onBreak();
-    this.p.break(this.eptr+1);
+    this.p.break(this.eptr+1, this);
   }
   onBreak() {}
   init() {}
@@ -106,7 +108,7 @@ class Pointer {
     let eindex = this.p.nextIns(index, this.program);
     let instr = this.program.slice(index, eindex);
     if (instr.length > 0 && [...instr].every(c=>stringChars.includes(c))) {
-      this.p.push(prepareStr(instr.replace(/¶/g,"\n")));
+      this.p.push(this.p.prepareStr(instr.replace(/¶/g,"\n")));
     } else {
       let func = this.p.builtins[instr];
       if (func === undefined) {
@@ -123,8 +125,8 @@ class Pointer {
         }
       }
     }
-    console.log(`${instr}@${index}${eindex-index==1?'':"-"+(eindex-1)}: ${arrRepr(this.p.stack)}`);
-    console.log(this.p);
+    if (this != this.p.cpo && !this.p.cpo.inParent) index = eindex = 0; // WARNING destructive
+    console.log(`${instr}@${index}${eindex-index==1||(eindex==0&&index==0)?'':"-"+(eindex-1)}: ${arrRepr(this.p.stack)}`);
     if (stepping) await redrawDebug(index, eindex, this.p);
   }
 }
@@ -168,6 +170,7 @@ class CanvasCode {
     // fuck you `this.`
     var get = this.get.bind(this);
     var push = this.push.bind(this);
+    var remainders = this.remainders;
     
     
     
@@ -177,7 +180,7 @@ class CanvasCode {
       "｛": () => this.addPtr(new (
         class extends Pointer {
           init() {
-            this.level = this.p.ptrs.length-1;
+            this.level = this.p.ptrs.length-2;
             this.obj = this.p.pop();
             this.collect = this.branches.slice(-1)[0].c == "］";
             this.collected = [];
@@ -220,13 +223,13 @@ class CanvasCode {
       "［": () => this.addPtr(new (
         class extends Pointer {
           init() {
-            this.level = this.p.ptrs.length-1;
+            this.level = this.p.ptrs.length-2;
             this.obj = this.p.pop();
             this.prefix = [];
             this.collect = this.branches.slice(-1)[0].c == "］";
             this.collected = [];
             this.array = !isNum(this.obj);
-            this.endCount = this.array? new Big(this.obj.length) : this.obj.round(0, Big.ROUND_FLOOR);
+            this.endCount = this.array? this.obj.length : +this.obj.round(0, Big.ROUND_FLOOR);
             this.index = 0;
             this.continue(undefined, true);
           }
@@ -251,8 +254,8 @@ class CanvasCode {
               this.p.setSup(this.level+1, this.prefix);
               this.p.setSup(this.level+2, this.index+(this.array? 1 : 0));
             } else {
-            this.p.setSup(this.level, this.index+1);
-            this.p.setSup(this.level+1, this.index);
+              this.p.setSup(this.level, this.index+1);
+              this.p.setSup(this.level+1, this.index);
             }
             
             this.index++;
@@ -261,7 +264,7 @@ class CanvasCode {
             if (this.collect) this.p.push(this.collected);
           }
           toString() {
-            return `@${this.ptr} loop; ${this.sptr}-${this.eptr}`;
+            return `@${this.ptr} loop; ${this.sptr}-${this.eptr} depth ${this.level}`;
           }
           
         }
@@ -294,13 +297,14 @@ class CanvasCode {
       "？": () => this.addPtr(new (
         class extends Pointer {
           init() {
-            this.level = this.p.ptrs.length-1;
+            this.level = this.p.ptrs.length-2;
             this.obj = this.p.pop();
             this.p.setSup(this.level, this.obj);
             
             this.switch = this.branches[0].c == "］";
             if (this.switch) {
               if (falsy(this.obj)) this.branch(1);
+              else if (this.endpts.length == 2) this.branch(0);
               else if (isNum(this.obj) && this.obj.gt(0) && this.obj.lt(this.branches.length-1)) this.branch(this.obj.round(0, Big.ROUND_FLOOR).plus(1));
               else this.branch(0);
             } else if(falsy(this.obj)) this.finished = true;
@@ -315,7 +319,7 @@ class CanvasCode {
       "‽": () => this.addPtr(new (
         class extends Pointer {
           init() {
-            this.level = this.p.ptrs.length-1;
+            this.level = this.p.ptrs.length-2;
             this.obj = this.p.pop();
             this.p.setSup(this.level, this.obj);
             
@@ -326,7 +330,6 @@ class CanvasCode {
           }
           
           branchf (ending) {
-            console.log("branch to",ending);
             if (ending%2 == 0 || ending == this.endpts.length-1) this.p.push(new Break(1));
             this.branch(ending);
           }
@@ -484,7 +487,7 @@ class CanvasCode {
         default: (a, b, c, d, ex) => ex("aaNN", ...this.orderAs("aaNN", a, b, c, d)),
       },
       "⇵": {
-        N: (n) => (a=n.divideAndRemainder(2), remainders.push(a[1]), a[0].plus(a[1])),
+        N: (n) => {var a=n.divideAndRemainder(2); remainders.push(a[1]); return a[0].plus(a[1])},
         A: (a) => a.reverse(),
         a: (a) => a.vertReverse(),
       },
@@ -583,7 +586,7 @@ class CanvasCode {
       },
       "‼": {
         N: (n) => +!n.eq(0),
-        S: (s) => s.length != 0,
+        S: (s) => +(s.length != 0),
         a: (a) => new Canvas(a.repr, this),
       },
       // string manipulation
@@ -703,14 +706,14 @@ class CanvasCode {
         a: (a) => a.subsection(1, 0).appendHorizontally(a.subsection(0, 0, 1)),
       },
       "»": {
-        N: (n) => (a=n.divideAndRemainder(2), remainders.push(a[1]), a[0]),
+        N: (n) => {var a=n.divideAndRemainder(2); remainders.push(a[1]); return a[0]},
         S: (s) => s.slice(-1).concat(s.slice(0,-1)),
         A: (a) => a.slice(-1)+a.slice(0,-1),
         a: (a) => a.subsection(-1, 0).appendHorizontally(a.subsection(0, 0, -1)),
       },
       "╵": {
         N: (n) => n.plus(1),
-        S: (s) => s.replace(/(^|[.?!]\s*)(\w)/g, (a,b,c)=>b+c.toUpperCase()),
+        S: (s) => s.replace(/(^\s*|[.?!]\s*)(\w)/g, (a,b,c)=>b+c.toUpperCase()),
       },
       "╷": {
         N: (n) => n.minus(1),
@@ -1085,15 +1088,21 @@ class CanvasCode {
   
   
   
-  break(newPtr) {
+  break(newPtr, who) {
     if (debug > 1) console.log(`break from ${this.ptrs.length} to ${newPtr}`);
     var ptr = this.ptrs.pop();
+    if (debug > 1 && who != ptr) console.warn("break who != last ptr");
     if (this.ptrs.length === 0) return;
-    this.cpo.update(newPtr);
+    if (ptr.inParent) this.cpo.update(newPtr);
   }
+  
   executeHere (newPr) {
-    console.err("TODO executeHere");
-    throw new Error("TODO executeHere");
+    this.addPtr(new (
+      class extends Pointer {
+        init() { this.inParent = false; }
+        toDebug () { return `@${this.ptr}: helper function`; }
+      }
+    )(newPr, this, -1, newPr.length));
   }
   
   outputFS (shouldPop, newline, noImpOut) { // output from stack
@@ -1187,6 +1196,9 @@ class CanvasCode {
     if (rt == 'S' || rt == 's') return rt.toString();
     throw `cast error from ${type(item)} to ${rt}: ${item} (probably casting to array which is strange & unsupported)`;
   }
+  prepareStr (str) {
+    return str.replace(/ŗ/g, () => this.pop());
+  }
 } // END OF CanvasCode
   
   
@@ -1198,9 +1210,6 @@ class CanvasCode {
   
   
   
-function prepareStr (str) {
-  return str.replace(/ŗ/g, () => pop());
-}
 function copy (item) {
   if (isArr(item)) return item.map((c) => copy(c));
   if (isArt(item)) return new Canvas(item);
@@ -1312,6 +1321,8 @@ function truthy (item) {
   if (isStr(item)) return item.length > 0;
   if (isArr(item)) return item.length > 0;
   if (isNum(item)) return !item.eq(0);
+  if (isArt(item)) return item.width>0 && item.height>0;
+  return !!item;
 }
 function falsy (item) {
   return !truthy(item);
