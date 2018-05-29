@@ -75,7 +75,7 @@
   <input id="fakeFileInp" type="file" style="display:none" />
   <a id="fakeLink" style="display:none" />
   <script>
-    var latestVersion = 2;
+    var latestVersion = 3;
     var usedVersion = latestVersion;
     var devMode = false;
     var debug = 0; // 0 - no debug; 1 - program debug; 2 - interpreter debug
@@ -237,7 +237,7 @@
             arr.push(inputstrs[i]);
             i++;
           }
-          cres = new Canvas(arr.join("\n"));
+          cres = new Canvas(arr.join("\n"), null);
         } else {
           var ev;
           try {

@@ -1,5 +1,5 @@
 ⁰	wrap the top same type items on the stack in an array
-¹-⁹	context & input & program dependant variables. Defaults: //KEYW ¹²³⁴⁵⁶⁷⁸⁹
+¹-⁹	context & input & program dependant variables.<br>from 1 onwards are loop data. The outermost loop has ¹, inner one - ², ect. Every loop might set other values it uses in further ones.<br>Helper functions are in order below `⁹`<br>before the last helpers superscript come the inputs<br>If unset, defaults:
   ¹: Infinity
   ²: 256
   ³: 13
@@ -8,11 +8,8 @@
   ⁶: 12
   ⁷: 16
   ⁸: 128
-  ⁹ - x: the program lines. ⁹ is the main program, ⁸ is the first helper, ⁷ - 2nd, ect.
-  after those, come the inputs. So for a program with 1 helper line the 1st input would be ⁷, the second ⁶, ect.
+  ⁹: call main program
   ¹-x: loop counters & stuff
-    the current loops item is it's depth, and optionally the next superscript may be something. The ones before gat saved from previous loops, but only 1 value is accessible.
-  if the above don't set a value, then this table shows each items value:
   
 ＋	add / join horizontally
   NN: add the numbers
@@ -118,7 +115,7 @@ printable ascii+¶: part of strings
   aNN: expand the ascii-art by the numbers
     `foo¶bar２３＊` → "ffoooo¶bbaarr¶ffoooo¶bbaarr¶ffoooo¶bbaarr"
   AS, SA: join the array with the string
-    `3Ｒ:＊` → "1:2:3"
+    `３Ｒ:＊` → "1:2:3"
   SS: insert the second string between the firsts chars
     `2xy∙^＊` → "2^x^y"
 ÷	divide
@@ -155,8 +152,8 @@ printable ascii+¶: part of strings
 Ｊ	pop the first item / first line
 Ｋ	pop the last item / last line
 Ｌ	get length
-    S, A, N: get length and pop the item
-    a: get height, don't pop
+  S, A, N: get length and pop the item
+  a: get height, don't pop
 Ｍ	
 Ｎ	
 Ｒ	range
@@ -175,6 +172,7 @@ printable ascii+¶: part of strings
 Ｖ	
 Ｗ	while
   ｝: do..while(pop)
+  ］: while(ToS)
 Ｚ	push the uppercase alphabet
 ａ	
 ｂ	
@@ -197,10 +195,10 @@ printable ascii+¶: part of strings
 ｊ	remove first item / first line
 ｋ	remove last item / last line
 ｌ	get length
-    S, A, N: get length, without popping
-    a: get height, don't pop
+  S, A, N: get length, without popping
+  a: get height, don't pop
 ｍ	mold to length / reshape
-    aN: reshape to the width of the number
+  aN: reshape to the width of the number
 ｎ	split into chunks / divmod
   NS, SN: split the string into chunks of length N, padding with spaces if necessary.
   NA, AN: split the array into arrays of length N. If there aren't enough items, just leave as-is.
@@ -246,7 +244,9 @@ printable ascii+¶: part of strings
   S: 0 if the string is empty, otherwise 1
   a: move the [1;1] point to the top-left of the visible art
 ¼	
-½	divide by 2
+½	halve //KEYW half
+  N: divide by 2
+    `９½` → 4.5
 ¾	
 √	square root
   N: get the square root
@@ -265,14 +265,14 @@ printable ascii+¶: part of strings
   N, S: join the stack until `（` or end into a string
 ∙	NOP / separator / space
   NOOP if both or no sides are ASCII
-    `abc∙def┐` → "def"
+    `abc∙def┐` → "abc"
   if ASCII is only on one side, pushes a space
     `abc∙×` → "a b c"
 ‽	if not / switch
   ｝: if not POP
     `‽false!｝` - if POP is falsy 
   ］: switch over the results before `］`, calling the one to its right. The last case, without a `］`, is the default result
-    `‽N］north｝S］south｝E］east｝west｝` - expands the direction name of the cardinal
+    `‽N∙n］north｝S∙s］south｝E∙e］east｝west｝` - expands the direction name of the cardinal
 ？	if/switch
   ｝: if
     `？truthy!｝` pushes "truthy" if the input is truthy
@@ -319,7 +319,9 @@ printable ascii+¶: part of strings
   aN: rotate clockwise that many times
 ＠	get item
   AN, NA: push that item (1-indexed) from the array
-  SN, SA: push that char (1-indexed) from the string
+  SN, NS: push that char (1-indexed) from the string
+  aNN: get the character at the positions [x; y] in the canvas
+  aNNNN: get a subsection from the canvas by the params [x; y; w; h]
 ＃	execute as JS
     `"Hello, "+"JS!"＃` → "Hello, JS!"
 ％	modulo
