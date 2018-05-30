@@ -297,7 +297,7 @@
         if (doneSteps == 2 && args.includes("run")) runMain();
       }
     });
-    var asciiArtName = usedVersion<2? "old/asciiartB2.js" : "asciiart.js"
+    var asciiArtName = usedVersion<2? "old/asciiartB2.js" : usedVersion<3? "old/asciiartB3.js" : "asciiart.js"
     $.ajax({
       url: asciiArtName,
       success: function (JScode) {
