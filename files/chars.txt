@@ -17,6 +17,7 @@
   aa: add the two items together horizontally
     `hello¶worl∙ ¶d!＋` → "hello  ¶worl d!"
 －	subtract
+  `５９－` → -4
 （	start an array wrapping
   `１２（３４５）` → 1, 2, [3, 4, 5]
 ）	end array wrapping. （ can be implicit
@@ -24,7 +25,9 @@
   N: repeat that many times (not pushing anything)
     `６７２［!＋Ｐ` → "7!¶6!"
   S: for each prefix
+    `abc［Ｐ` → "a¶ab¶abc"
   A: for each prefix
+    `１２３）［!＋］`
 ］	close a loop, collecting the results and pushing them after, so `｛...］` would be a `.map` function
   `hello｛[ŗ]］∑` -> "[h][e][l][l][o]"
 ｛	loop
