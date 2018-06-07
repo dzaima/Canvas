@@ -881,10 +881,6 @@ class CanvasCode {
         let callable = simpleBuiltins[key];
         let originalObject = callable;
         let matchingKey;
-        if (mode == 2) {
-          console.error("what the hell is this");
-          throw new Error("is this even used");
-        }
         if (mode == 2 && isFn(callable)) {
           return true;
         }
