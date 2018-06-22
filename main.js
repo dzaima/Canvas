@@ -405,11 +405,17 @@ class CanvasCode {
         aa: (a, b) => b.appendHorizontally(a),
       },
       "＊": {
-        // TODO: AN, NA
         SS: (a, b) => [...a].join(b),
         AS: (a, s) => a.join(s),
         SA: (s, a) => a.join(s),
         aa: (a, b, ex) => ex("SS", a.toString(), b.toString()),
+        
+        SN: (s, n) => new Array(+n).fill(s),
+        NS: (n, s, ex) => ex("SN", s, n),
+        
+        AN: (a, n) => new Array(n*a.length).fill(0).map((_,i)=>a[i%a.length]),
+        NA: (n, a, ex) => ex("AN", a, n),
+        
         aN: (a, n) => {
           let na = this.blank;
           for (let i = 0; i < n; i++) {
@@ -545,7 +551,7 @@ class CanvasCode {
       "Ｊ": {
         _A: (a) => (a.splice(0, 1)[0]),
         S: (s) => {
-          res = a.slice(0, 1);
+          var res = s.slice(0, 1);
           push(s.slice(1));
           push(...res);
         },
@@ -560,7 +566,7 @@ class CanvasCode {
       "Ｋ": {
         _A: (a) => (a.pop()),
         S: (s) => {
-          res = s.slice(-1);
+          var res = s.slice(-1);
           push(s.slice(0, -1));
           push(res);
         },
@@ -808,7 +814,7 @@ class CanvasCode {
         },
         a: (a) => {
           var res = this.blank;
-          a.forEachChar((chr, x, y) => res.set(a.width-y+x-1, y, chr));
+          a.forEachChar((chr, x, y) => res.set(x-y-1, y, chr));
           return res;
         },
         N: (n, ex) => ex("S", "/".repeat(n)),

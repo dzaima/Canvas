@@ -56,6 +56,10 @@ $.ajax({
           if (cols.length == 3 || cols.length == 1 || cols.length > 4) {
             if (cols.length == 5) cols.splice(3);
             let dataItem = data.find((item) => item.c === chr);
+            if (!dataItem) {
+              console.warn("char not found: "+chr);
+              continue;
+            }
             dataItem.impl = {};
             if (cols.length > 1) {
               let tarr = cols.length == 3? ["N", "S", "A"] : ["NN", "SS", "AA", "NS", "AN", "AS"];
