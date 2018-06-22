@@ -512,6 +512,10 @@ class CanvasCode {
         NS: (n, s, ex) => ex("SN", s, n),
         NA: (n, a, ex) => ex("AN", a, n),
         Na: (n, a, ex) => ex("aN", a, n),
+        NN: (a, b) => a.gt(b)? b : a,
+      },
+      "Ｍ": {
+        NN: (a, b) => a.gt(b)? a : b,
       },
       "ｎ": {
         AN: (a, n) => {

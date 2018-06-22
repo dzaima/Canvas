@@ -157,7 +157,8 @@ printable ascii+¶: part of strings
 Ｌ	get length
   S, A, N: get length and pop the item
   a: get height, don't pop
-Ｍ	
+Ｍ	maximum
+  NN: maximum
 Ｎ	
 Ｒ	range
   N: range from 1 to N, inclusive
@@ -202,6 +203,7 @@ printable ascii+¶: part of strings
   a: get height, don't pop
 ｍ	mold to length / reshape
   aN: reshape to the width of the number
+  NN: minimum
 ｎ	split into chunks / divmod
   NS, SN: split the string into chunks of length N, padding with spaces if necessary.
   NA, AN: split the array into arrays of length N. If there aren't enough items, just leave as-is.
