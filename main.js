@@ -385,6 +385,8 @@ class CanvasCode {
       "∔": {
         NN: (a, b) => b.subtract(a),
         AA: (a, b) => a.concat(b),
+        AS: (a, s) => (a.push(s), a),
+        SA: (s, a) => (a.splice(0, 0, s), a),
         AT: (a, b) => (a.push(b), a),
         TA: (a, b) => (b.splice(0, 0, a), b),
         aa: (a, b) => a.appendVertically(b),
