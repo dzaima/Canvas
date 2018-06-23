@@ -156,7 +156,7 @@ printable ascii+¶: part of strings
 Ｋ	pop the last item / last line
 Ｌ	get length
   S, A, N: get length and pop the item
-  a: get height, don't pop
+  a: get width, don't pop
 Ｍ	maximum
   NN: maximum
 Ｎ	
