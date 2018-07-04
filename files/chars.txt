@@ -168,11 +168,11 @@ printable ascii+¶: part of strings
 Ｕ	uppercase/ceiling
   S: uppercase the string
   N: get the ceiling of the number
-  A: vectorise
+  A: vectorize
 ｕ	lowercase/floor
   S: lowercase the string
   N: get the floor of the number
-  A: vectorise
+  A: vectorize
 Ｖ	
 Ｗ	while
   ｝: do..while(pop)

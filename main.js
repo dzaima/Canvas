@@ -867,9 +867,7 @@ class CanvasCode {
         S: (a) => a.toLowerCase(),
         N: (a) => a.round(0, Big.ROUND_FLOOR),
       },
-      "ｒａｗ": (a) => {
-        println(arrRepr(a));
-      }
+      "ｒａｗ": (a) => arrRepr(a),
     }
     
     // number built-ins
