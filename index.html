@@ -76,6 +76,7 @@
   <a id="fakeLink" style="display:none" />
   <script>
     var latestVersion = 3;
+    var module = 0; // node is annoying & this can't be a more meaningful variable name
     var usedVersion = latestVersion;
     var devMode = false;
     var debug = 0; // 0 - no debug; 1 - program debug; 2 - interpreter debug
@@ -85,6 +86,7 @@
     var devLoaded = false;
     var lastSearch = "";
     if (devChk.checked) devUpdate(); // for Firefox-ish reloads that keep checked
+    var debugLog = console.log;
     // loading initial permalinked data
     var args = location.search.substring(1).split(",");
     for (var i = 0; i < args.length; i++) {

@@ -1,0 +1,26 @@
+{
+  "name": "canvas",
+  "version": "3.0.0",
+  "description": "a stack-based golfing language made for ASCII-art golfing",
+  "main": "node.js",
+  "dependencies": {
+    "get-stdin": "^6.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dzaima/Canvas.git"
+  },
+  "keywords": [
+    "golfing-language"
+  ],
+  "author": "dzaima",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dzaima/Canvas/issues"
+  },
+  "homepage": "https://github.com/dzaima/Canvas#readme"
+}

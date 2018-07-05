@@ -1174,6 +1174,3 @@
     }
     
 })(this);
-
-var BigDecimal = Big;
-var BigInteger = Big;

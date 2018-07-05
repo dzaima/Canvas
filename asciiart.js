@@ -1,3 +1,4 @@
+if (module) var Big = require('./bigDecimal');
 // undefined - background
 // null - wasn't there originally - e.g. edges on a ragged array
 class Canvas {
@@ -378,4 +379,15 @@ var smartRotate = function (chr) {
 // var canvas10 = new Canvas("      _,.-\n   ,-'\\  _\n  /  _ \\  \n ,      \\ \n |-------\\");
 // var canvas11 = canvas10.palindromize(H, "mirror", 1, smcanvasOverlap, V, (a, b) => smcanvasOverlapDef(a, b, a), 1, smcanvasOverlap);
 
-window.Canvas = Canvas;
+
+if (module) {
+  module.exports = {
+    smartRotate: smartRotate,
+    smartOverlapDef: smartOverlapDef,
+    smartOverlapBehind: smartOverlapBehind,
+    smartOverlap: smartOverlap,
+    noBGOverlap: noBGOverlap,
+    simpleOverlap: simpleOverlap,
+    Canvas: Canvas,
+  };
+} else window.Canvas = Canvas;

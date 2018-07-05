@@ -1,5 +1,20 @@
 var codepage = "⁰¹²³⁴⁵⁶⁷⁸⁹¶\n＋－（）［］｛｝＜＞‰ø＾◂←↑→↓↔↕ !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~┌┐└┘├┤┬┴╴╵╶╷╋↖↗↘↙×÷±«»≤≥≡≠ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ０１２３４５６７８９§‼¼½¾√／＼∑∙‽‾⇵∔：；⟳⤢⌐ŗ“”■？＊↶↷＠＃％！─│┼═║╫╪╬αω";
 
+if (module) {
+  var Big = require('./bigDecimal');
+  var debug = false;
+  var stepping = false;
+  var running = false;
+  const AA = require('./asciiart');
+  var smartRotate = AA.smartRotate;
+  var smartOverlapDef = AA.smartOverlapDef;
+  var smartOverlapBehind = AA.smartOverlapBehind;
+  var smartOverlap = AA.smartOverlap;
+  var noBGOverlap = AA.noBGOverlap;
+  var simpleOverlap = AA.simpleOverlap;
+  var Canvas = AA.Canvas;
+  var debugLog = console.warn;
+}
 var version = 3;
 var stringChars;
 {
@@ -126,7 +141,7 @@ class Pointer {
       }
     }
     if (this != this.p.cpo && !this.p.cpo.inParent) index = eindex = 0; // WARNING destructive
-    console.log(`${instr}@${index}${eindex-index==1||(eindex==0&&index==0)?'':"-"+(eindex-1)}: ${arrRepr(this.p.stack)}`);
+    if (this.p.debug) debugLog(`${instr}@${index}${eindex-index==1||(eindex==0&&index==0)?'':"-"+(eindex-1)}: ${arrRepr(this.p.stack)}`);
     if (stepping) await redrawDebug(index, eindex, this.p);
   }
 }
@@ -145,8 +160,8 @@ class Break {
 
 async function run (program, inputs = []) {
   running = true;
-  result.value = "";
-  new CanvasCode(program, bigify(inputs)).run();
+  if (!module) result.value = "";
+  return new CanvasCode(program, bigify(inputs)).run();
 }
 class CanvasCode {
   constructor (wholeProgram, inputs) {
@@ -614,7 +629,14 @@ class CanvasCode {
         S: (s) => s.length==1? s.charCodeAt(0) : [...s].map(chr=>chr.charCodeAt(0)),
         a: (a) => a.repr.map(ln=>ln.map(chr=>chr? chr.charCodeAt(0) : 0)),
       },
-      
+      // "ｆ": {
+      //   TTT: (s, o, r) {
+      //     function vreplace(s, o, r) {
+      // 
+      //     }
+      //     vreplace(s, o, r);
+      //   },
+      // },
       
       //palindromizators
       "─": {
@@ -903,7 +925,7 @@ class CanvasCode {
           let newfn;
           for (let currentKey in callable) {
             let regkey = currentKey.replace(/a/g, "[aAS]").replace(/[tT]/g, "[aASN]").replace(/s/g, "[SN]").replace(/_/g, "")+"$";
-            if (debug > 2) console.log(regkey, "tested on", paramTypes);
+            if (debug > 2) debugLog(regkey, "tested on", paramTypes);
             if (new RegExp(regkey).test(paramTypes)) {
               matchingKey = currentKey;
               newfn = callable[matchingKey];
@@ -939,7 +961,6 @@ class CanvasCode {
           this.remove(fromTop);
         }
         this.lastArgs.push(...params.map(copy));
-        //console.log("simpleBuiltins params: ",params,this.lastArgs);
         let ex = (which, ...newParams) => originalObject[which](...newParams);
         let res = callable(...params, ex);
         if (isJSNum(res)) res = B(res);
@@ -986,10 +1007,11 @@ class CanvasCode {
       await this.cpo.next();
     }
     if (this.implicitOut) this.outputFS(true,true,true);
-    result.value = this.printableOut;
+    if (!module) result.value = this.printableOut;
     
     running = false;
     if (stepping) stopStepping();
+    return this.printableOut;
   }
   
   setSup (i, v) {
@@ -1095,7 +1117,7 @@ class CanvasCode {
   
   
   break(newPtr, who) {
-    if (debug > 1) console.log(`break from ${this.ptrs.length} to ${newPtr}`);
+    if (debug > 1) debugLog(`break from ${this.ptrs.length} to ${newPtr}`);
     var ptr = this.ptrs.pop();
     if (debug > 1 && who != ptr) console.warn("break who != last ptr");
     if (this.ptrs.length === 0) return;
@@ -1342,4 +1364,12 @@ function flatten (arr) {
 }
 function errorLN (e) {
   return e.stack.split("\n")[1].match(/\d+/g).slice(-2,-1).shift();
+}
+
+if (module) {
+  module.exports = {
+    CanvasCode: CanvasCode,
+    Canvas: Canvas,
+    run: run
+  };
 }
