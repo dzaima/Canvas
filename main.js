@@ -12,7 +12,7 @@ if (module) {
   var smartOverlap = AA.smartOverlap;
   var noBGOverlap = AA.noBGOverlap;
   var simpleOverlap = AA.simpleOverlap;
-  var Canvas = AA.Canvas;
+  eval("var Canvas = AA.Canvas;");
   var debugLog = console.warn;
 }
 var version = 3;
