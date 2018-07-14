@@ -15,7 +15,7 @@ if (module) {
   eval("var Canvas = AA.Canvas;");
   var debugLog = console.warn;
 }
-var version = 4;
+var version = 3;
 var stringChars;
 {
   let printableAsciiArr=[];

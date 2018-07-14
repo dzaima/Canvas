@@ -1136,6 +1136,7 @@
     }
     P.divideAndRemainder = function (inp) {
         var remr = this.mod(inp);
+        if (remr.lt(0)) remr = remr.add(inp);
         var divr = this.subtract(remr).divide(inp);
         return [divr, remr];
     }
