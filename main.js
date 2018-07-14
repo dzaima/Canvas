@@ -1001,9 +1001,10 @@ class CanvasCode {
         toDebug () { return `@${this.ptr}: main program`; }
       }
     )(main, this, -1, main.length));
-    
+    var counter = 0;
     while (this.ptrs.length > 0) {
-      if (sleepUpdate) await sleep(0);
+      if (sleepUpdate && counter%100 == 0) await sleep(0);
+      counter++;
       await this.cpo.next();
     }
     if (this.implicitOut) this.outputFS(true,true,true);
