@@ -452,7 +452,7 @@ class CanvasCode {
         },
       },
       "÷" : (a,b) => b.eq(0)? a : a.divide(b),
-      "％": (a,b) => a.remainder(b),
+      "％": (a,b) => a.remainder(b).plus(b).remainder(b),
       "√": (a) => a.sqrt(),
       "＾": (a, b) => a.pow(b.floatValue()),
       "＜": (a, b) => +a.lt(b),
