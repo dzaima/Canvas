@@ -173,7 +173,7 @@ printable ascii+¶: part of strings
   S: lowercase the string
   N: get the floor of the number
   A: vectorize
-Ｖ	
+Ｖ	increment x
 Ｗ	while
   ｝: do..while(pop)
   ］: while(ToS)
@@ -217,8 +217,13 @@ printable ascii+¶: part of strings
 ｓ	split
   SS: split the 1st string on the 2nd
   SN: split the string on the number
-ｖ	
-ｗ	
+ｖ	increment/append
+  N: increment x & push the result
+    `hi!｛ｖ］` → ["h",1,"i",2,"!",3]
+  S: add the value to X
+  A: push the value to X
+ｗ	set the variable Y without popping
+  `fooＹｙbarｗｙ）` → ["foo", "bar", "bar"]
 ｘ	get the value of the variable X
 ｙ	get the value of the variable Y
 Ｘ	set the variable X to POP

@@ -28,6 +28,12 @@ class Canvas {
       this.background = preset.background;
     }
     if (Array.isArray(preset)) {
+      var na = [];
+      for (var c of preset) {
+        if (isArt(c)) na.push(...c.repr);
+        else na.push(c);
+      }
+      preset = na;
       this.ey = preset.length;
       let longestLine = 0;
       this.repr = preset.map((line) => {

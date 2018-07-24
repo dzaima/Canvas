@@ -8,7 +8,9 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <center><h1 style="height:10px; margin-top:0; margin-bottom: 10px"><a href=https://github.com/dzaima/Canvas>Canvas</a></h1></center>
+  <center id="toptitle">
+    <a style="height:10px; margin-top:0; margin-bottom: 10px; font-weight:bold; font-size:2em;" href=https://github.com/dzaima/Canvas>Canvas</a>
+</center>
   <div id="p" style="width:40%;"><span id="bytecount" style="font-size:12px">0 bytes</span></div>
   <div id="textareas">
     <div class="left" id="progdiv">
@@ -59,8 +61,8 @@
       <button id="loadFile" onclick="loadFile()" style="width:100%">load encoded file</button>
       <button id="saveFile" onclick="saveFile()" style="width:100%">save encoded file</button>
     </div>
-    <div style="width:80px" class="left">
-      <button id="permalink" onclick="permalink(2)"style="width:100%">permalink</button>
+    <div style="width:60px" class="left">
+      <button id="stopBtn" onclick="stop()" style="width:100%; display:none">stop</button>
       <button id="topost"    onclick="postify()"  style="width:100%">postify  </button>
       <button id="toCMC"     onclick="CMCify()"   style="width:100%">CMCify   </button>
     </div>
@@ -75,7 +77,7 @@
   <input id="fakeFileInp" type="file" style="display:none" />
   <a id="fakeLink" style="display:none" />
   <script>
-    var latestVersion = 4;
+    var latestVersion = 5;
     var module = 0; // node is annoying & this can't be a more meaningful variable name
     var usedVersion = latestVersion;
     var devMode = false;
@@ -106,8 +108,14 @@
         search.value=unescape(parts[1]);
       }
     }
-    
+    if (latestVersion !== usedVersion) {
+      toptitle.innerHTML+='<a style="color:#D2D2D2" onclick="toLatest()" href="#" title="using v'+usedVersion+' for compatibility; Click to switch to v'+latestVersion+'">v'+usedVersion+'</a>'
+    }
     // dev mode
+    function toLatest() {
+      window.location = permalink(2)+(devMode? ",dev" : "");
+    }
+    
     function devUpdate() {
       
       devMode^= true;
@@ -124,6 +132,7 @@
         docs.style.display = "block";
         loadpermalink.style.display = "block";
         stepBtn.style.display = "block";
+        stopBtn.style.display = "block";
         if (!debug) debug = 1;
       } else {
         inpdiv.appendChild(inputs);
@@ -137,6 +146,7 @@
         stepData.style.display = "none";
         loadpermalink.style.display = "none";
         stepBtn.style.display = "none";
+        stopBtn.style.display = "none";
         if (debug == 1) debug = 0;
       }
     }
@@ -149,6 +159,11 @@
       if (!stepping) enterStepping();
       if (running) stepNow = true;
       else runMain();
+    }
+    function stop() {
+      running = false;
+      if (stepping) stopStepping();
+      stepNow = true;
     }
     function enterStepping() {
       stepping = true;
@@ -209,13 +224,13 @@
     // permalink stuff
     function permalink(param) {
       if (param == 1) var res = "https://dzaima.github.io/Canvas/?";
-      else var res = location.href.substring(0,location.href.length-location.search.length)+"?";
+      else var res = [location.protocol, '//', location.host, location.pathname].join('')+"?";
       
       res+= "u="+ (btoa(escape(program.value)).replace(/=/g, "_"));
       var inputs = document.getElementById("inputs").value;
       if (inputs != "")
         res+= ",i="+ btoa(escape(inputs)).replace(/=/g, "_");
-      res+= ",v="+version
+      res+= ",v="+(param==2? latestVersion : version)
       result.value = res;
       if (param == 2) {
         result.select();
@@ -282,6 +297,7 @@
     document.onkeydown = updater;
     update();
     // loading the appropriate version JS file
+    
     var JSname = latestVersion === usedVersion? "main.js" : "old/main"+usedVersion+".js";
     var doneSteps = 0;
     $.ajax({

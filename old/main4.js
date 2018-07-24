@@ -15,7 +15,7 @@ if (module) {
   eval("var Canvas = AA.Canvas;");
   var debugLog = console.warn;
 }
-var version = 5;
+var version = 4;
 var stringChars;
 {
   let printableAsciiArr=[];
@@ -184,7 +184,6 @@ class CanvasCode {
     
     // fuck you `this.`
     var get = this.get.bind(this);
-    var pop = this.pop.bind(this);
     var push = this.push.bind(this);
     var remainders = this.remainders;
     
@@ -385,7 +384,6 @@ class CanvasCode {
       },
       "｝": () => {},
       "］": () => {},
-      "ｗ": () => {this.vars.y = get();} 
     }
     
     // simple functions
@@ -404,9 +402,9 @@ class CanvasCode {
         AA: (a, b) => a.concat(b),
         AS: (a, s) => (a.push(s), a),
         SA: (s, a) => (a.splice(0, 0, s), a),
+        AT: (a, b) => (a.push(b), a),
+        TA: (a, b) => (b.splice(0, 0, a), b),
         aa: (a, b) => a.appendVertically(b),
-        AN: (a, b) => (a.push(b), a),
-        NA: (a, b) => (b.splice(0, 0, a), b),
       },
       "－": (a, b) => a.minus(b),
       "×": {
@@ -864,21 +862,11 @@ class CanvasCode {
       },
       
       //variables
-      "ｘ": () => this.vars.x,
-      "ｙ": () => this.vars.y,
-      "Ｘ": (a) => {this.vars.x = a},
-      "Ｙ": (a) => {this.vars.y = a},
-      "Ｖ": () => {
-        if (this.vars.x === undefined) this.vars.x = new Big(0);
-        this.vars.x = this.vars.x.plus(1);
-      },
-      "ｖ": () => {
-        if (this.vars.x === undefined) this.vars.x = new Big(0);
-        if (isNum(this.vars.x)) push(this.vars.x = this.vars.x.plus(1));
-        else if (isArr(this.vars.x)) this.vars.x.push(pop());
-        else if (isArt(this.vars.x)) this.vars.x.appendVertically(new Canvas(pop()));
-        else this.vars.x+= pop();
-      },
+      "ｘ": () => this.vars['x'],
+      "ｙ": () => this.vars['y'],
+      "Ｘ": (a) => {this.vars['x'] = a},
+      "Ｙ": (a) => {this.vars['y'] = a},
+      
       
       // outputing
       "Ｏ": () => this.outputFS(true, true, false),
@@ -1007,7 +995,6 @@ class CanvasCode {
     this.debug = debug;
     this.step = step;
     
-    if (!module) result.placeholder="Running...";
     var main = this.functions.slice(-1)[0];
     this.ptrs.push(new (
       class extends Pointer {
@@ -1019,13 +1006,9 @@ class CanvasCode {
       if (sleepUpdate && counter%100 == 0) await sleep(0);
       counter++;
       await this.cpo.next();
-      if (!running) break;
     }
     if (this.implicitOut) this.outputFS(true,true,true);
-    if (!module) {
-      result.placeholder=running? "No output was returned" : "No output on premature stop";
-      result.value = this.printableOut;
-    }
+    if (!module) result.value = this.printableOut;
     
     running = false;
     if (stepping) stopStepping();
