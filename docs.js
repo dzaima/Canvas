@@ -18,13 +18,13 @@ $.ajax({
       for (let lid = 0; lid < larr.length; lid++) {
         let line = larr[lid].replace(commentRegex, "");
         if (cmatch = line.match(exampleRegex)) {
-          examples.push({c:cmatch[1], r:cmatch[2]});
+          examples.push({c:cmatch[1], r:cmatch[2].replace(/ ?\/\/(NOTE|NOTTEST)/g, ""), raw: cmatch[2].split("//NOTE")[0].split("→")[1]});
         } else if (cmatch = line.match(/  ([NSAa,¹²³⁴⁵⁶⁷⁸⁹｝］ ]+): (.+)/)) {
           
           let texamples = [];
           let exm;
           while (exm = larr[++lid].match(exampleRegex)) {
-            texamples.push({c:exm[1], r:exm[2]});
+            texamples.push({c:exm[1], r:exm[2].replace(/ ?\/\/(NOTE|NOTTEST)/g, ""), raw: exm[2].split("//NOTE")[0].split("→")[1]});
           }
           lid--;
           
@@ -223,8 +223,8 @@ var cycles = [
   
   "AＡ","BＢ","CＣ","DＤ","EＥ","FＦ","GＧ","HＨ","IＩ","JＪ","KＫ","LＬ","MＭ",
   "NＮ","OＯ","PＰ","QＱ","RＲ","SＳ","TＴ","UＵ","VＶ","WＷ","XＸ","YＹ","ZＺ",
-  "aａ","bｂ","cｃ","dｄ","eｅ","fｆ","gｇ","hｈ","iｉ","jｊ","kｋ","lｌ","mｍ",
-  "nｎ","oｏ","pｐ","qｑ","rｒ√ŗ","sｓ∑","tｔ","uｕ","vｖ","wｗ","xｘ","yｙ","zｚ",
+  "aａα","bｂ","cｃ","dｄ","eｅ","fｆ","gｇ","hｈ","iｉ","jｊ","kｋ","lｌ","mｍ",
+  "nｎ","oｏ","pｐ","qｑ","rｒ√ŗ","sｓ∑","tｔ","uｕ","vｖ","wｗω","xｘ","yｙ","zｚ",
   
   "0０⁰","1１¹","2２²","3３³","4４⁴","5５⁵","6６⁶","7７⁷","8８⁸","9９⁹",
   "!！‼", "@＠", "#＃", "%％", "^＾",

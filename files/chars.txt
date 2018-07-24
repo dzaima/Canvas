@@ -29,7 +29,7 @@
   A: for each prefix
     `１２３）［!＋］`
 ］	close a loop, collecting the results and pushing them after, so `｛...］` would be a `.map` function
-  `hello｛[ŗ]］∑` -> "[h][e][l][l][o]"
+  `hello｛[ŗ]］∑` → "[h][e][l][l][o]"
 ｛	loop
   N: repeat from 1 to that number, pushing the counter
     `３｛a×Ｐ` → "a¶aa¶aaa"
@@ -46,7 +46,7 @@
 ‰	
 ø	push an empty art object
 ＾	power
-    `Ａ３＾` -> 1000
+    `Ａ３＾` → 1000
 ◂	push "0123456789"
 ◂◂ push ["1234567890","qwertyuiop","asdfghjkl","zxcvbnm"]
 ←	
@@ -75,7 +75,7 @@ printable ascii+¶: part of strings
   N: increase by 2
     `７├` → 9
   S: uppercase the first letter of the first word
-    `   hello, world!┤` → "   Hello, world!"
+    `   hello, world!├` → "   Hello, world!"
   A: vectorize
 ┤	double decrement
   N: decrease by 2
@@ -185,7 +185,7 @@ printable ascii+¶: part of strings
     `Ａ６×ｃ` → "<"
   S: convert to unicode codepoint
     `hｃ` → 104
-    `helloｃ` → [104, 101, 108, 108, 111] (note that this only happens if length>1, be careful)
+    `helloｃ` → [104, 101, 108, 108, 111] //NOTE (note that this only happens if length>1, be careful)
   A: convert to 2D array of codepoints
     `ab¶cｃ` → [[97, 98], [99, 0]]
 ｄ	
@@ -260,7 +260,7 @@ printable ascii+¶: part of strings
 ¾	
 √	square root
   N: get the square root
-    `９２√＊Ｕ` → 13
+    `９２√×Ｕ` → 13
 ／	create an antidiagonal
   N: create a antidiagonal of that length
   S: create a antidiagonal of the characters of that string
@@ -280,15 +280,15 @@ printable ascii+¶: part of strings
     `abc∙×` → "a b c"
 ‽	if not / switch
   ｝: if not POP
-    `‽false!｝` - if POP is falsy 
+    `‽false!｝` - if POP is falsy //NOTTEST
   ］: switch over the results before `］`, calling the one to its right. The last case, without a `］`, is the default result
-    `‽N∙n］north｝S∙s］south｝E∙e］east｝west｝` - expands the direction name of the cardinal
+    `‽N∙n］north｝S∙s］south｝E∙e］east｝west｝` - expands the direction name of the cardinal //NOTTEST
 ？	if/switch
   ｝: if
-    `？truthy!｝` pushes "truthy" if the input is truthy
+    `？truthy!｝` pushes "truthy" if the input is truthy //NOTTEST
   ］｝: switch for numbers 0..x. first is default, next is 0 (or anything falsy), next - 1, next - 2, ect.<br>If only 2 blocks are used, this is basically if/else.
-    `？truthy!］falsy.｝` outputs "truthy" if the input is truthy
-    `？not zero nor one］zero］one｝` self explanatory
+    `？truthy!］falsy.｝` outputs "truthy" if the input is truthy //NOTTEST
+    `？not zero nor one］zero］one｝` self explanatory //NOTTEST
 ‾	
 ⇵	reverse vertically
   N: ceiling divide by 2, storing the remainder
@@ -338,10 +338,10 @@ printable ascii+¶: part of strings
   NN: modulo
     `８３％` → 2
 ！	
-α	get the second to last argument used in a simpleFunction
-    `７３÷１％α；－` → 2 (floor division implementation)
-ω	get the last argument used in a simpleFunction
-    `７３÷αω％ω÷－` → 2 (floor division implementation)
+α	get the second to last argument used in a simpleFunction //KEYW history
+    `７３÷１％α；－` → 2 //NOTE (floor division implementation)
+ω	get the last argument used in a simpleFunction //KEYW history
+    `７３÷αω％ω÷－` → 2 //NOTE (floor division implementation)
 
 ─	palindzomize vertically with 1 overlap
 ═	palindzomize vertically with 0 overlap

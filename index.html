@@ -103,6 +103,9 @@
       if (parts[0]=='dev') {
         devChk.click();
       }
+      if (parts[0]=='tests') {
+        setTimeout(tests, 200);
+      }
       if (parts[0]=='search') {
         devChk.click();
         search.value=unescape(parts[1]);
@@ -152,7 +155,7 @@
     }
     
     function loadPermalink(forceOnline) {
-      window.location = permalink(forceOnline? 1 : 0) + ",dev,run";
+      window.location = permalink(forceOnline? 1 : 0) + ",dev";
     }
     
     function step() {
@@ -240,8 +243,7 @@
     }
     // byte count updating & program running
     function runMain() {
-      if (running) return;
-      running = true;
+      if (running) throw "already running!";
       var inputstrs = inputs.value.split("\n");
       var inputsParsed = [];
       var cres = "";
@@ -325,6 +327,50 @@
         if (doneSteps == 2 && args.includes("run")) runMain();
       }
     });
+    
+    
+    
+    
+    
+    
+    
+    async function tests() {
+      for (let c of data) {
+        // console.log("Testing",c.c,[c])
+        let ae = c.examples || [];
+        if (c.types.length) {
+          for (let ct of c.types) ae.push(...ct.e)
+        }
+        for (let e of ae) {
+          if (!e.raw || e.raw.includes("//NOTTEST")) continue;
+          let toEval = "["+e.raw.replace(/¶/g, "\\n")+"]";
+          let expected;
+          try {
+            expected = eval(toEval);
+          } catch (e) {
+            expected = eval(toEval.replace(/\\/g,"\\\\"));
+          }
+          let expStr = (expected.length > 1 || isArr(expected[0]))? null : expected[0]+"";
+          let expNorm = isArr(expected)? bigify(expected) : null;
+          console.log(`testing \`${e.c}\`; expected`, expected);
+          let cc = new CanvasCode(e.c, []);
+          let out = await cc.run(0, false, false);
+          if (expected!==null && out == expStr) {
+            console.log("pass: output")
+          } else if (equal(cc.get(), expNorm)) {
+            console.log("pass: ToS")
+          } else if (equal(cc.stack, expNorm)) {
+            console.log("pass: stack")
+          } else {
+            console.log("got",out);
+            throw up;
+          }
+        }
+      }
+    }
+    
+    
+    
   </script>
 </body>
 </html>

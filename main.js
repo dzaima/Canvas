@@ -159,7 +159,6 @@ class Break {
 }
 
 async function run (program, inputs = []) {
-  running = true;
   if (!module) result.value = "";
   return new CanvasCode(program, bigify(inputs)).run();
 }
@@ -756,7 +755,8 @@ class CanvasCode {
         S: (s) => s.replace(/(^|\W)(\w)/g, (a,b,c)=>b+c.toUpperCase()),
       },
       "├": {
-        N: (n) =>  n.plus(2),
+        N: (n) => n.plus(2),
+        S: (s) => s.replace(/([^\w_]*)(\w)/, (a,b,c)=>b+c.toUpperCase())
       },
       "┤": {
         N: (n) => n.minus(2),
@@ -1003,12 +1003,15 @@ class CanvasCode {
   
   
   async run (debug = 0, step = false, sleepUpdate = true) {
+    
+    if (running) throw "already running!";
+    else running = true;
     this.sleepUpdate = sleepUpdate;
     this.debug = debug;
     this.step = step;
     
     if (!module) result.placeholder="Running...";
-    var main = this.functions.slice(-1)[0];
+    var main = this.functions[this.functions.length-1];
     this.ptrs.push(new (
       class extends Pointer {
         toDebug () { return `@${this.ptr}: main program`; }
