@@ -15,7 +15,7 @@ if (module) {
   eval("var Canvas = AA.Canvas;");
   var debugLog = console.warn;
 }
-var version = 6;
+var version = 5;
 var stringChars;
 {
   let printableAsciiArr=[];
@@ -557,7 +557,7 @@ class CanvasCode {
       },
       "⤢": {
         // TODO: A:
-        a: (a) => a.rotate(1).horizReverse(),
+        a: (a) => a.horizMirror().vertMirror(),
         N: (n) => n.abs(),
       },
       "ｊ": {
