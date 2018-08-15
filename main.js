@@ -523,9 +523,9 @@ class CanvasCode {
         N: (n) => (a=n.divideAndRemainder(2), remainders.push(a[1]), a[0]),
       },
       "ｍ": {
-        SN: (s, n) => s.substring(0, +n),
+        SN: (s, n) => s.repeat(Math.ceil(n/s.length)).substring(0, +n),
         AN: (a, n) => a.slice(0, n),
-        aN: (a, n) => a.subsection(0, 0, +n).toString(),
+        aN: (a, n) => a.subsection(0, 0, +n),
         
         NS: (n, s, ex) => ex("SN", s, n),
         NA: (n, a, ex) => ex("AN", a, n),
@@ -1384,7 +1384,8 @@ function flatten (arr) {
   return arr.map((ca) => isArr(ca)? flatten(ca) : [ca]).reduce((a,b) => a.concat(b))
 }
 function errorLN (e) {
-  return e.stack.split("\n")[1].match(/\d+/g).slice(-2,-1).shift();
+  if (e && e.stack) return e.stack.split("\n")[1].match(/\d+/g).slice(-2,-1).shift();
+  else return "unknown";
 }
 
 if (module) {
