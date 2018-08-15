@@ -844,7 +844,7 @@ class CanvasCode {
         },
         a: (a) => {
           var res = this.blank;
-          a.forEachChar((chr, x, y) => res.set(x-y-1, y, chr));
+          a.forEachChar((chr, x, y) => res.set(x-y-1+a.height, y, chr));
           return res;
         },
         N: (n, ex) => ex("S", "/".repeat(n)),
@@ -1384,8 +1384,11 @@ function flatten (arr) {
   return arr.map((ca) => isArr(ca)? flatten(ca) : [ca]).reduce((a,b) => a.concat(b))
 }
 function errorLN (e) {
-  if (e && e.stack) return e.stack.split("\n")[1].match(/\d+/g).slice(-2,-1).shift();
-  else return "unknown";
+  try {
+    return e.stack.split("\n")[1].match(/\d+/g).slice(-2,-1).shift();
+  } catch (e2) {
+    return "unknown";
+  }
 }
 
 if (module) {
