@@ -93,7 +93,7 @@ function searched (sv) {
     for (let item of data) {
       let score = 0;
       if (term.length == 1) {
-        score = item.c == term? i+1e15 : -Infinity;
+        score = (item.c == term || (item.raw.split("//SUB ")[1]||"").includes(term))? i+1e15 : -Infinity;
         if (!scores[item.c] || scores[item.c] < 0) scores[item.c] = score;
       } else {
         if (!item.raw.toLowerCase().includes(term.toLowerCase())) {

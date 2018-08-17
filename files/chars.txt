@@ -1,5 +1,5 @@
 ⁰	wrap the top same type items on the stack in an array
-¹-⁹	context & input & program dependant variables.<br>from 1 onwards are loop data. The outermost loop has ¹, inner one - ², ect. Every loop might set other values it uses in further ones.<br>Helper functions are in order below `⁹`<br>before the last helpers superscript come the inputs<br>If unset, defaults:
+¹-⁹	context & input & program dependant variables.<br>from 1 onwards are loop data. The outermost loop has ¹, inner one - ², ect. Every loop might set other values it uses in further ones.<br>Helper functions are in order below `⁹`<br>before the last helpers superscript come the inputs<br>If unset, defaults: //KEYW //SUB ⁰¹²³⁴⁵⁶⁷⁸⁹
   ¹: Infinity
   ²: 256
   ³: 13
@@ -247,7 +247,7 @@ printable ascii+¶: part of strings
 ｐ	output in the current line, popping the item
 ｑ	output in the current line
 ｔ	output in the current line, disabling implicit output
-０-９	push that number (０１２３４５６７８９) //KEYW 0 1 2 3 4 5 6 7 8 9
+０-９	push that number (０１２３４５６７８９) //KEYW 0 1 2 3 4 5 6 7 8 9 //SUB ０１２３４５６７８９
 §	
 ‼	normalize
   N: 1 if the number isn't 0, otherwise 0
