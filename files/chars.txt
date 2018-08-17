@@ -269,9 +269,11 @@ printable ascii+¶: part of strings
   N: create a diagonal of that length
   S: create a diagonal of the characters of that string
   a: prepend each line with one more space than the last, the first having 0 spaces
-∑	join together
-  A: join the array together
+∑	join/sum
+  A: join the array together or sum if array only contains numbers
     `（（ab∙cd）（ef∙gh））∑` → "abcdefgh"
+    `４Ｒ∑` → 10
+    `５Ｒ｛Ｒ］∑` → 35
   N, S: join the stack until `（` or end into a string
 ∙	NOP / separator / space
   NOOP if both or no sides are ASCII

@@ -84,22 +84,30 @@ $.ajax({
   }
 });
 
+
 function searched (sv) {
   lastSearch = sv;
   var scores = {};
-  var chararr = [];
-  for (let item of data) {
-    let score = 0;
-    if (!item.raw.toLowerCase().includes(sv.toLowerCase())) {
-      score = -Infinity;
+  var i = 0;
+  for (let term of sv.split("|")) {
+    for (let item of data) {
+      let score = 0;
+      if (term.length == 1) {
+        score = item.c == term? i+1e15 : -Infinity;
+        if (!scores[item.c] || scores[item.c] < 0) scores[item.c] = score;
+      } else {
+        if (!item.raw.toLowerCase().includes(term.toLowerCase())) {
+          score = -Infinity;
+        }
+        if (item.c.includes(term)) score+= 1e14;
+        if (item.desc.includes(term)) score+= 1e13;
+        score-= 1000000*(item.c.length - 1);
+        score-= 10000*item.desc.length;
+        score+= codepage.indexOf(item.c);
+        scores[item.c] = scores[item.c]? Math.max(scores[item.c], score, scores[item.c] + score) : score;
+      }
     }
-    if (item.c.includes(sv)) score+= 1e15;
-    if (item.desc.includes(sv)) score+= 1e14;
-    score-= 1000000*(item.c.length - 1);
-    score-= 10000*item.desc.length;
-    score+= codepage.indexOf(item.c);
-    scores[item.c] = score;
-    chararr.push(item.c);
+    i++;
   }
   var order = [...document.getElementsByClassName("chrinf")].sort((a, b) => {
     if (a.chr === b.chr) {
@@ -108,8 +116,8 @@ function searched (sv) {
     } else {
       let sa = scores[a.chr];
       let sb = scores[b.chr];
-      if (sa > sb) return 1;
-      if (sa < sb) return -1;
+      if (sa > sb) return -1;
+      if (sa < sb) return 1;
     }
     return 0
   });

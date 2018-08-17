@@ -38,7 +38,7 @@ if 5 columns exist, it's a loop(ish thing) starter they correspond to `NSA｝］
 |`┐`  | ✓ |
 |`└`  | ✓ |
 |`┘`  | ✓ |
-|`├`  | ✓ | □ | □ |
+|`├`  | ✓ | ✓ | □ |
 |`┤`  | ✓ | ✓ | ✓ |
 |`┬`  | ✓ |   |   |   |   |   |
 |`┴`  |   |   |   |   | ✓ |   |
@@ -53,7 +53,7 @@ if 5 columns exist, it's a loop(ish thing) starter they correspond to `NSA｝］
 |`↗`  |
 |`↘`  |
 |`↙`  |
-|`×`  | ✓ | ✓ | ✓ | ✓ | □ | ✓ |
+|`×`  | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 |`＊` | □ | ✓ |   | ✓ | ✓ | ✓ | aNN ✓ |
 |`÷`  | ✓ |   |   |   |   |   |
 |`±`  | ✓ | ✓ | ✓ |
@@ -101,7 +101,7 @@ if 5 columns exist, it's a loop(ish thing) starter they correspond to `NSA｝］
 |`ｊ` |   | ✓ | ✓ |
 |`ｋ` |   | ✓ | ✓ |
 |`ｌ` | ✓ | ✓ | ✓ |
-|`ｍ` |   |   |   | ✓ | ✓ |   |
+|`ｍ` | ✓ |   |   | ✓ | ✓ |   |
 |`ｎ` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 |`ｏ` | ✓ |
 |`ｐ` | ✓ |
@@ -111,7 +111,7 @@ if 5 columns exist, it's a loop(ish thing) starter they correspond to `NSA｝］
 |`ｔ` | ✓ |
 |`ｕ` | ✓ | ✓ | ✓ |
 |`ｖ` | ✓ | ✓ | ✓ |
-|`ｗ` |
+|`ｗ` | ✓ |
 |`ｘ` | ✓ |
 |`ｙ` | ✓ |
 |`ｚ` | ✓ |
@@ -119,7 +119,7 @@ if 5 columns exist, it's a loop(ish thing) starter they correspond to `NSA｝］
 |`§`  |
 |`‼`  | ✓ | ✓ | ✓ |
 |`¼`  |
-|`½`  |
+|`½`  | ✓ |   |   |
 |`¾`  |
 |`√`  | ✓ |   |   |
 |`／` | ✓ | ✓ | ✓ |
@@ -132,7 +132,7 @@ if 5 columns exist, it's a loop(ish thing) starter they correspond to `NSA｝］
 |`∔`  | ✓ | ✓ | ✓ |   |   | ✓ |
 |`：` | ✓ |
 |`；` | ✓ |
-|`⟳` | ✓ | ✓ | ✓ |
+|`⟳` | aN ✓ | ✓ | ✓ |
 |`⤢` | ✓ | ✓ | ✓ |
 |`⌐`  | ✓ |
 |`═`  | ✓ |
@@ -143,7 +143,7 @@ if 5 columns exist, it's a loop(ish thing) starter they correspond to `NSA｝］
 |`■`  |
 |`？` | ✓ | ✓ | ✓ | ✓ | ✓ |
 |`↶`  |   | ✓ | ✓ |
-|`↷`  | ✓ | ✓ | ✓ |
+|`↷`  | aN ✓ | ✓ | ✓ |
 |`＠` |   |   |   | ✓ | ✓ |   | aNN ✓ | aNNNN ✓ |
 |`＃` | ✓ |
 |`％` | ✓ |   |   |   |   |   |

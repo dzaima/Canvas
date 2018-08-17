@@ -280,8 +280,10 @@
       var startPos = program.selectionStart;
       var endPos = program.selectionEnd;
       var co = bytecount +" byte"+ (bytecount==1? "" : "s");
-      if (endPos != startPos)
+      if (endPos != startPos) {
         co+= " ("+ (endPos-startPos) +" byte"+ (endPos-startPos==1? "" : "s") +" selected)"
+        if (document.activeElement == program) search.value = [...program.value.substring(startPos,endPos)].filter(c=>c.charCodeAt()>127).join("|")
+      }
       document.getElementById("bytecount").innerHTML = co;
       if (search.value != lastSearch && typeof searched !== 'undefined') searched(search.value);
       //console.log(startPos+" "+endPos);
