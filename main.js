@@ -524,7 +524,7 @@ class CanvasCode {
       },
       "ｍ": {
         SN: (s, n) => s.repeat(Math.ceil(n/s.length)).substring(0, +n),
-        AN: (a, n) => a.slice(0, n),
+        AN: (a, n) => new Array(+n).fill().map((_,i) => a[i%a.length]),
         aN: (a, n) => a.subsection(0, 0, +n),
         
         NS: (n, s, ex) => ex("SN", s, n),
