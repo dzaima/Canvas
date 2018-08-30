@@ -202,8 +202,7 @@ class Canvas {
   }
   
   
-  overlap (canvas, ox, oy, method) {
-    if (method == undefined) method = simpleOverlap;
+  overlap (canvas, ox, oy, method = simpleOverlap) {
     if (typeof ox !== "number") ox = Number.parseInt(ox);
     if (typeof oy !== "number") oy = Number.parseInt(oy);
     canvas.forEach((chr, x, y) => {//console.log(chr,x,y,ox,oy);
@@ -214,8 +213,8 @@ class Canvas {
   
   trimmedLine (y) {
     var res = this.repr[y-this.sy];
-    while (res.length > 0 && res[0] === undefined) res.unshift();
-    while (res.length > 0 && res[res.length-1] === undefined) res.pop();
+    while (res.length > 0 && (res[0] === undefined || res[0] === null)) res.shift();
+    while (res.length > 0 && (res[res.length-1] === undefined || res[res.length-1] === null)) res.pop();
     return res;
   }
   
