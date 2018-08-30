@@ -28,7 +28,7 @@
     `abc［Ｐ` → "a¶ab¶abc"
   A: for each prefix
     `１２３）［!＋］`
-］	close a loop, collecting the results and pushing them after, so `｛...］` would be a `.map` function
+］	close a loop as map
   `hello｛[ŗ]］∑` → "[h][e][l][l][o]"
 ｛	loop
   N: repeat from 1 to that number, pushing the counter
@@ -160,7 +160,7 @@ printable ascii+¶: part of strings
 Ｍ	maximum
   NN: maximum
 Ｎ	
-Ｒ	range
+Ｒ	range / set default background
   N: range from 1 to N, inclusive
   S: set the default background to the string
 Ｓ	split on spaces
@@ -210,7 +210,7 @@ printable ascii+¶: part of strings
     `１２３４５６）４ｎ` → [[1,2,3,4],[5,6]]
   NN: push the result of floor division and then modulo
   aa: overlap the two
-ｒ	lowered range
+ｒ	lowered range / set background / center
   N: range from 0 to N-1, inclusive
   aS: set the arts background character to that
   a: center the art, preferring to go left
