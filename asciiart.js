@@ -342,6 +342,8 @@ var smartOverlapBehind = (a, b) => smartOverlapDef(a, b, a);
 var smartOverlapDef = function (a, b, def) {
   if (a===null || a===undefined || a===" ") return b;
   if (b===null || b===undefined || b===" ") return a;
+  if (a==='_' && b!==' ') return b;
+  if (b==='_' && a!==' ') return a;
   switch (a+b) {
     case "/\\": return "X";
     case "\\/": return "X";
