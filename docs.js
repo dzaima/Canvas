@@ -236,19 +236,92 @@ var cycles = [
   
   "0０⁰","1１¹","2２²","3３³","4４⁴","5５⁵","6６⁶","7７⁷","8８⁸","9９⁹",
   "!！‼", "@＠", "#＃", "%％", "^＾",
-  "+＋∔", "-－∔", "*×＊", "/／÷", "\\＼", "|｜",
-  ":：", ";；", "?？‽",
+  "+＋╋∔", "-－─∔", "*×＊", "/／÷", "\\＼", "|｜│║",
+  ":：", ";；", "?？‽", "\"”‟", "'“„",
   "(（", ")）", "[［", "]］", "{｛", "}｝", "<＜≤«", ">＞≥»",
+  "=≡≠═",
   " ∙", "\n¶"
 ]
+
+var transforms = [];
+for (let [k, v] of Object.entries({
+  "||-": "╫",
+  "--|": "╪",
+  "=|": "╪",
+  "|": "│",
+  "||": "║",
+  "-": "─",
+  "--": "═",
+  "-|": "┼",
+  "--||": "╬",
+  "=||": "╬",
+  "<>": "↔",
+  "+-": "±", // also horizontal reverse
+  "^v": "↕",
+  "rev": "⇵",
+  "cw": "↷",
+  "ccw": "↶",
+  "rot": "⟳",
+  "o/":  "ø",  // empty art obj
+  "o\\": "ø",
+  "new": "ø",
+  "pop": "┐", // pop & remove item
+  "tri": "⌐", // triplicate
+  "//": "⤢",
+  "+2":  "├",
+  "inc": "╵",
+  "+1":  "╵",
+  "-1":  "╷",
+  "dec": "╷",
+  "-2":  "┤",
+  "to":  "┬",  // to base (2 nums -> arr)
+  "from": "┴", // from base (arr & base -> num)
+  "dig": "◂",
+  "=/": "≠",
+  "!!": "‼",
+  "12": "½",
+  "1/2": "½",
+  "/2": "½",
+  "rt": "√",
+  "": "",
+  "": "",
+  "": "",
+  "": "",
+})) {
+  transforms.push([[...k].sort().join(''), v]);
+}
+
+transforms.sort((a,b)=>{
+  let p1 = b[0].length-a[0].length;
+  if (p1) return p1;
+  return (b[0]>a[0]) - (b[0]<a[0])
+});
+let tkey = localStorage.kpr? eval(localStorage.kpr) : c => c.key == "F1" || c.key == "F2";
+
 program.onkeydown = function (e) {
-  if (e.key === "Tab" && program.selectionStart == program.selectionEnd) {
-    e.preventDefault();
-    var ptr = program.selectionStart;
-    var schr = program.value[ptr-1];
-    var cycle = cycles.find(c=>c.includes(schr));
-    var chr = cycle[(cycle.indexOf(schr) + 1) % cycle.length];
-    program.value = program.value.substring(0,ptr-1)+chr+program.value.substring(ptr);
-    program.selectionStart = program.selectionEnd = ptr;
+  // console.log(e);
+  if (program.selectionStart == program.selectionEnd) {
+    if (e.key === "Tab") {
+      e.preventDefault();
+      var ptr = program.selectionStart;
+      var schr = program.value[ptr-1];
+      var cycle = cycles.find(c=>c.includes(schr));
+      if (!cycle) return;
+      var chr = cycle[(cycle.indexOf(schr) + 1) % cycle.length];
+      program.value = program.value.substring(0,ptr-1)+chr+program.value.substring(ptr);
+      program.selectionStart = program.selectionEnd = ptr;
+    } else if (tkey(e)) {
+      let ptr = program.selectionStart;
+      const PV = program.value;
+      for (let [k, v] of transforms) {
+        //console.log([...PV.slice(ptr-k.length, ptr)].sort().join(''), k);
+        if ([...PV.slice(ptr-k.length, ptr)].sort().join('') == k) {
+          program.value = PV.slice(0, ptr-k.length)+v+PV.slice(ptr, PV.length);
+          program.selectionStart = program.selectionEnd = ptr-k.length + v.length;
+          break;
+        }
+      }
+      e.preventDefault();
+    }
   }
 }

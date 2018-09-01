@@ -190,8 +190,8 @@ printable ascii+¶: part of strings
     `ab¶cｃ` → [[97, 98], [99, 0]]
 ｄ	
 ｅ	encase in a letter
-`hello∙'ｅ` → "'hello'"
   SS: encase the 1st string in the 2nd
+    `hello∙'ｅ` → "'hello'"
 ｆ	
 ｇ	
 ｈ	
@@ -248,7 +248,6 @@ printable ascii+¶: part of strings
 ｑ	output in the current line
 ｔ	output in the current line, disabling implicit output
 ０-９	push that number (０１２３４５６７８９) //KEYW 0 1 2 3 4 5 6 7 8 9 //SUB ０１２３４５６７８９
-§	
 ‼	normalize
   N: 1 if the number isn't 0, otherwise 0
   S: 0 if the string is empty, otherwise 1
@@ -291,7 +290,7 @@ printable ascii+¶: part of strings
   ］｝: switch for numbers 0..x. first is default, next is 0 (or anything falsy), next - 1, next - 2, ect.<br>If only 2 blocks are used, this is basically if/else.
     `？truthy!］falsy.｝` outputs "truthy" if the input is truthy //NOTTEST
     `？not zero nor one］zero］one｝` self explanatory //NOTTEST
-‾	
+‾	1-char number constant
 ⇵	reverse vertically
   N: ceiling divide by 2, storing the remainder
     `７⇵` → 4
@@ -320,10 +319,10 @@ printable ascii+¶: part of strings
   AA: add the two arrays together
   aa: add the two vertically
 ŗ	replace in a string with pop
-“	
-”	
-■	
-
+“	string starter
+”	string ender
+„	compressed number
+‟	compressed string ender
 ↶	rotate anticlockwise
   a: rotate counter clockwise, rotating characters that make sense to be rotated
 ↷	rotate clockwise
@@ -345,14 +344,14 @@ printable ascii+¶: part of strings
 ω	get the last argument used in a simpleFunction //KEYW history
     `７３÷αω％ω÷－` → 2 //NOTE (floor division implementation)
 
-─	palindzomize vertically with 1 overlap
-═	palindzomize vertically with 0 overlap
-│	palindzomize horizontally with 1 overlap
-║	palindzomize horizontally with 0 overlap
-┼	quad-palindzomize with 1 overlap
-╬	quad-palindzomize with 0 overlap
-╫	quad-palindzomize with 1 overlap vertically and 0 horizontally
-╪	quad-palindzomize with 0 overlap vertically and 1 horizontally
+─	palindromize vertically with 1 overlap
+═	palindromize vertically with 0 overlap
+│	palindromize horizontally with 1 overlap
+║	palindromize horizontally with 0 overlap
+┼	quad-palindromize with 1 overlap
+╬	quad-palindromize with 0 overlap
+╫	quad-palindromize with 1 overlap vertically and 0 horizontally
+╪	quad-palindromize with 0 overlap vertically and 1 horizontally
 two of the same palindromizators next to each other disable character mirroring
 if after a double-line there's a character with that as a single line, it's replaced by a remainder.
 So ╫│ is vertical palindromization with overlap 1 and horizontal with overlap of the remainder

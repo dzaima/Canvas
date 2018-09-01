@@ -55,6 +55,18 @@
     </div>
     <textarea id="result" placeholder="Output will be here" spellcheck="false" style="width:100%; background-color: #333333; height:390px" readonly></textarea>
   </div>
+  <div id="overlay">
+    <div id="overlayMenu">
+      <center>
+        <span id="menuTitle" style="font-size:1.4em"></span>
+        <br>
+        <input id="saveName" style="position: relative; top:5%" placeholder="enter name" onclick="setTimeout(updateSaveList, 0);" oninput="setTimeout(updateSaveList, 0);"/>
+        <br><br>
+        <div id="saveList">
+        </div>
+      </center>
+    </div>
+  </div>
   <div id="buttonPanel">
     <div style="width:120px" class="left">
       <button id="runBtn"   onclick="runMain()"    style="width:100%">run (ctrl+enter) </button>
@@ -77,6 +89,7 @@
   <input id="fakeFileInp" type="file" style="display:none" />
   <a id="fakeLink" style="display:none" />
   <script>
+  program.focus();
     var latestVersion = 6;
     var module = 0; // node is annoying & this can't be a more meaningful variable name
     var usedVersion = latestVersion;
@@ -103,6 +116,9 @@
       if (parts[0]=='dev') {
         devChk.click();
       }
+      if (parts[0]=='d') {
+        debug = +parts[1];
+      }
       if (parts[0]=='tests') {
         setTimeout(tests, 200);
       }
@@ -119,12 +135,19 @@
       window.location = permalink(2)+(devMode? ",dev" : "");
     }
     
+    if (!localStorage.saves) {
+      localStorage.saves = JSON.stringify([
+        ["string compress", "enter parts in the input field as separate lines, with ¶ as newlines and ŗ as popping from stack\nThis doesn't count the starting quote in the bytecount\nI.split`\\n`＃：clip(compressString(p.p))＃ＱＬ╷；∑Ｌŗ -> ŗ bytes∙p.F＃", "", 1],
+        ["number compress", "clip(compressNum(p.p))＃p.F＃", "", 1]
+      ])
+    }
+    
     function devUpdate() {
       
       devMode^= true;
       if (devMode) {
         if (!devLoaded) {
-          $.getScript("docs.js");
+          $.getScript("docs.js").fail((_,_2,c)=>console.error("docs.js failed to load:", c));
           devLoaded = true;
         }
         progdiv.appendChild(inputs);
@@ -275,6 +298,8 @@
       setTimeout (update, 0);
       setTimeout (update, 10);
     }
+    var menu = 0;
+    var inputFocused;
     function update() {
       var bytecount = program.value.length;
       var startPos = program.selectionStart;
@@ -288,14 +313,95 @@
       if (search.value != lastSearch && typeof searched !== 'undefined') searched(search.value);
       //console.log(startPos+" "+endPos);
     }
-    document.addEventListener ("keydown", e=> {
+    function updateSaveList() {
+      let saves = JSON.parse(localStorage.saves);
+      let searched = saveName.value;
+      let validSaves = saves.map(c=>c[0]).filter(c=>c.includes(searched));
+      saveList.innerHTML = validSaves.map(c=>`<a href=# onclick="saveClicked('${c}')">${c}</a>`).join('<hr>');
+      return validSaves;
+    }
+    function saveClicked(name) {
+      if (menu === 1) saveSave(name);
+      else loadSave(name);
+    }
+    function loadSave(name) {
+      let sa = JSON.parse(localStorage.saves);
+      let save = sa.find(c=>c[0] === name);
+      if (save) {
+        overlay.style.display = "none";
+        program.focus();
+        program.value = save[1];
+        inputs.value = save[2];
+        if (save[3]) inputs.focus();
+        else program.focus();
+      } else {
+        console.warn("No save named "+name+" found");
+      }
+      menu = 0;
+      overlay.style.display = "none";
+    }
+    function saveSave(name) {
+      overlay.style.display = "none";
+      program.focus();
+      let sa = JSON.parse(localStorage.saves);
+      sa = sa.filter(c=>c[0] !== name);
+      sa.push([name, program.value, inputs.value, inputFocused]);
+      localStorage.saves = JSON.stringify(sa);
+    }
+    document.addEventListener ("keydown", e => {
       if (e.ctrlKey && e.code === "KeyB") {
         bpS = document.getElementById("program").selectionStart;
         bpE = document.getElementById("program").selectionEnd;
+        e.preventDefault();
       }
-      //console.log(e.code);
-      if (e.ctrlKey && e.code === "Enter") {
+      if (menu) {
+        if (e.key === "Escape") {
+          e.preventDefault();
+          menu = 0;
+          overlay.style.display = "none";
+          (inputFocused? inputs : program).focus();
+        } else if (e.key === "Enter") {
+          e.preventDefault();
+          if (menu === 1) {
+            saveSave(saveName.value);
+          } else {
+            loadSave(updateSaveList()[0]);
+          }
+          menu = 0;
+        }
+      } else if (e.key === 'r' && e.ctrlKey) {
+        e.preventDefault();
+        loadPermalink();
+      } else if (e.key === 'i' && e.ctrlKey) {
+        e.preventDefault();
+        inputs.focus();
+      } else if (e.key === 'p' && e.ctrlKey) {
+        e.preventDefault();
+        program.focus();
+      } else if (e.key === 'g' && e.ctrlKey) {
+        e.preventDefault();
+        search.focus();
+      } else if (e.ctrlKey && e.code === "Enter") {
+        e.preventDefault();
         runMain();
+      } else if (e.key === 's' && e.ctrlKey) {
+        e.preventDefault();
+        inputFocused = +(document.activeElement == inputs);
+        overlay.style.display = "block";
+        prevFocused = 
+        saveName.focus();
+        menuTitle.innerText = "Save";
+        menu = 1;
+        updateSaveList();
+      } else if (e.key === 'o' && e.ctrlKey) {
+        e.preventDefault();
+        inputFocused = +(document.activeElement == inputs);
+        overlay.style.display = "block";
+        saveName.value = "";
+        saveName.focus();
+        menuTitle.innerText = "Open";
+        menu = 2;
+        updateSaveList();
       }
     });
     document.onkeydown = updater;
@@ -317,7 +423,8 @@
         console.log("main.js loaded!");
         doneSteps++;
         if (doneSteps == 2 && args.includes("run")) runMain();
-      }
+      },
+      error: (e)=>console.error(e),
     });
     var asciiArtName = usedVersion<2? "old/asciiartB2.js" : usedVersion<3? "old/asciiartB3.js" : "asciiart.js"
     $.ajax({
@@ -327,23 +434,36 @@
         console.log("Canvas loaded!");
         doneSteps++;
         if (doneSteps == 2 && args.includes("run")) runMain();
-      }
+      },
+      error: (e)=>console.error(e),
     });
     
     
+    
+    function clip(str) {
+      var ta=document.createElement("textarea");
+      document.body.appendChild(ta);
+      ta.value = str;
+      ta.focus();
+      ta.select();
+      document.execCommand('copy');
+      ta.remove()
+      return str;
+    }
     
     
     
     
     
     async function tests() {
+      let pass = true;
       for (let c of data) {
         // console.log("Testing",c.c,[c])
         let ae = c.examples || [];
         if (c.types.length) {
           for (let ct of c.types) ae.push(...ct.e)
         }
-        for (let e of ae) {
+        for (let e of ae) { // test examples
           if (!e.raw || e.raw.includes("//NOTTEST")) continue;
           let toEval = "["+e.raw.replace(/¶/g, "\\n")+"]";
           let expected;
@@ -364,10 +484,24 @@
           } else if (equal(cc.stack, expNorm)) {
             console.log("pass: stack")
           } else {
-            console.log("got",out);
-            throw up;
+            pass = false;
+            console.error("got",out);
           }
         }
+      }
+      for (i in new Array(300).fill()) { // test numbers
+        let r = compressNum(i);
+        let res = await run(r,[]);
+        console.log("testing", i, r);
+        if (res != i) {
+          pass = false;
+          console.error(i+" failed as "+r);
+        }
+      }
+      if (pass) {
+        console.log("Passed all tests!");
+      } else {
+        console.warn("All tests not passed…");
       }
     }
     

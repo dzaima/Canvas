@@ -1,5 +1,42 @@
-var codepage = "⁰¹²³⁴⁵⁶⁷⁸⁹¶\n＋－（）［］｛｝＜＞‰ø＾◂←↑→↓↔↕ !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~┌┐└┘├┤┬┴╴╵╶╷╋↖↗↘↙×÷±«»≤≥≡≠ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ０１２３４５６７８９§‼¼½¾√／＼∑∙‽‾⇵∔：；⟳⤢⌐ŗ“”■？＊↶↷＠＃％！─│┼═║╫╪╬αω";
+var codepage = "⁰¹²³⁴⁵⁶⁷⁸⁹¶\n＋－（）［］｛｝＜＞‰ø＾◂←↑→↓↔↕ !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~┌┐└┘├┤┬┴╴╵╶╷╋↖↗↘↙×÷±«»≤≥≡≠ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ０１２３４５６７８９‟‼¼½¾√／＼∑∙‽‾⇵∔：；⟳⤢⌐ŗ“”„？＊↶↷＠＃％！─│┼═║╫╪╬αω";
+var baseChars = [...codepage].filter(c=>!"„“”‟\n".includes(c));
+var baseChar = c=>[].indexOf.bind(baseChars)(c);
+let compressionChars = "ZQJKVBPYGFWMUCLDRHSNIATEXOzqjkvbpygfwmucldrhsniatexo~!$%&=?@^()<>[]{};:9876543210#*\"'`.,+\\/_|-\nŗ ";
+let compressionModes = 5;
+let boxChars=" -_/\\|¶\n";
 
+
+var shortNumbers = {};
+var simpleNumbers;
+var compressedNumberStart;
+{
+  simpleNumbers = {
+    '０': 0,
+    '１': 1,
+    '２': 2,
+    '３': 3,
+    '４': 4,
+    '５': 5,
+    '６': 6,
+    '７': 7,
+    '８': 8,
+    '９': 9,
+    'Ａ': 10,
+    '６«':12,
+    '７«':14,
+    '８«':16,
+    '９«':18,
+    'Ａ«':20,
+  };
+  let cnum = 0;
+  let skippable = Object.entries(simpleNumbers).map(c=>c[1]);
+  baseChars.forEach(chr=>{
+    cnum++;
+    while(skippable.includes(cnum)) cnum++;
+    shortNumbers["‾"+chr] = cnum;
+  });
+  compressedNumberStart = cnum+1;
+}
 if (module) {
   var Big = require('./bigDecimal');
   var debug = false;
@@ -23,6 +60,7 @@ var stringChars;
   let printableAscii = printableAsciiArr.join("");
   stringChars = printableAscii + "¶ŗ";
 }
+
 
 async function redrawDebug(selStart, selEnd, state) {
   if (!stepping) return;
@@ -124,6 +162,83 @@ class Pointer {
     let instr = this.program.slice(index, eindex);
     if (instr.length > 0 && [...instr].every(c=>stringChars.includes(c))) {
       this.p.push(this.p.prepareStr(instr.replace(/¶/g,"\n")));
+    } else if (instr[0] === '“') {
+      let str = instr.slice(1, -1);
+      switch (instr[instr.length-1]) {
+        case "”":
+          this.p.push(str);
+        break;
+        case "„": {
+          let num = [...str].map(baseChar);
+          if (debug && num.some(c => c===-1)) console.log(str+" contained non-compression chars "+num.map((c,i)=>[c,i]).filter(c=>c[0]==-1).map(c=>str[c[1]]));
+          this.p.push(fromBijective(num, baseChars.length).plus(compressedNumberStart));
+        } break;
+        case "‟": {
+          let num = [...str].map(baseChar);
+          if (debug && num.some(c => c==-1)) console.log(str+" contained non-compression chars");
+          num = fromBijective(num, baseChars.length);
+          let mode;
+          let string = "";
+          let popped = []; // yes, for debugging only
+          function pop(base) {
+            let arr = num.divideAndRemainder(base);
+            popped.push(arr[1]+"/"+base);
+            num = arr[0];
+            return arr[1].intValue();
+          }
+          function popChar(chars) {
+            return chars[pop(chars.length)];
+          }
+          while (num.gt(Big.ZERO)) {
+            let mode = pop(compressionModes);
+            popped = [];
+            switch (mode) {
+              case 0: // char
+                for (let len = pop(2) + 1; len > 0; len--) {
+                  string+= popChar(compressionChars);
+                }
+              break;
+              case 1:
+                for (let len = pop(16) + 3; len > 0; len--) {
+                  string+= popChar(compressionChars);
+                }
+              break;
+              case 2: {
+                let pos = -1;
+                let chars = "";
+                while (pos < compressionChars.length) {
+                  if (pos>=0) chars += compressionChars[pos];
+                  pos = pos + 1 + pop(compressionChars.length - pos - (pos==-1));
+                }
+                let lbit = pop(2);
+                let len = chars.length + 1;
+                if (lbit) len+= pop(128)+16;
+                else len+= pop(16);
+                if (debug > 2) console.log("dict: " + chars + " len: " + len);
+                for (; len > 0; len--) {
+                  string+= popChar(chars);
+                }
+              } break;
+              case 3: {
+                let chars = "";
+                for (let c of boxChars) if (pop(2)) chars+= c;
+                let lbit = pop(2);
+                let len = chars.length + 1;
+                if (lbit) len+= pop(128)+16;
+                else len+= pop(16);
+                if (debug > 2) console.log("dict: " + chars + " len: " + len);
+                for (; len > 0; len--) {
+                  string+= popChar(chars);
+                }
+              } break;
+            }
+            if (debug>1) console.log(mode + "  " + popped.join(" "));
+          }
+          this.p.push(this.p.prepareStr(string));
+        } break;
+      }
+    } else if (instr[0] == "‾") {
+      this.p.push(shortNumbers[instr]);
     } else {
       let func = this.p.builtins[instr];
       if (func === undefined) {
@@ -162,7 +277,7 @@ async function run (program, inputs = []) {
   if (!module) result.value = "";
   return new CanvasCode(program, bigify(inputs)).run();
 }
-class CanvasCode {
+CanvasCode = class {
   constructor (wholeProgram, inputs) {
     // ALL of the state of the program
     this.implicitOut = true;
@@ -379,6 +494,14 @@ class CanvasCode {
       },
       "（": () => push(new Break(0)),
       "＃": () => {
+        let I = $('#inputs')[0].value;
+        let P = $('#program')[0].value;
+        let E = eval;
+        let p=new (class{
+          get p() { return pop(); }
+          get f() { program.focus(); }
+          get F() { $('#inputs')[0].focus(); }
+        });
         let res = eval(this.pop());
         if (res != undefined) this.push(res);
       },
@@ -980,9 +1103,12 @@ class CanvasCode {
       }.bind(this)
     }
     
-    // programs, prepended with `｛`s if needed
+    // fix quotes & prepended with `｛`s if needed
     this.functions = wholeProgram.split("\n").map((pr) => {
       var ctr = 0;
+      pr = pr
+        .replace(/([”‟„]|^)([^“”‟„\n]*)(?=[”‟„])/g, "$1“$2")
+        .replace(/“[^“”‟„\n]*$/, "$&”");
       while (this.endPt(-1, true, false, pr) !== undefined && (!debug || (ctr++) <= 100)) pr = "｛"+pr;
       if (ctr>=100 && debug) console.error("couldn't fix braces after 100 iterations!");
       return pr;
@@ -1122,6 +1248,11 @@ class CanvasCode {
     if (stringChars.includes(program[index])) {
       while (stringChars.includes(program[index+1])) index++;
       return index+1;
+    }
+    if (program[index] == "‾") return index+2;
+    if (program[index] == '“') {
+      while (index < program.length && !'“„”‟'.includes(program[index+1])) index++;
+      return index+2;
     }
     let multibyte = Object.keys(this.builtins).filter(c => c.length>1).find(key => 
       [...key].every((char,i)=>
@@ -1390,6 +1521,142 @@ function errorLN (e) {
     return "unknown";
   }
 }
+
+function toBijective (n, b) {
+  var res = [];
+  while(n.gt(b)) {
+    n = n.minus(1);
+    let [div, mod] = n.divideAndRemainder(b);
+    n = div;
+    res.push(mod);
+  }
+  if (n>0) res.push(n.minus(1));
+  return res;
+}
+function fromBijective (n, b) {
+  // return n.reverse().reduce((acc,n) => acc*b + n + 1n, 0n)// + b**BigInt(n.length-1);
+  var res = Big.ZERO;
+  for (let i = n.length-1; i>=0; i--) {
+    res = res.mul(b);
+    res = res.plus(Big.ONE.plus(n[i]));
+  }
+  return res;
+}
+
+function compressNum(n) {
+  if (n < compressedNumberStart) {
+    let c = Object.entries(simpleNumbers).find(c=>c[1]==n);
+    if (c) return c[0];
+    c = Object.entries(shortNumbers).find(c=>c[1]==n);
+    if (c) return c[0];
+    console.warn("< compressed start but not anywhere",n);
+  } else return `“${toBijective(new Big(n-compressedNumberStart), baseChars.length).map(c=>baseChars[c]).join('')}„`;
+}
+
+function compressString(arr) {
+  class Part {
+    constructor (type) {
+      this.type = type;
+      this.arr = [];
+      this.score = Big.ONE;
+    }
+    add(n, b) {
+      this.score = this.score.mul(b).add(n);
+      this.S=+this.score;
+      this.arr.push([n, b]);
+    }
+    all(a) {
+      this.arr = this.arr.concat(a.arr);
+    }
+  }
+  let stack = [new Part()];
+  function push(n, b) {
+    if (debug>2) console.log(n, b);
+    stack[stack.length-1].add(n, b);
+  }
+  for (let part of arr) {
+    if (!part) continue;
+    part = part.replace(/¶/g, "\n");
+    if (part.length < 3) {
+      push(0, compressionModes);
+      push(part.length-1, 2);
+      for (let c of part) push(compressionChars.indexOf(c), compressionChars.length);
+    } else {
+      attempts = [];
+      if (part.length <= 18) {
+        stack.push(new Part("chars"));
+        push(1, compressionModes);
+        push(part.length-3, 16);
+        for (let c of part) push(compressionChars.indexOf(c), compressionChars.length);
+        attempts.push(stack.pop());
+      }
+      let unique = [...part].filter((c,i,a) => a.indexOf(c) == i);
+      if (unique.length < part.length && unique.every(c=>boxChars.includes(c))) {
+        let valid = 1;
+        stack.push(new Part("boxdict"));
+        push(3, compressionModes);
+        for (let c of boxChars)
+          push(+(unique.includes(c)), 2);
+        
+        let chars = [...boxChars].filter(c=>unique.includes(c));
+        
+        let slen = part.length-unique.length-1;
+        if (slen < 16) {
+          push(0, 2);
+          push(slen, 16);
+        } else {
+          push(1, 2);
+          if (slen - 16 >= 128) valid = 0;
+          push(slen - 16, 128);
+        }
+        for (let c of part) push(chars.indexOf(c), chars.length);
+        if (valid) attempts.push(stack.pop());
+        
+      }
+      if (unique.length < part.length) { // at least 1 thing is repeating
+        let valid = 1;
+        let indexes = unique.map(c=>compressionChars.indexOf(c)).sort((a,b)=>a-b);
+        let map = indexes.map(c=>compressionChars[c]);
+        stack.push(new Part("dict"));
+        push(2, compressionModes);
+        let curr = -1;
+        for (let c of indexes) {
+          push(c-curr-1, compressionChars.length - curr - (curr==-1));
+          curr = c;
+        }
+        // 1 12345
+        // 2 2345¶
+        // 4 345¶
+        
+        // 5 5¶
+        // ¶ ¶
+        
+        // ¶ 5¶
+        let end = compressionChars.length - curr;
+        push(end-1, end);
+        let slen = part.length-unique.length-1;
+        if (slen < 16) {
+          push(0, 2);
+          push(slen, 16);
+        } else {
+          push(1, 2);
+          if (slen - 16 >= 128) valid = 0;
+          push(slen - 16, 128);
+        }
+        for (let c of part) push(map.indexOf(c), map.length);
+        if (valid) attempts.push(stack.pop());
+      }
+      let sorted = attempts.sort((a,b)=>a.S-b.S);
+      stack[0].all(sorted[0]);
+      if (debug) console.log("possible for part:", sorted);
+    }
+  }
+  let res = Big.ZERO;
+  let ns = stack.pop().arr;
+  for (let i = ns.length-1; i>= 0; i--) res = res.mul(ns[i][1]).add(ns[i][0]);
+  return '“' + toBijective(res, baseChars.length).map(c=>baseChars[c]).join('') + '‟';
+}
+
 
 if (module) {
   module.exports = {
