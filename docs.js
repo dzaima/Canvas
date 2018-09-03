@@ -270,6 +270,7 @@ for (let [k, v] of Object.entries({
   "dup": "┌", // duplicate 2nd from top
   "g2": "┌", // duplicate 2nd from top
   "3rd": "┘", // duplicate 2nd from top
+  "swap": "└",
   "//": "⤢",
   "abs": "⤢",
   "+2":  "├",
