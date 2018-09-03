@@ -45,10 +45,13 @@
     `２７＞` → 0
 ‰	
 ø	push an empty art object
+  `ø３｛１hi╋` → "hhhi"
 ＾	power
     `Ａ３＾` → 1000
 ◂	push "0123456789"
-◂◂ push ["1234567890","qwertyuiop","asdfghjkl","zxcvbnm"]
+  `◂` → "0123456789" //TEST
+◂◂	push ["1234567890","qwertyuiop","asdfghjkl","zxcvbnm"]
+  `◂◂` → ["1234567890","qwertyuiop","asdfghjkl","zxcvbnm"] //TEST
 ←	
 ↑	
 →	
@@ -59,18 +62,23 @@
 ↙	
 ↔	mirror horizontally
   S, A: mirror horizontally - reverse & swap chars as required
+    `\_/-↔` → "-\_/"
 ↕	mirror vertically
   S, a: mirror vertically - reverse vertically & swap chars as required
+    `_/¶ v↕` → "_^¶ \"
   N: floor divide by 2 + 1
-
-
-printable ascii+¶: part of strings
-
+    `５↕` → 3
+    `６↕` → 4
+    
 
 ┌	duplicate the item 2nd from top
+  `１２３┌）` → [1,2,3,2]
 ┐	pop & remove an item
+  `１２３┐）` → [1,2]
 └	swap the two items below ToS
-┘	put the 3nd item from top ontop
+  `１２３└）` → [2,1,3]
+┘	put the 3rd item from top ontop // KEYW get 
+  `１２３┘）` → [2,3,1]
 ├	double increment / uppercase first letter
   N: increase by 2
     `７├` → 9
@@ -84,17 +92,21 @@ printable ascii+¶: part of strings
   A: put all the elements on the stack
 ┬	decode from base 10
   NN: convert x from base 10 to an array of digits of it in base y
+    `Ａ２┬` → [1,0,1,0]
 ┴	encode into base 10
   AN: convert the array, interpreted as base y, to a base 10 number
+  `１０１０）２┴` → 10
 ╴	previous input
 ╵	increment / sentence case
   N: increase by 1
+    `７╷` → 8 //TEST
   S: uppercase every letter after any of ".?!" and in the beginning
     `  hello, world! goodbye, world!╵` → "  Hello, world! Goodbye, world!"
   A: vectorize
 ╶	next input
 ╷	decrement / title case
   N: decrease by 1
+    `７╷` → 6 //TEST
   S: uppercase the first letter of every word
     `hello, world!╷` → "Hello, World!"
   A: vectorize
@@ -123,22 +135,28 @@ printable ascii+¶: part of strings
     `2xy∙^＊` → "2^x^y"
 ÷	divide
   NN: divide the numbers
-    `３∙４÷`
+    `３４÷`
 ±	horizontal reverse / negate
   N: negate
+    `４±` → -4
   a: reverse horizontally
     `\abc/±` → "/cba\"
     `abc∙(def)）±` → ["  cba", ")fed("]
 «	shift left
   N: shift left by 1 bit / multiply by 2
+    `６«` → 12
   S: put the first char at the end
+    `hello«` → "elloh"
   A: put the first item at the end
+    `１２３）«` → [2,3,1]
 »	shift right
   N: shift right by 1 bit / floor divide by 2, storing the remainder
-    `7»` → 3
+    `７»` → 3
+    `８»` → 4
   S: put the last char at the beginning
     `hello»` → "ohell"
   A: put the last item at the beginning
+    `１２３）«` → [2,3,1]
 ≤	
 ≥	
 ≡	equal
@@ -147,37 +165,56 @@ printable ascii+¶: part of strings
 Ｂ	
 Ｃ	push the ASCII characters (' '..'~')
 Ｄ	deduplicate
+  `１３２３４１）Ｄ` → [1,3,2,4]
 Ｅ	
 Ｆ	
 Ｇ	
 Ｈ	
 Ｉ	
 Ｊ	pop the first item / first line
+  `helloＪ` → "ello", "h"
 Ｋ	pop the last item / last line
+`helloＪ` → "hell", "o"
 Ｌ	get length
   S, A, N: get length and pop the item
+    `helloＬ）` → [5]
+    `‾⁹Ｌ）` → [2]
   a: get width, don't pop
+    `a¶bcdefＬ` → 5
 Ｍ	maximum
   NN: maximum
+    `８４Ｍ` → 8
 Ｎ	
 Ｒ	range / set default background
   N: range from 1 to N, inclusive
+    `４Ｒ` → [1,2,3,4]
   S: set the default background to the string
+    //TODO
 Ｓ	split on spaces
   S: split on spaces
+    `hi thereＳ` → ["hi", "there"]
 Ｕ	uppercase/ceiling
   S: uppercase the string
+    `HiＵ` → "HI"
   N: get the ceiling of the number
+    `５½Ｕ` → 3
   A: vectorize
+    //TODO
 ｕ	lowercase/floor
   S: lowercase the string
+    `HiＵ` → "hi"
   N: get the floor of the number
+    `５½Ｕ` → 2
   A: vectorize
+    //TODO
 Ｖ	increment x
+  `３｛Ｖ］ｘ` → 3
 Ｗ	while
   ｝: do..while(pop)
+    //TODO and below
   ］: while(ToS)
 Ｚ	push the uppercase alphabet
+  `Ｚ` → "ABCDEFGHIJKLMNOPQRSTUVWXYZ" //TEST
 ａ	
 ｂ	
 ｃ	convert to/from unicode
@@ -197,30 +234,41 @@ printable ascii+¶: part of strings
 ｈ	
 ｉ	
 ｊ	remove first item / first line
+  `helloｊ）` → ["ello"]
 ｋ	remove last item / last line
+  `helloｊ）` → ["hell"]
 ｌ	get length
   S, A, N: get length, without popping
   a: get height, don't pop
 ｍ	mold to length / reshape
   aN: reshape to the width of the number
+    `abc８ｍ` → "abcabcab"
   NN: minimum
+    `４７ｍ` → 4
 ｎ	split into chunks / divmod
-  NS, SN: split the string into chunks of length N, padding with spaces if necessary.
+  NS, SN: split the string into chunks of length N
+    `hello２ｎ` → ["he","ll", "o"]
   NA, AN: split the array into arrays of length N. If there aren't enough items, just leave as-is.
     `１２３４５６）４ｎ` → [[1,2,3,4],[5,6]]
   NN: push the result of floor division and then modulo
+    `７３ｎ）` → [2, 1]
   aa: overlap the two
+    //TODO
 ｒ	lowered range / set background / center
   N: range from 0 to N-1, inclusive
+    `４ｒ` → [0,1,2,3]
   aS: set the arts background character to that
+    //TODO v^
   a: center the art, preferring to go left
 ｓ	split
   SS: split the 1st string on the 2nd
+    `hello∙elｓ` → ["h", "lo"]
   SN: split the string on the number
 ｖ	increment/append
   N: increment x & push the result
     `hi!｛ｖ］` → ["h",1,"i",2,"!",3]
   S: add the value to X
+    //TODO
   A: push the value to X
 ｗ	set the variable Y without popping
   `fooＹｙbarｗｙ）` → ["foo", "bar", "bar"]
@@ -229,6 +277,7 @@ printable ascii+¶: part of strings
 Ｘ	set the variable X to POP
 Ｙ	set the variable Y to POP
 ｚ	push the lowercase alphabet
+  `ｚ` → "abcdefghijklmnopqrstuvwxyz" //TEST
 //   newline   pop   disable auto output
 // Ｏ	  x       x                       
 // Ｐ	  x       x        x              
@@ -253,7 +302,7 @@ printable ascii+¶: part of strings
   S: 0 if the string is empty, otherwise 1
   a: move the [1;1] point to the top-left of the visible art
 ¼	
-½	halve //KEYW half
+½	halve //KEYW half halve
   N: divide by 2
     `９½` → 4.5
 ¾	
@@ -262,6 +311,7 @@ printable ascii+¶: part of strings
     `９２√×Ｕ` → 13
 ／	create an antidiagonal
   N: create a antidiagonal of that length
+    //TODO god
   S: create a antidiagonal of the characters of that string
   a: prepend each line with one less space than the last, the last line having 0 spaces
 ＼	create a diagonal
@@ -310,10 +360,15 @@ printable ascii+¶: part of strings
   A, AN: rotate the items so that it looks rotated if printed
 ⤢	transpose / absolute value
   a: transpose
+    `ab¶cd⤢` → "ac¶bd"
   N: absolute value
+    `４⤢` → 4
+    `４±⤢` → 4
 ∔	add vertically / reverse subtract
   NN: reverse subtract
+    `４７∔` → 3
   SS: add the two together with a separating newline
+   //TODO everything below
   AS: add the string to the array
   SA: prepend the string to the arrays beginning
   AA: add the two arrays together

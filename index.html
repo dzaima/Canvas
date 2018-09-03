@@ -457,6 +457,8 @@
     
     async function tests() {
       let pass = true;
+      
+      // run all examples
       for (let c of data) {
         // console.log("Testing",c.c,[c])
         let ae = c.examples || [];
@@ -465,12 +467,18 @@
         }
         for (let e of ae) { // test examples
           if (!e.raw || e.raw.includes("//NOTTEST")) continue;
-          let toEval = "["+e.raw.replace(/¶/g, "\\n")+"]";
+          let toEval = "["+e.raw.replace("//TEST","").replace(/¶/g, "\\n")+"]";
           let expected;
           try {
             expected = eval(toEval);
           } catch (e) {
-            expected = eval(toEval.replace(/\\/g,"\\\\"));
+            try {
+              expected = eval(toEval.replace(/\\/g,"\\\\"));
+            } catch (e) {
+              console.error("Malfunctioned example:", toEval);
+              pass = false;
+              continue;
+            }
           }
           let expStr = (expected.length > 1 || isArr(expected[0]))? null : expected[0]+"";
           let expNorm = isArr(expected)? bigify(expected) : null;
@@ -489,15 +497,40 @@
           }
         }
       }
-      for (i in new Array(300).fill()) { // test numbers
+      
+      // test numbers
+      for (i in new Array(300).fill()) {
         let r = compressNum(i);
-        let res = await run(r,[]);
+        let cc = new CanvasCode(r, []);
+        let res = await cc.run(0, false, false);
         console.log("testing", i, r);
         if (res != i) {
           pass = false;
           console.error(i+" failed as "+r);
         }
       }
+      
+      // compress strings
+      let strings = [
+        [11, "yay","1!111!1!11!111!!1"],
+        [11, "_--__--_-__---____-_", "__/---\\__"],
+        [17, "bad compression", "!"],
+        ...new Array(145).fill().map((_, i) => ["5", "1".repeat(i+1)]),
+        ...new Array(145).fill().map((_, i) => ["5", "-".repeat(i+1)]),
+        ...new Array(300).fill().map(_=> [0, new Array(18).fill().map(_=>stringChars.replace("¶ŗ","")[Math.random()*(stringChars.length-2) |0]).join('')]),
+      ];
+      for (let [length, ...parts] of strings) {
+        let compressed = compressString(parts);
+        console.log("testing", parts, compressed);
+        let cc = new CanvasCode(compressed, []);
+        let res = await cc.run(0, false, false);
+        if (length && (typeof length === 'number'? compressed.length !== length : compressed.length > +length)) console.warn("unexpected length: wanted "+length+", got "+compressed.length);
+        if (res !== parts.join('')) {
+          console.error("Compression failed!");
+          pass = false;
+        }
+      }
+      
       if (pass) {
         console.log("Passed all tests!");
       } else {

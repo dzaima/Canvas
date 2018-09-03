@@ -18,13 +18,13 @@ $.ajax({
       for (let lid = 0; lid < larr.length; lid++) {
         let line = larr[lid].replace(commentRegex, "");
         if (cmatch = line.match(exampleRegex)) {
-          examples.push({c:cmatch[1], r:cmatch[2].replace(/ ?\/\/(NOTE|NOTTEST)/g, ""), raw: cmatch[2].split("//NOTE")[0].split("→")[1]});
+          if (!cmatch[2].includes("//TEST")) examples.push({c:cmatch[1], r:cmatch[2].replace(/ ?\/\/(NOTE|NOTTEST)/g, ""), raw: cmatch[2].split("//NOTE")[0].split("→")[1]});
         } else if (cmatch = line.match(/  ([NSAa,¹²³⁴⁵⁶⁷⁸⁹｝］ ]+): (.+)/)) {
           
           let texamples = [];
           let exm;
           while (exm = larr[++lid].match(exampleRegex)) {
-            texamples.push({c:exm[1], r:exm[2].replace(/ ?\/\/(NOTE|NOTTEST)/g, ""), raw: exm[2].split("//NOTE")[0].split("→")[1]});
+            if (!exm[2].includes("//TEST")) texamples.push({c:exm[1], r:exm[2].replace(/ ?\/\/(NOTE|NOTTEST)/g, ""), raw: exm[2].split("//NOTE")[0].split("→")[1]});
           }
           lid--;
           
@@ -267,7 +267,11 @@ for (let [k, v] of Object.entries({
   "new": "ø",
   "pop": "┐", // pop & remove item
   "tri": "⌐", // triplicate
+  "dup": "┌", // duplicate 2nd from top
+  "g2": "┌", // duplicate 2nd from top
+  "3rd": "┘", // duplicate 2nd from top
   "//": "⤢",
+  "abs": "⤢",
   "+2":  "├",
   "inc": "╵",
   "+1":  "╵",
@@ -283,7 +287,6 @@ for (let [k, v] of Object.entries({
   "1/2": "½",
   "/2": "½",
   "rt": "√",
-  "": "",
   "": "",
   "": "",
   "": "",

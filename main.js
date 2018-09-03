@@ -643,7 +643,7 @@ CanvasCode = class {
       },
       "↕": {
         a: (a) => a.vertMirrorSmart(smartOverlapBehind),
-        N: (n) => (a=n.divideAndRemainder(2), remainders.push(a[1]), a[0]),
+        N: (n) => {let a=n.divideAndRemainder(2); remainders.push(a[1]); return a[0].add(1)},
       },
       "ｍ": {
         SN: (s, n) => s.repeat(Math.ceil(n/s.length)).substring(0, +n),
@@ -723,7 +723,7 @@ CanvasCode = class {
           push(i);
         },
       },
-      "Ｄ": {
+      "Ｄ": { // TODO strings
         A: (a) => {
           let out = [];
           for (let item of a) {
@@ -1648,7 +1648,7 @@ function compressString(arr) {
       }
       let sorted = attempts.sort((a,b)=>a.S-b.S);
       stack[0].all(sorted[0]);
-      if (debug) console.log("possible for part:", sorted);
+      if (debug>1) console.log("possible for part:", sorted);
     }
   }
   let res = Big.ZERO;
