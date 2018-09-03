@@ -1048,7 +1048,7 @@ CanvasCode = class {
         let callable = simpleBuiltins[key];
         let originalObject = callable;
         let matchingKey;
-        if (mode == 2 && isFn(callable)) {
+        if (mode == 2) {
           return true;
         }
         if (!isFn(callable)) {

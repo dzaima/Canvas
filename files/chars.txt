@@ -111,8 +111,10 @@
     `hello, world!╷` → "Hello, World!"
   A: vectorize
 ╋	overlap / replace
-  sss: replace in the first the second with the third
+  SSS: replace in the first the second with the third
   aaNN: overlap the 2nd art over the 1st at x;y using smartOverlap
+╋╋	simple overlap
+  aaNN: overlap the 2nd art over the 1st at x;y using simpleOverlap
 ×	repeat horizontally / prepend
   NN: multiply the numbers
     `６７×` → 42
