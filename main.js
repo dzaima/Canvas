@@ -1551,7 +1551,7 @@ function compressNum(n) {
     c = Object.entries(shortNumbers).find(c=>c[1]==n);
     if (c) return c[0];
     console.warn("< compressed start but not anywhere",n);
-  } else return `“${toBijective(new Big(n-compressedNumberStart), baseChars.length).map(c=>baseChars[c]).join('')}„`;
+  } else return `“${toBijective(new Big(n).minus(compressedNumberStart), baseChars.length).map(c=>baseChars[c]).join('')}„`;
 }
 
 function compressString(arr) {
