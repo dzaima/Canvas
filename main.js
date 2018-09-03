@@ -533,6 +533,7 @@ CanvasCode = class {
       "－": (a, b) => a.minus(b),
       "×": {
         NN: (a, b) => a.multiply(b),
+        SS: (a, b) => b+a,
         SN: (s, n) => s.repeat(n),
         NS: (n, s, ex) => ex("SN", s,n),
         aN: (a, n) => {
