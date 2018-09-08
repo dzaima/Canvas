@@ -301,6 +301,7 @@ CanvasCode = class {
     var pop = this.pop.bind(this);
     var push = this.push.bind(this);
     var cast = this.cast.bind(this);
+    var getRemainder = this.getRemainder.bind(this);
     var remainders = this.remainders;
     var lastArgs = this.lastArgs;
     
@@ -1255,8 +1256,8 @@ CanvasCode = class {
   get printableOut() {
     return this.output.replace(/^\n{0,2}|\n{0,2}$/g,"");
   }
-  getRemainder (ift) {
-    return remainders[remainders.length-1 - (ift%remainders.length)];
+  getRemainder (ift = 1) {
+    return this.remainders[this.remainders.length-1 - (ift%this.remainders.length)];
   }
   
   get cpo() {
