@@ -8,8 +8,8 @@ $.ajax({
     let charRegex = /^([^\t\n ]{1,3})\t(.+)\n(( {2,}.+\n)*)/gm;
     let exampleRegex = / {2,4}`([^`]*)` (.+)/;
     let commentRegex = /\/\/(TODO|KEYW).+$/;
-    
-    var match, cmatch;
+  
+    let match, cmatch;
     // parsing chars.txt
     while (match = charRegex.exec(chars)) {
       let obj = {c: match[1], desc:match[2].replace(commentRegex, ""), raw: match[0]};
@@ -47,9 +47,9 @@ $.ajax({
       url: "files/implemented.md",
       success: function (implemented) {
         console.log("implemented.md loaded!");
-        var regex = /^\|`([^`]+)`\s*\|(.+)$/gm;
-        var match;
-        
+        const regex = /^\|`([^`]+)`\s*\|(.+)$/gm;
+        let match;
+  
         // parsing
         while (match = regex.exec(implemented)) {
           let chr = match[1];
@@ -61,9 +61,9 @@ $.ajax({
           }
           dataItem.impl = {};
           if (cols.length > 1 || cols[0].length > 1) {
-            let tarr = cols.length == 5? ["N", "S", "A", "｝", "］"] : cols.length == 3? ["N", "S", "A"] : ["NN", "SS", "AA", "NS", "AN", "AS","_","_","_"].slice(0, cols.length);
+            let tarr = cols.length === 5? ["N", "S", "A", "｝", "］"] : cols.length === 3? ["N", "S", "A"] : ["NN", "SS", "AA", "NS", "AN", "AS","_","_","_"].slice(0, cols.length);
             cols.forEach((impl, index) => {
-              if (impl.length == 1) dataItem.impl[tarr[index]] = impl==="✓";
+              if (impl.length === 1) dataItem.impl[tarr[index]] = impl==="✓";
               else {
                 let parts = impl.split(" ");
                 dataItem.impl[parts[0].toUpperCase()] = parts[1]==="✓";
@@ -75,7 +75,7 @@ $.ajax({
         }
         console.log("implementation data added!");
         createTable();
-        if (search.value != lastSearch && searched) searched(search.value);
+        if (search.value !== lastSearch && searched) searched(search.value);
       }
     });
   }
@@ -84,13 +84,13 @@ $.ajax({
 
 function searched (sv) {
   lastSearch = sv;
-  var scores = {};
-  var i = 0;
+  const scores = {};
+  let i = 0;
   for (let term of sv.split("|")) {
     for (let item of data) {
       let score = 0;
-      if (term.length == 1) {
-        score = (item.c == term || (item.raw.split("//SUB ")[1]||"").includes(term))? i+1e15 : -Infinity;
+      if (term.length === 1) {
+        score = (item.c === term || (item.raw.split("//SUB ")[1]||"").includes(term))? i+1e15 : -Infinity;
         if (!scores[item.c] || scores[item.c] < 0) scores[item.c] = score;
       } else {
         if (!item.raw.toLowerCase().includes(term.toLowerCase())) {
@@ -106,7 +106,7 @@ function searched (sv) {
     }
     i++;
   }
-  var order = [...document.getElementsByClassName("chrinf")].sort((a, b) => {
+  const order = [...document.getElementsByClassName("chrinf")].sort((a, b) => {
     if (a.chr === b.chr) {
       if (a.classList.length > b.classList.length) return 1;
       if (a.classList.length < b.classList.length) return -1;
@@ -118,8 +118,6 @@ function searched (sv) {
     }
     return 0
   });
-  t=order;
-  t2=scores;
   for (let el of order) {
     if (scores[el.chr] > -Infinity) {
       el.style.display = "table-row";
@@ -141,7 +139,7 @@ function createTable() {
     desc.innerHTML = '<th><a class="chr" href=""><code>' + item.c + '</code></a></th>';
     desc.insertCell(1).innerHTML = item.desc.replace(/`([^`]+)`/g, '<code class="cv">$1</code>');
     let el = desc.children[0].children[0].children[0];
-    if (item.impl != undefined) el.style.color = Object.values(item.impl).includes(true)? "#55bb55" : "#bb5555";
+    if (item.impl !== undefined) el.style.color = Object.values(item.impl).includes(true)? "#55bb55" : "#bb5555";
     // simple examples
     if (item.examples.length > 0) {
       let examplesRow = docstable.insertRow(-1);
@@ -176,14 +174,14 @@ function createTable() {
       for (let typeObj of item.types) {
         let typeRow = typesTable.insertRow(-1);
         typeRow.innerHTML = '<th' + (first? '>' : ' class="typecellmid">') + typeObj.t.split(/, ?/).map(c=> '<code>'+c+'</code>').join('<br>') + '</th>';
-        if (item.impl != undefined) {
+        if (item.impl !== undefined) {
           for (let el of typeRow.children[0].children) {
             let key = item.impl[[...el.innerText.toUpperCase()].sort().join("")];
-            if (key != undefined) el.style.color = key? "#55bb55" : "#bb5555";
+            if (key !== undefined) el.style.color = key? "#55bb55" : "#bb5555";
           }
         }
         let typeDesc = typeRow.insertCell(1);
-        typeDesc.innerHTML = '<code> ' + typeObj.desc + '</code>'
+        typeDesc.innerHTML = '<code> ' + typeObj.desc + '</code>';
         // type examples
         
         typeDesc.innerHTML+= '<table class="dex"><tbody></tbody></table>';
@@ -195,9 +193,9 @@ function createTable() {
           indent.classList.add("dindent");
           if (first2) indent.classList.add("di-t");
           let code = exampleRow.insertCell(1);
-          code.innerHTML = '<code class="cv ex">' + example.c + '</code>'
+          code.innerHTML = '<code class="cv ex">' + example.c + '</code>';
           let result = exampleRow.insertCell(2);
-          result.innerHTML = ' <code> ' + example.r + '</code>'
+          result.innerHTML = ' <code> ' + example.r + '</code>';
           first2 = false;
         }
         first = false;
@@ -207,8 +205,8 @@ function createTable() {
   // various actions
   $("a.chr").click(function (e) {
     e.preventDefault();
-    var startPos = program.selectionStart;
-    var endPos = program.selectionEnd;
+    const startPos = program.selectionStart;
+    const endPos = program.selectionEnd;
     program.value = program.value.substring(0, startPos) + e.target.innerText + program.value.substring(endPos, program.value.length);
     program.selectionStart = program.selectionEnd = startPos+e.target.innerText.length;
     program.focus();
@@ -238,7 +236,7 @@ var cycles = [
   "(（", ")）", "[［", "]］", "{｛", "}｝", "<＜≤«", ">＞≥»",
   "=≡≠═",
   " ∙", "\n¶"
-]
+];
 
 var transforms = [];
 for (let [k, v] of Object.entries({
@@ -286,8 +284,8 @@ for (let [k, v] of Object.entries({
   "/2": "½",
   "rt": "√",
   "": "",
-  "": "",
-  "": "",
+  "": "a",
+  "": "c",
 })) {
   transforms.push([[...k].sort().join(''), v]);
 }
@@ -297,11 +295,11 @@ transforms.sort((a,b)=>{
   if (p1) return p1;
   return (b[0]>a[0]) - (b[0]<a[0])
 });
-let tkey = localStorage.kpr? eval(localStorage.kpr) : c => c.key == "F1" || c.key == "F2";
+let tkey = localStorage.kpr? eval(localStorage.kpr) : c => c.key === "F1" || c.key === "F2";
 
 program.onkeydown = function (e) {
   // console.log(e);
-  if (program.selectionStart == program.selectionEnd) {
+  if (program.selectionStart === program.selectionEnd) {
     if (e.key === "Tab") {
       e.preventDefault();
       var ptr = program.selectionStart;
@@ -316,7 +314,7 @@ program.onkeydown = function (e) {
       const PV = program.value;
       for (let [k, v] of transforms) {
         //console.log([...PV.slice(ptr-k.length, ptr)].sort().join(''), k);
-        if ([...PV.slice(ptr-k.length, ptr)].sort().join('') == k) {
+        if ([...PV.slice(ptr-k.length, ptr)].sort().join('') === k) {
           program.value = PV.slice(0, ptr-k.length)+v+PV.slice(ptr, PV.length);
           program.selectionStart = program.selectionEnd = ptr-k.length + v.length;
           break;

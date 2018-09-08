@@ -8,9 +8,9 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <center id="toptitle">
+  <div id="toptitle" style="text-align: center;">
     <a style="height:10px; margin-top:0; margin-bottom: 10px; font-weight:bold; font-size:2em;" href=https://github.com/dzaima/Canvas>Canvas</a>
-</center>
+  </div>
   <div id="p" style="width:40%;"><span id="bytecount" style="font-size:12px">0 bytes</span></div>
   <div id="textareas">
     <div class="left" id="progdiv">
@@ -20,7 +20,8 @@
       <textarea id="inputs" placeholder="Enter inputs in each line" spellcheck="false" style="width:100%; height:150px"></textarea>
       <div id="docs" style="display:none" align="left">
         <div style="padding-bottom: 5px">
-          <input id="search" style="width:93%;" onclick="setTimeout(updater, 0);" oninput="setTimeout(updater, 0);" placeholder="search for chars, descriptions, ect."></input>
+          <input id="search" style="width:93%;" onclick="setTimeout(updater, 0);" oninput="setTimeout(updater, 0);"
+                 placeholder="search for chars, descriptions, ect."/>
         </div>
         <div id="docs-scroll">
           <table id="docstable" style="width:99%" align="left">
@@ -89,7 +90,7 @@
   <input id="fakeFileInp" type="file" style="display:none" />
   <a id="fakeLink" style="display:none" />
   <script>
-  program.focus();
+    program.focus();
     var latestVersion = 7;
     var module = 0; // node is annoying & this can't be a more meaningful variable name
     var usedVersion = latestVersion;
@@ -106,23 +107,23 @@
     var args = location.search.substring(1).split(",");
     for (var i = 0; i < args.length; i++) {
       var carg = args[i];
-      var parts = carg.split("=")
-      if (parts[0]=='u')
+      var parts = carg.split("=");
+      if (parts[0]==='u')
         program.value = unescape(atob(parts[1].replace(/_/g, "=")));
-      if (parts[0]=='i')
+      if (parts[0]==='i')
         inputs.value = unescape(atob(parts[1].replace(/_/g, "=")));
-      if (parts[0]=='v')
+      if (parts[0]==='v')
         usedVersion = +parts[1];
-      if (parts[0]=='dev') {
+      if (parts[0]==='dev') {
         devChk.click();
       }
-      if (parts[0]=='d') {
+      if (parts[0]==='d') {
         debug = +parts[1];
       }
-      if (parts[0]=='tests') {
+      if (parts[0]==='tests') {
         setTimeout(tests, 200);
       }
-      if (parts[0]=='search') {
+      if (parts[0]==='search') {
         devChk.click();
         search.value=unescape(parts[1]);
       }
@@ -173,7 +174,7 @@
         loadpermalink.style.display = "none";
         stepBtn.style.display = "none";
         stopBtn.style.display = "none";
-        if (debug == 1) debug = 0;
+        if (debug === 1) debug = 0;
       }
     }
     
@@ -204,7 +205,7 @@
     
     // saving to encoded file
     function saveFile() {
-      var prog = program.value;
+      const prog = program.value;
       fakeLink.download = "encoded.canvas";
       var binary = "";
       for (var i = 0; i < prog.length; i++) {
@@ -249,16 +250,17 @@
     
     // permalink stuff
     function permalink(param) {
-      if (param == 1) var res = "https://dzaima.github.io/Canvas/?";
-      else var res = [location.protocol, '//', location.host, location.pathname].join('')+"?";
+      let res;
+      if (param === 1) res = "https://dzaima.github.io/Canvas/?";
+      else res = [location.protocol, '//', location.host, location.pathname].join('')+"?";
       
       res+= "u="+ (btoa(escape(program.value)).replace(/=/g, "_"));
       var inputs = document.getElementById("inputs").value;
-      if (inputs != "")
+      if (inputs !== "")
         res+= ",i="+ btoa(escape(inputs)).replace(/=/g, "_");
-      res+= ",v="+(param==2? latestVersion : version)
+      res+= ",v="+(param===2? latestVersion : version);
       result.value = res;
-      if (param == 2) {
+      if (param === 2) {
         result.select();
         document.execCommand("copy");
       }
@@ -272,10 +274,10 @@
       var cres = "";
       for (var i = 0; i < inputstrs.length; i++) {
         var cl = inputstrs[i];
-        if (cl == "```") {
+        if (cl === "```") {
           var arr = [];
           i++;
-          while (i < inputstrs.length && inputstrs[i] != "```") {
+          while (i < inputstrs.length && inputstrs[i] !== "```") {
             arr.push(inputstrs[i]);
             i++;
           }
@@ -287,8 +289,8 @@
           } catch (e) {
             ev = undefined;
           }
-          if (typeof ev == "number") ev = new Big(cl);
-          cres = ev == undefined? cl : ev;
+          if (typeof ev === "number") ev = new Big(cl);
+          cres = ev === undefined? cl : ev;
         }
         inputsParsed.push(cres);
       }
@@ -304,13 +306,13 @@
       var bytecount = program.value.length;
       var startPos = program.selectionStart;
       var endPos = program.selectionEnd;
-      var co = bytecount +" byte"+ (bytecount==1? "" : "s");
-      if (endPos != startPos) {
-        co+= " ("+ (endPos-startPos) +" byte"+ (endPos-startPos==1? "" : "s") +" selected)"
-        if (document.activeElement == program) search.value = [...program.value.substring(startPos,endPos)].filter(c=>c.charCodeAt()>127).join("|")
+      var co = bytecount +" byte"+ (bytecount===1? "" : "s");
+      if (endPos !== startPos) {
+        co+= " ("+ (endPos-startPos) +" byte"+ (endPos-startPos===1? "" : "s") +" selected)";
+        if (document.activeElement === program) search.value = [...program.value.substring(startPos,endPos)].filter(c=>c.charCodeAt()>127).join("|")
       }
       document.getElementById("bytecount").innerHTML = co;
-      if (search.value != lastSearch && typeof searched !== 'undefined') searched(search.value);
+      if (search.value !== lastSearch && typeof searched !== 'undefined') searched(search.value);
       //console.log(startPos+" "+endPos);
     }
     function updateSaveList() {
@@ -386,7 +388,7 @@
         runMain();
       } else if (e.key === 's' && e.ctrlKey) {
         e.preventDefault();
-        inputFocused = +(document.activeElement == inputs);
+        inputFocused = +(document.activeElement === inputs);
         overlay.style.display = "block";
         prevFocused = 
         saveName.focus();
@@ -395,7 +397,7 @@
         updateSaveList();
       } else if (e.key === 'o' && e.ctrlKey) {
         e.preventDefault();
-        inputFocused = +(document.activeElement == inputs);
+        inputFocused = +(document.activeElement === inputs);
         overlay.style.display = "block";
         saveName.value = "";
         saveName.focus();
@@ -407,9 +409,9 @@
     document.onkeydown = updater;
     update();
     // loading the appropriate version JS file
-    
-    var JSname = latestVersion === usedVersion? "main.js" : "old/main"+usedVersion+".js";
-    var doneSteps = 0;
+
+    const JSname = latestVersion === usedVersion ? "main.js" : "old/main" + usedVersion + ".js";
+    let doneSteps = 0;
     $.ajax({
       url: JSname,
       success: function (JScode) {
@@ -422,18 +424,18 @@
         window.eval(JScode);
         console.log("main.js loaded!");
         doneSteps++;
-        if (doneSteps == 2 && args.includes("run")) runMain();
+        if (doneSteps === 2 && args.includes("run")) runMain();
       },
       error: (e)=>console.error(e),
     });
-    var asciiArtName = usedVersion<2? "old/asciiartB2.js" : usedVersion<3? "old/asciiartB3.js" : "asciiart.js"
+    const asciiArtName = usedVersion < 2 ? "old/asciiartB2.js" : usedVersion < 3 ? "old/asciiartB3.js" : "asciiart.js";
     $.ajax({
       url: asciiArtName,
       success: function (JScode) {
         window.eval(JScode);
         console.log("Canvas loaded!");
         doneSteps++;
-        if (doneSteps == 2 && args.includes("run")) runMain();
+        if (doneSteps === 2 && args.includes("run")) runMain();
       },
       error: (e)=>console.error(e),
     });
@@ -441,13 +443,13 @@
     
     
     function clip(str) {
-      var ta=document.createElement("textarea");
+      const ta = document.createElement("textarea");
       document.body.appendChild(ta);
       ta.value = str;
       ta.focus();
       ta.select();
       document.execCommand('copy');
-      ta.remove()
+      ta.remove();
       return str;
     }
     
@@ -467,7 +469,7 @@
         }
         cexample: for (let e of ae) { // test examples
           console.groupEnd();
-          if (!e.raw || e.raw.includes("//NOTTEST")) continue cexample;
+          if (!e.raw || e.raw.includes("//NOTTEST")) continue;
           let toEval = "["+e.raw.replace("//TEST","").replace(/¶/g, "\\n")+"]";
           let outputs = [];
           try {
@@ -477,10 +479,10 @@
             outputs.push(eval(toEval.replace(/\\(?!n)/g,"\\\\")));
           } catch (e) {}
           outputs = outputs.filter(c=>c);
-          if (outputs.length == 0) {
+          if (outputs.length === 0) {
             console.error("Malfunctioned example:", toEval);
             failed++;
-            continue cexample;
+            continue;
           }
           let cc = new CanvasCode(e.c, []);
           let out;
@@ -492,7 +494,7 @@
             failed++;
             console.groupEnd();
             console.error("Interpreter errored:",e);
-            continue cexample;
+            continue;
           }
           function rec(x) {
             if (isArr(x)) return x.map(c=>rec(c));
@@ -529,11 +531,11 @@
       
       // test numbers
       for (i in new Array(300).fill()) {
-        let r = compressNum(i);
+        let r = compressNum(+i);
         let cc = new CanvasCode(r, []);
         let res = await cc.run(0, false, false);
         console.log("testing", i, r);
-        if (res != i) {
+        if (res !== i) {
           failed++;
           console.error(i+" failed as "+r);
         }
@@ -546,7 +548,7 @@
         [17, "bad compression", "!"],
         ...new Array(145).fill().map((_, i) => ["5", "1".repeat(i+1)]),
         ...new Array(145).fill().map((_, i) => ["5", "-".repeat(i+1)]),
-        ...new Array(300).fill().map(_=> [0, new Array(18).fill().map(_=>stringChars.replace("¶ŗ","")[Math.random()*(stringChars.length-2) |0]).join('')]),
+        ...new Array(300).fill().map(()=> [0, new Array(18).fill().map(_=>stringChars.replace("¶ŗ","")[Math.random()*(stringChars.length-2) |0]).join('')]),
       ];
       for (let [length, ...parts] of strings) {
         let compressed = compressString(parts);
@@ -572,19 +574,3 @@
   </script>
 </body>
 </html>
-<!--
-  9873｛62｛851｝5｝999991＋＋＋＋［o
-  ９８７６５４３２１０１［３４｝９［ｏ
-  ５｛[]＊Ｏ
-  ６５４（（console.log([1,2,3,4,5,6].map(npop).map(c=>c+""))＃
-  ８｛）┐：（╵］）
-  abc∙def∙ghi３［-＋｝
-  ⇵｛*＊］⤢┼
-  >｛⇵-＊|；＋╬│Ｐ
-  -＊>＋＋
-  __ /|２ｎ╶┤ｒ⇵｛├⁸¹⁸｝ｊ*＋↔│
-  ⇵-＊/；＋╶⇵|×∔╬┼
-  abc¶def¶ghi∙a＋∙12¶3∙a＋２２╋
-  |×╶_××/×««╶⇵［»：］⁷⇵ｍ↕↕┼╬
-  Ｗ｛¹％］：Ｄ≡｝¹
--->

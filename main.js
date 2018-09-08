@@ -1,16 +1,16 @@
 //# sourceURL=Main
-var version = 7;
-var codepage = "⁰¹²³⁴⁵⁶⁷⁸⁹¶\n＋－（）［］｛｝＜＞‰ø＾◂←↑→↓↔↕ !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~┌┐└┘├┤┬┴╴╵╶╷╋↖↗↘↙×÷±«»≤≥≡≠ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ０１２３４５６７８９‟‼¼½¾√／＼∑∙‽‾⇵∔：；⟳⤢⌐ŗ“”„？＊↶↷＠＃％！─│┼═║╫╪╬αω";
-var baseChars = [...codepage].filter(c=>!"„“”‟\n".includes(c));
-var baseChar = c=>[].indexOf.bind(baseChars)(c);
+version = 7;
+codepage = "⁰¹²³⁴⁵⁶⁷⁸⁹¶\n＋－（）［］｛｝＜＞‰ø＾◂←↑→↓↔↕ !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~┌┐└┘├┤┬┴╴╵╶╷╋↖↗↘↙×÷±«»≤≥≡≠ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ０１２３４５６７８９‟‼¼½¾√／＼∑∙‽‾⇵∔：；⟳⤢⌐ŗ“”„？＊↶↷＠＃％！─│┼═║╫╪╬αω";
+const baseChars = [...codepage].filter(c => !"„“”‟\n".includes(c));
+const baseChar = c => [].indexOf.bind(baseChars)(c);
 let compressionChars = "ZQJKVBPYGFWMUCLDRHSNIATEXOzqjkvbpygfwmucldrhsniatexo~!$%&=?@^()<>[]{};:9876543210#*\"'`.,+\\/_|-\nŗ ";
 let compressionModes = 5;
 let boxChars=" -_/\\|¶\n";
 
 
-var shortNumbers = {};
-var simpleNumbers;
-var compressedNumberStart;
+const shortNumbers = {};
+let simpleNumbers;
+let compressedNumberStart;
 {
   simpleNumbers = {
     '０': 0,
@@ -65,20 +65,20 @@ var stringChars;
 
 async function redrawDebug(selStart, selEnd, state) {
   result.value = state.printableOut;
-  var program = state.program;
+  let program = state.program;
   codeState.innerHTML = '<span class="code">' + program.substring(0,selStart) + '</span>'
                       + '<span class="code sel">' + program.substring(selStart,selEnd) + '</span>'
                       + '<span class="code">' + program.substring(selEnd) + '</span>';
   stateX.innerText = arrRepr(state.vars.x);
   stateY.innerText = arrRepr(state.vars.y);
-  var lastOfLA = state.lastArgs.slice(-2);
+  const lastOfLA = state.lastArgs.slice(-2);
   stateAlpha.innerText = arrRepr(lastOfLA[0]);
   stateOmega.innerText = arrRepr(lastOfLA[1]);
   stateRemainders.innerText = arrRepr(state.remainders.slice(-3));
   stateSups.innerText = state.supVals.map((c,i)=>["¹²³⁴⁵⁶⁷⁸⁹"[i] + ":", c]).filter(c=>typeof c[1] !== 'function').map(c=>c[0] + arrRepr(c[1])).join(", ");
   bgState.innerText = quotify(state.background, `"`);
   ptrstackState.innerText = state.ptrs.map(c=>c.toDebug()).join("\n");
-  var ar, width;
+  let ar, width;
   stackState.innerHTML = state.stack.map(c => (
     ar=c instanceof Canvas? c.toDebugString(true) : arrRepr(c),
     width=Math.max(50,
@@ -131,8 +131,8 @@ class Pointer {
   }
   iter() {
     this.ptr = this.p.nextIns(this.ptr, this.program);
-    var ending = this.endptrs.indexOf(this.ptr);
-    if (ending != -1) this.continue(this.endpts[ending]);
+    const ending = this.endptrs.indexOf(this.ptr);
+    if (ending !== -1) this.continue(this.endpts[ending]);
     else if (this.ptr >= this.eptr) this.continue(this.endpts[this.endpts.length]);
   }
   update(newPtr) {
@@ -170,12 +170,12 @@ class Pointer {
         break;
         case "„": {
           let num = [...str].map(baseChar);
-          if (debug && num.some(c => c===-1)) console.log(str+" contained non-compression chars "+num.map((c,i)=>[c,i]).filter(c=>c[0]==-1).map(c=>str[c[1]]));
+          if (debug && num.some(c => c===-1)) console.log(str+" contained non-compression chars "+num.map((c,i)=>[c,i]).filter(c=>c[0]===-1).map(c=>str[c[1]]));
           this.p.push(fromBijective(num, baseChars.length).plus(compressedNumberStart));
         } break;
         case "‟": {
           let num = [...str].map(baseChar);
-          if (debug && num.some(c => c==-1)) console.log(str+" contained non-compression chars");
+          if (debug && num.some(c => c===-1)) console.log(str+" contained non-compression chars");
           num = fromBijective(num, baseChars.length);
           let mode;
           let string = "";
@@ -208,7 +208,7 @@ class Pointer {
                 let chars = "";
                 while (pos < compressionChars.length) {
                   if (pos>=0) chars += compressionChars[pos];
-                  pos = pos + 1 + pop(compressionChars.length - pos - (pos==-1));
+                  pos = pos + 1 + pop(compressionChars.length - pos - (pos===-1));
                 }
                 let lbit = pop(2);
                 let len = chars.length + 1;
@@ -237,7 +237,7 @@ class Pointer {
           this.p.push(this.p.prepareStr(string));
         } break;
       }
-    } else if (instr[0] == "‾") {
+    } else if (instr[0] === "‾") {
       this.p.push(shortNumbers[instr]);
     } else {
       let func = this.p.builtins[instr];
@@ -245,7 +245,7 @@ class Pointer {
         if (debug) console.warn(`the function ${instr}@${index} doesn't exist`);
         this.p.push(instr); // idk why k
       } else {
-        try { 
+        try {
           func();
         } catch (e) {
           if (debug) {
@@ -255,8 +255,8 @@ class Pointer {
         }
       }
     }
-    if (this != this.p.cpo && !this.p.cpo.inParent) index = eindex = 0; // WARNING destructive
-    if (this.p.debug) debugLog(`${instr}@${index}${eindex-index==1||(eindex==0&&index==0)?'':"-"+(eindex-1)}: ${arrRepr(this.p.stack)}`);
+    if (this !== this.p.cpo && !this.p.cpo.inParent) index = eindex = 0; // WARNING destructive
+    if (this.p.debug) debugLog(`${instr}@${index}${eindex-index===1||(eindex===0&&index===0)?'':"-"+(eindex-1)}: ${arrRepr(this.p.stack)}`);
     if (stepping) await redrawDebug(index, eindex, this.p);
   }
 }
@@ -297,14 +297,15 @@ CanvasCode = class {
     
     
     // fuck you `this.`
-    var get = this.get.bind(this);
-    var pop = this.pop.bind(this);
-    var push = this.push.bind(this);
-    var remainderPalindromize = this.remainderPalindromize.bind(this);
-    var cast = this.cast.bind(this);
-    var getRemainder = this.getRemainder.bind(this);
-    var remainders = this.remainders;
-    var lastArgs = this.lastArgs;
+    const get = this.get.bind(this);
+    const pop = this.pop.bind(this);
+    const push = this.push.bind(this);
+    const currInp = this.currInp.bind(this);
+    const remainderPalindromize = this.remainderPalindromize.bind(this);
+    const cast = this.cast.bind(this);
+    const getRemainder = this.getRemainder.bind(this);
+    const remainders = this.remainders;
+    const lastArgs = this.lastArgs;
     
     
     
@@ -316,7 +317,7 @@ CanvasCode = class {
           init() {
             this.level = this.p.ptrs.length-2;
             this.obj = this.p.pop();
-            this.collect = this.branches.slice(-1)[0].c == "］";
+            this.collect = this.branches.slice(-1)[0].c === "］";
             this.canvas = isArt(this.obj);
             if (this.canvas) {
               this.result = new Canvas([], this.obj.p);
@@ -345,8 +346,8 @@ CanvasCode = class {
             if (this.collect) {
               this.p.push(new Break(1));
             }
-            
-            var newItem, x, y;
+  
+            let newItem, x, y;
             if (this.canvas) {
               this.x = this.index%this.obj.width;
               this.y = 0 | this.index/this.obj.width;
@@ -386,7 +387,7 @@ CanvasCode = class {
             this.level = this.p.ptrs.length-2;
             this.obj = this.p.pop();
             this.prefix = [];
-            this.collect = this.branches.slice(-1)[0].c == "］";
+            this.collect = this.branches.slice(-1)[0].c === "］";
             this.collected = [];
             this.array = !isNum(this.obj);
             this.endCount = this.array? this.obj.length : +this.obj.round(0, Big.ROUND_FLOOR);
@@ -432,7 +433,7 @@ CanvasCode = class {
       "Ｗ": () => this.addPtr(new (
         class extends Pointer {
           init() {
-            this.doWhile = this.branches.slice(-1)[0].c != "］";
+            this.doWhile = this.branches.slice(-1)[0].c !== "］";
             this.continue(undefined, false);
           }
           
@@ -461,10 +462,10 @@ CanvasCode = class {
             this.obj = this.p.pop();
             this.p.setSup(this.level, this.obj);
             
-            this.switch = this.branches[0].c == "］";
+            this.switch = this.branches[0].c === "］";
             if (this.switch) {
               if (falsy(this.obj)) this.branch(1);
-              else if (this.endpts.length == 2) this.branch(0);
+              else if (this.endpts.length === 2) this.branch(0);
               else if (isNum(this.obj) && this.obj.gt(0) && this.obj.lt(this.branches.length-1)) this.branch(this.obj.round(0, Big.ROUND_FLOOR).plus(1));
               else this.branch(0);
             } else if(falsy(this.obj)) this.finished = true;
@@ -483,20 +484,20 @@ CanvasCode = class {
             this.obj = this.p.pop();
             this.p.setSup(this.level, this.obj);
             
-            this.switch = this.branches[0].c == "］";
+            this.switch = this.branches[0].c === "］";
             if (this.switch) {
               this.branchf(0);
             } else if(truthy(this.obj)) this.finished = true;
           }
           
           branchf (ending) {
-            if (ending%2 == 0 || ending == this.endpts.length-1) this.p.push(new Break(1));
+            if (ending%2 === 0 || ending === this.endpts.length-1) this.p.push(new Break(1));
             this.branch(ending);
           }
           
           continue(ending) {
             ending = ending.index;
-             if (ending%2 == 1 || ending == this.endpts.length-1) this.break();
+             if (ending%2 === 1 || ending === this.endpts.length-1) this.break();
              else {
                let results = this.p.collectToArray();
                if (results.some(c=>equal(c, this.obj))) this.branchf(ending+1);
@@ -517,7 +518,7 @@ CanvasCode = class {
       "⁰": () => {
         let utype = type(get(1));
         let res = [];
-        while (type(get(1)) == utype && this.stack.length > 0) {
+        while (type(get(1)) === utype && this.stack.length > 0) {
           res.splice(0, 0, pop());
         }
         push(res);
@@ -533,12 +534,12 @@ CanvasCode = class {
           get F() { $('#inputs')[0].focus(); }
         });
         let res = eval(this.pop());
-        if (res != undefined) this.push(res);
+        if (res !== undefined) this.push(res);
       },
       "｝": () => {},
       "］": () => {},
-      "ｗ": () => {this.vars.y = get();} 
-    }
+      "ｗ": () => {this.vars.y = get();}
+    };
     
     // simple functions
     let simpleBuiltins = {
@@ -622,7 +623,7 @@ CanvasCode = class {
       "≡": (a, b) => + equal(a,b),
       "≠": (a, b) => +!equal(a,b),
       "┬": (a, b) => {
-        var res = [];
+        const res = [];
         if (b.eq(1)) return new Array(+a).fill(Big.ONE);
         while (!a.eq(0)) {
           res.push(a.mod(b));
@@ -638,11 +639,11 @@ CanvasCode = class {
       // array & ascii-art manipulation
       "∑": {
         A: (a) => {
-          var checkIsNums = (a) => isArr(a)? a.every(checkIsNums) : isNum(a);
+          const checkIsNums = (a) => isArr(a) ? a.every(checkIsNums) : isNum(a);
           let reduceType;
           if (checkIsNums(a)) reduceType = (a,b) => a.plus(b);
           else reduceType = (a,b) => a+""+b;
-          var sumArr = (a) => a.map(c => isArr(c)? sumArr(c) : c).reduce(reduceType);
+          const sumArr = (a) => a.map(c => isArr(c) ? sumArr(c) : c).reduce(reduceType);
           return sumArr(a);
         }
       },
@@ -699,8 +700,8 @@ CanvasCode = class {
       "ｎ": {
         AN: (a, n) => {
           // n = n.intValue();
-          var out = [];
-          var curr = [];
+          const out = [];
+          let curr = [];
           for (let i = 0; i < a.length; i++) {
             if (i%n === 0 && i !== 0) {
               out.push(curr);
@@ -776,7 +777,7 @@ CanvasCode = class {
       },
       "‼": {
         N: (n) => +!n.eq(0),
-        S: (s) => +(s.length != 0),
+        S: (s) => +(s.length !== 0),
         a: (a) => new Canvas(a.repr, this),
       },
       // string manipulation
@@ -789,13 +790,13 @@ CanvasCode = class {
       },
       "ｃ": {
         N: (n) => String.fromCodePoint(n),
-        S: (s) => s.length==1? s.charCodeAt(0) : [...s].map(chr=>chr.charCodeAt(0)),
+        S: (s) => s.length===1? s.charCodeAt(0) : [...s].map(chr=>chr.charCodeAt(0)),
         a: (a) => a.repr.map(ln=>ln.map(chr=>chr? chr.charCodeAt(0) : 0)),
       },
       // "ｆ": {
       //   TTT: (s, o, r) {
       //     function vreplace(s, o, r) {
-      // 
+      //
       //     }
       //     vreplace(s, o, r);
       //   },
@@ -852,9 +853,9 @@ CanvasCode = class {
       },
       
       
-      "╬│": {
-        a: (a) => a.palindromize(H, "mirror", getRemainder(0), smartOverlap, V, smartOverlapBehind, 0, smartOverlap),
-      },
+      // "╬│": {
+      //   a: (a) => a.palindromize(H, "mirror", getRemainder(0), smartOverlap, V, smartOverlapBehind, 0, smartOverlap),
+      // },
       "╬┼": {
         a: (a) => a.palindromize(H, "mirror", getRemainder(1), smartOverlap, V, smartOverlapBehind, getRemainder(0), smartOverlap)
       },
@@ -955,19 +956,19 @@ CanvasCode = class {
         N: (a) => lrange(a),
         aS: (a, S) => (a.background=S, a),
         a: (a) => {
-          var res = this.blank;
-          var longest = 0;
-          var start = Infinity;
+          const res = this.blank;
+          let longest = 0;
+          let start = Infinity;
           for (let y = a.sy; y < a.ey; y++) {
-            var ln = a.trimmedLine(y);
+            const ln = a.trimmedLine(y);
             if (ln.length > longest) longest = ln.length;
-            var s = a.repr[y-a.sy];
-            var st = 0;
+            const s = a.repr[y - a.sy];
+            let st = 0;
             while (st < s.length && s[st] === undefined) st++;
             if (start > st) start = st;
           }
           for (let y = a.sy; y < a.ey; y++) {
-            var ln = a.trimmedLine(y);
+            const ln = a.trimmedLine(y);
             for (let x = 0; x < ln.length; x++) {
               res.set(Math.floor((longest-ln.length)/2)+x, y, ln[x]);
             }
@@ -990,13 +991,13 @@ CanvasCode = class {
       "Ｃ": () => " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~",
       "＼": {
         S: (s) => {
-          var res = this.blank;
+          const res = this.blank;
           // new Canvas(Array.from(s).map((c, i) => " ".repeat(s.length-i-1)+c), this),
           for (let i = 0; i < s.length; i++) res.set(i, i, s[i]);
           return res;
         },
         a: (a) => {
-          var res = this.blank;
+          const res = this.blank;
           a.forEachChar((chr, x, y) => res.set(x+y, y, chr));
           return res;
         },
@@ -1004,13 +1005,13 @@ CanvasCode = class {
       },
       "／": {
         S: (s) => {
-          var res = this.blank;
+          const res = this.blank;
           // new Canvas(Array.from(s).map((c, i) => " ".repeat(s.length-i-1)+c), this),
           for (let i = 0; i < s.length; i++) res.set(s.length-i-1, i, s[i]);
           return res;
         },
         a: (a) => {
-          var res = this.blank;
+          const res = this.blank;
           a.forEachChar((chr, x, y) => res.set(x-y-1+a.height, y, chr));
           return res;
         },
@@ -1040,7 +1041,7 @@ CanvasCode = class {
         this.vars.x = this.vars.x.plus(1);
       },
       "ｖ": () => {
-        let ToS = get();
+        // let ToS = get();
         if (this.vars.x === undefined) this.vars.x = Big.ZERO; // isNum(ToS)? new Big(0) : isStr(ToS)? "" : isArt(ToS);
         if (isNum(this.vars.x)) push(this.vars.x = this.vars.x.plus(1));
         else if (isArr(this.vars.x)) this.vars.x.push(pop());
@@ -1048,7 +1049,7 @@ CanvasCode = class {
         else this.vars.x+= pop();
       },
       
-      // outputing
+      // outputting
       "Ｏ": () => this.outputFS(true, true, false),
       "ｏ": () => this.outputFS(true, false, false),
       "Ｔ": () => this.outputFS(false, true, true),
@@ -1070,7 +1071,7 @@ CanvasCode = class {
         N: (a) => a.round(0, Big.ROUND_FLOOR),
       },
       "ｒａｗ": (a) => arrRepr(a),
-    }
+    };
     
     // number built-ins
     for (let i = 0; i < 10; i++)
@@ -1114,7 +1115,7 @@ CanvasCode = class {
           return exfn(obj);
         }
         
-        let len = Object.keys(obj).map(c=>c=="default"? 0 : c.length).reduce((a,b)=>Math.max(a,b));
+        let len = Object.keys(obj).map(c => c==="default"? 0 : c.length).reduce((a, b)=>Math.max(a,b));
         let pattern = "";
         for (let i = len; i >= 1; i--) {
           pattern+= type(get(i));
@@ -1207,7 +1208,7 @@ CanvasCode = class {
     var counter = 0;
     try {
       while (this.ptrs.length > 0) {
-        if (sleepUpdate && counter%100 == 0) await sleep(0);
+        if (sleepUpdate && counter%100 === 0) await sleep(0);
         counter++;
         await this.cpo.next();
         if (!running) break;
@@ -1249,8 +1250,8 @@ CanvasCode = class {
   
   remainderPalindromize (canvas, x, y) {
     var xa = [], ya = [];
-    if (x!==null) xa = [H, "mirror", x==2? this.getRemainder(0) : x, smartOverlap];
-    if (y!==null) ya = [V, smartOverlapBehind, y==2? this.getRemainder(0) : y, smartOverlap];
+    if (x!==null) xa = [H, "mirror", x===2? this.getRemainder(0) : x, smartOverlap];
+    if (y!==null) ya = [V, smartOverlapBehind, y===2? this.getRemainder(0) : y, smartOverlap];
     return canvas.palindromize(...xa, ...ya);
   }
   // output with 2 trailing and leading newlines removed
@@ -1305,7 +1306,7 @@ CanvasCode = class {
           default:
             back = true;
         }
-        if (lvl == 1) ends.push({i:ind, c:echr});
+        if (lvl === 1) ends.push({i:ind, c:echr});
         if (back) {
           lvl--;
           bstk.pop();
@@ -1320,14 +1321,14 @@ CanvasCode = class {
       while (stringChars.includes(program[index+1])) index++;
       return index+1;
     }
-    if (program[index] == "‾") return index+2;
-    if (program[index] == '“') {
+    if (program[index] === "‾") return index+2;
+    if (program[index] === '“') {
       while (index < program.length && !'“„”‟'.includes(program[index+1])) index++;
       return index+2;
     }
-    let multibyte = Object.keys(this.builtins).filter(c => c.length>1).find(key => 
+    let multibyte = Object.keys(this.builtins).filter(c => c.length>1).find(key =>
       [...key].every((char,i)=>
-           program[index+i] == char
+           program[index+i] === char
       ) // && this.builtins[key].length > 0
         // && this.builtins[key](2)
     );
@@ -1342,7 +1343,7 @@ CanvasCode = class {
   break(newPtr, who) {
     if (debug > 1) debugLog(`break from ${this.ptrs.length} to ${newPtr}`);
     var ptr = this.ptrs.pop();
-    if (debug > 1 && who != ptr) console.warn("break who != last ptr");
+    if (debug > 1 && who !== ptr) console.warn("break who != last ptr");
     if (this.ptrs.length === 0) return;
     if (ptr.inParent) this.cpo.update(newPtr);
   }
@@ -1383,12 +1384,12 @@ CanvasCode = class {
     return out;
   }
   get(ift = 1) { // item from top; 1 = top, 2 = 2nd from top, ect.
-    var ptr = this.stack.length;
-    while (ptr > 0 && ift != 0) {
+    let ptr = this.stack.length;
+    while (ptr > 0 && ift !== 0) {
       ptr--;
       if (!(this.stack[ptr] instanceof Break)) ift--;
     }
-    if (ift == 0) return this.stack[ptr];
+    if (ift === 0) return this.stack[ptr];
     return this.currInp(ift);
   }
   pop(ift = 1) { // item from top; 1 = top, 2 = 2nd from top, ect.
@@ -1403,7 +1404,7 @@ CanvasCode = class {
     return item;
   }
   remove(ift = 1) {
-    var ptr = this.stack.length;
+    let ptr = this.stack.length;
     while (ptr > 0 && ift > 0) {
       ptr--;
       if (!(this.stack[ptr] instanceof Break)) ift--;
@@ -1422,7 +1423,7 @@ CanvasCode = class {
     );
   }
   collectToArray() {
-    var collected = [];
+    const collected = [];
     while (this.stack.length > 0 && !(this.stack[this.stack.length-1] instanceof Break)) {
       collected.splice(0, 0, this.stack.pop());
     }
@@ -1442,26 +1443,26 @@ CanvasCode = class {
     return ppt.map((c, i) => this.cast(c[0], order[i]))
   }
   cast (item, rt, p) {
-    if (type(item) == rt || rt == "T") return item;
-    if (rt == 'N') return new Big(item.toString().replace(",","."));
-    if (rt == 'a' || rt == 't') return new Canvas(item, this);
-    if (rt == 'S' || rt == 's') return rt.toString();
+    if (type(item) === rt || rt === "T") return item;
+    if (rt === 'N') return new Big(item.toString().replace(",","."));
+    if (rt === 'a' || rt === 't') return new Canvas(item, this);
+    if (rt === 'S' || rt === 's') return rt.toString();
     throw new Error(`cast error from ${type(item)} to ${rt}: ${item} (probably casting to array which is strange & unsupported)`);
   }
   prepareStr (str) {
     return str.replace(/ŗ/g, () => this.pop());
   }
 } // END OF CanvasCode
-  
-  
 
-  
-  
-  
-  
-  
-  
-  
+
+
+
+
+
+
+
+
+
 function copy (item) {
   if (isArr(item)) return item.map((c) => copy(c));
   if (isArt(item)) return new Canvas(item);
@@ -1478,13 +1479,14 @@ function equal(a, b) {
   throw new Error("no eq test for "+a+";"+b);
 }
 function subType (a, b) { // is `a` a subtype of `b`?
-  if (a==b) return true;
-  if (b=="a" && "AS".includes(a)) return true;
+  if (a===b) return true;
+  if (b==="a" && "AS".includes(a)) return true;
+  
   return false;
 }
 
 function irange (s, e) {//inclusive range
-  var out = [];
+  const out = [];
   for (let b = new Big(s); b.lte(e); b = b.plus(1)) {
     out.push(b);
   }
@@ -1502,12 +1504,6 @@ function B (what) {
   return new Big(what);
 }
 
-//golfing JS functions
-function P() {
-  var out = pop();
-  if (isNum(out)) return +out;
-  return out;
-}
 
 //https://stackoverflow.com/a/39914235/7528415
 async function sleep (ms) {
@@ -1557,11 +1553,11 @@ function arrRepr (item) {
 function quotify (what, qt) {
   if (isArt(what)) what = what.toDebugString();
   else what = what.toString();
-  var ml = what.includes("\n");
+  const ml = what.includes("\n");
   return (qt+qt+qt+"\n").slice(0, ml? 4 : 1) + what + ("\n"+qt+qt+qt).slice(ml? 0 : 3)
 }
 function bigify (item) {
-  var out = [];
+  const out = [];
   for (citem of item) {
     if (isArr(citem)) citem = bigify(citem);
     if (isJSNum(citem) && Number.isFinite(citem)) citem = new Big(citem);
@@ -1596,7 +1592,7 @@ function errorLN (e) {
 }
 
 function toBijective (n, b) {
-  var res = [];
+  const res = [];
   while(n.gt(b)) {
     n = n.minus(1);
     let [div, mod] = n.divideAndRemainder(b);
@@ -1608,7 +1604,7 @@ function toBijective (n, b) {
 }
 function fromBijective (n, b) {
   // return n.reverse().reduce((acc,n) => acc*b + n + 1n, 0n)// + b**BigInt(n.length-1);
-  var res = Big.ZERO;
+  let res = Big.ZERO;
   for (let i = n.length-1; i>=0; i--) {
     res = res.mul(b);
     res = res.plus(Big.ONE.plus(n[i]));
@@ -1618,9 +1614,9 @@ function fromBijective (n, b) {
 
 function compressNum(n) {
   if (n < compressedNumberStart) {
-    let c = Object.entries(simpleNumbers).find(c=>c[1]==n);
+    let c = Object.entries(simpleNumbers).find(c=>c[1]===n);
     if (c) return c[0];
-    c = Object.entries(shortNumbers).find(c=>c[1]==n);
+    c = Object.entries(shortNumbers).find(c=>c[1]===n);
     if (c) return c[0];
     console.warn("< compressed start but not anywhere",n);
   } else return `“${toBijective(new Big(n).minus(compressedNumberStart), baseChars.length).map(c=>baseChars[c]).join('')}„`;
@@ -1673,7 +1669,7 @@ function compressString(arr) {
       push(part.length-1, 2);
       for (let c of part) push(compressionChars.indexOf(c), compressionChars.length);
     } else {
-      attempts = [];
+      let attempts = [];
       if (part.length <= 18) {
         stack.push(new Part("chars"));
         push(1, compressionModes);
@@ -1681,7 +1677,7 @@ function compressString(arr) {
         for (let c of part) push(compressionChars.indexOf(c), compressionChars.length);
         attempts.push(stack.pop());
       }
-      let unique = [...part].filter((c,i,a) => a.indexOf(c) == i);
+      let unique = [...part].filter((c,i,a) => a.indexOf(c) === i);
       if (unique.length < part.length && unique.every(c=>boxChars.includes(c))) {
         let valid = 1;
         stack.push(new Part("boxdict"));
@@ -1712,7 +1708,7 @@ function compressString(arr) {
         push(2, compressionModes);
         let curr = -1;
         for (let c of indexes) {
-          push(c-curr-1, compressionChars.length - curr - (curr==-1));
+          push(c-curr-1, compressionChars.length - curr - (curr===-1));
           curr = c;
         }
         // 1 12345
