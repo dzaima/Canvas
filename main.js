@@ -1210,7 +1210,7 @@ CanvasCode = class {
         await this.cpo.next();
         if (!running) break;
       }
-      if (this.implicitOut) this.outputFS(false, false, false);
+      if (this.implicitOut) this.outputFS(false, true, false);
       if (!module) {
         result.placeholder=running? "No output was returned" : "No output on premature stop";
         result.value = this.printableOut;
