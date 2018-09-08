@@ -35,6 +35,9 @@
     `３｛a×Ｐ` → "a¶aa¶aaa"
   S: for each character, pushing it
     `abc｛-ｐｐ` → "-a-b-c"
+  a: for each character
+    `ab¶c｛!＋Ｏ` → "a!¶b!¶c!¶ !"
+    `ab¶c｛Ｕ］` → "AB¶C "
   A: for each item, pushing it
 ｝	close a loop
 ＜	less than
@@ -47,6 +50,7 @@
 ø	push an empty art object
   `ø３｛１hi╋` → "hhhi"
 ＾	power
+  NN: x^y
     `Ａ３＾` → 1000
 ◂	push "0123456789"
   `◂` → "0123456789" //TEST
@@ -130,7 +134,7 @@
   NA, AN: multiply the array vertically that many times
     `a∙b）２＊` → ["a","b","a","b"]
   aNN: expand the ascii-art by the numbers
-    `foo¶bar２３＊` → "ffoooo¶bbaarr¶ffoooo¶bbaarr¶ffoooo¶bbaarr"
+    `foo¶bar２３＊` → "ffoooo¶ffoooo¶ffoooo¶bbaarr¶bbaarr¶bbaarr"
   AS, SA: join the array with the string
     `３Ｒ:＊` → "1:2:3"
   SS: insert the second string between the firsts chars
@@ -143,7 +147,7 @@
     `４±` → -4
   a: reverse horizontally
     `\abc/±` → "/cba\"
-    `abc∙(def)）±` → ["  cba", ")fed("]
+    `abc∙(def)）±` → ["  cba", ")fed("]
 «	shift left
   N: shift left by 1 bit / multiply by 2
     `６«` → 12
@@ -191,7 +195,7 @@
   N: range from 1 to N, inclusive
     `４Ｒ` → [1,2,3,4]
   S: set the default background to the string
-    //TODO
+    `.Ｒø２２+╋` → "..¶.+"
 Ｓ	split on spaces
   S: split on spaces
     `hi thereＳ` → ["hi", "there"]
@@ -201,20 +205,19 @@
   N: get the ceiling of the number
     `５½Ｕ` → 3
   A: vectorize
-    //TODO
 ｕ	lowercase/floor
   S: lowercase the string
-    `HiＵ` → "hi"
+    `Hiｕ` → "hi"
   N: get the floor of the number
-    `５½Ｕ` → 2
+    `５½ｕ` → 2
   A: vectorize
-    //TODO
 Ｖ	increment x
   `３｛Ｖ］ｘ` → 3
 Ｗ	while
   ｝: do..while(pop)
-    //TODO and below
+    `helloＷＫｌ；Ｏ｝` → "o¶l¶l¶e¶h"
   ］: while(ToS)
+    `５Ｗ╷Ｔ］` → "4¶3¶2¶1¶0"
 Ｚ	push the uppercase alphabet
   `Ｚ` → "ABCDEFGHIJKLMNOPQRSTUVWXYZ" //TEST
 ａ	
@@ -238,9 +241,10 @@
 ｊ	remove first item / first line
   `helloｊ）` → ["ello"]
 ｋ	remove last item / last line
-  `helloｊ）` → ["hell"]
+  `helloｋ）` → ["hell"]
 ｌ	get length
   S, A, N: get length, without popping
+    `helloｌ）` → ["hello", 5]
   a: get height, don't pop
 ｍ	mold to length / reshape
   aN: reshape to the width of the number
@@ -255,13 +259,14 @@
   NN: push the result of floor division and then modulo
     `７３ｎ）` → [2, 1]
   aa: overlap the two
-    //TODO
+    `--∙|¶|ｎ` → "+-¶| "
 ｒ	lowered range / set background / center
   N: range from 0 to N-1, inclusive
     `４ｒ` → [0,1,2,3]
   aS: set the arts background character to that
-    //TODO v^
+    `ø.ｒ２２+╋` → "..¶.+"
   a: center the art, preferring to go left
+    `a¶bc¶defgｒ` → " a  ¶ bc ¶defg"
 ｓ	split
   SS: split the 1st string on the 2nd
     `hello∙elｓ` → ["h", "lo"]
@@ -270,7 +275,7 @@
   N: increment x & push the result
     `hi!｛ｖ］` → ["h",1,"i",2,"!",3]
   S: add the value to X
-    //TODO
+    `”Ｘabc｛!＋ｖ｝ｘ` → "a!b!c!"
   A: push the value to X
 ｗ	set the variable Y without popping
   `fooＹｙbarｗｙ）` → ["foo", "bar", "bar"]
@@ -313,13 +318,18 @@
     `９２√×Ｕ` → 13
 ／	create an antidiagonal
   N: create a antidiagonal of that length
-    //TODO god
+    `２／` → " /¶/ "
   S: create a antidiagonal of the characters of that string
+    `ab／` → " a¶b "
   a: prepend each line with one less space than the last, the last line having 0 spaces
+    `ab¶cd¶ef／` → "  ab¶ cd ¶ef  "
 ＼	create a diagonal
   N: create a diagonal of that length
+    `２＼` → "\ ¶ \"
   S: create a diagonal of the characters of that string
+    `ab＼` → "a ¶ b"
   a: prepend each line with one more space than the last, the first having 0 spaces
+    `ab¶cd¶ef＼` → "ab  ¶ cd ¶  ef"
 ∑	join/sum
   A: join the array together or sum if array only contains numbers
     `（（ab∙cd）（ef∙gh））∑` → "abcdefgh"
@@ -330,7 +340,7 @@
   NOOP if both or no sides are ASCII
     `abc∙def┐` → "abc"
   if ASCII is only on one side, pushes a space
-    `abc∙×` → "a b c"
+    `abc∙＊` → "a b c"
 ‽	if not / switch
   ｝: if not POP
     `‽false!｝` - if POP is falsy //NOTTEST
@@ -357,7 +367,7 @@
   `４９；－` → 5
 ⟳	rotate clockwise w/o character changing
   a: rotate clockwise once
-    `i∙h!∔⟳` → `hi¶!`
+    `i∙h!∔⟳` → "hi¶! "
   aN: rotate clockwise that many times
   A, AN: rotate the items so that it looks rotated if printed
 ⤢	transpose / absolute value
@@ -370,26 +380,44 @@
   NN: reverse subtract
     `４７∔` → 3
   SS: add the two together with a separating newline
-   //TODO everything below
-  AS: add the string to the array
-  SA: prepend the string to the arrays beginning
+    `abc∙de∔` → "abc¶de "
+  AS: move the string into the array
+    `a３Ｒ∔` → ["a", 1, 2, 3]
+    `３Ｒa∔` → [1, 2, 3, "a"]
   AA: add the two arrays together
+    `２Ｒ３Ｒ∔` → [1, 2, 1, 2, 3]
   aa: add the two vertically
+    `ab¶cd∙1¶2∔` → "ab¶cd¶1 ¶2 "
 ŗ	replace in a string with pop
+    `World∙Hello, ŗ!` → "Hello, World!"
 “	string starter
+    `“ｈｉ` → "ｈｉ"
 ”	string ender
-„	compressed number
-‟	compressed string ender
+    `ｈｉ”` → "ｈｉ"
+    `ａｂｃ”１２”）` → ["ａｂｃ", "１２"]
+„	compressed number (ctrl+O → number compress to generate)
+‟	compressed string ender (ctrl+O → string compress to generate)
 ↶	rotate anticlockwise
   a: rotate counter clockwise, rotating characters that make sense to be rotated
+    `//¶/↶` → "\ ¶\\"
+  aN: rotate anticlockwise that many times
+    `abc¶d２↶` → "  d¶cba"
 ↷	rotate clockwise
   a: rotate clockwise, rotating characters that make sense to be rotated
+    `//¶/↷` → "\\¶ \"
   aN: rotate clockwise that many times
+    `abc¶d２↷` → "  d¶cba"
+    
 ＠	get item
   AN, NA: push that item (1-indexed) from the array
+    `９８７）５＠` → 8
   SN, NS: push that char (1-indexed) from the string
+    `Ｚ４＠` → "D"
+    `AB５＠` → "A"
   aNN: get the character at the positions [x; y] in the canvas
+    `AB¶CD２２＠` → "D"
   aNNNN: get a subsection from the canvas by the params [x; y; w; h]
+    `Ｚ５ｎ２２３３＠` → "GHI¶LMN¶QRS"
 ＃	execute as JS
     `"Hello, "+"JS!"＃` → "Hello, JS!"
 ％	modulo

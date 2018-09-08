@@ -90,7 +90,7 @@
   <a id="fakeLink" style="display:none" />
   <script>
   program.focus();
-    var latestVersion = 6;
+    var latestVersion = 7;
     var module = 0; // node is annoying & this can't be a more meaningful variable name
     var usedVersion = latestVersion;
     var devMode = false;
@@ -456,7 +456,7 @@
     
     
     async function tests() {
-      let pass = true;
+      let failed = 0;
       
       // run all examples
       for (let c of data) {
@@ -465,38 +465,67 @@
         if (c.types.length) {
           for (let ct of c.types) ae.push(...ct.e)
         }
-        for (let e of ae) { // test examples
-          if (!e.raw || e.raw.includes("//NOTTEST")) continue;
+        cexample: for (let e of ae) { // test examples
+          console.groupEnd();
+          if (!e.raw || e.raw.includes("//NOTTEST")) continue cexample;
           let toEval = "["+e.raw.replace("//TEST","").replace(/¶/g, "\\n")+"]";
-          let expected;
+          let outputs = [];
           try {
-            expected = eval(toEval);
+            outputs.push(eval(toEval));
+          } catch (e) {}
+          try {
+            outputs.push(eval(toEval.replace(/\\(?!n)/g,"\\\\")));
+          } catch (e) {}
+          outputs = outputs.filter(c=>c);
+          if (outputs.length == 0) {
+            console.error("Malfunctioned example:", toEval);
+            failed++;
+            continue cexample;
+          }
+          let cc = new CanvasCode(e.c, []);
+          let out;
+          console.groupCollapsed(`%ctesting \`${e.c}\`; expecting`, "font-weight: normal;", outputs);
+          try {
+            out = await cc.run(0, false, false);
           } catch (e) {
+            stop();
+            failed++;
+            console.groupEnd();
+            console.error("Interpreter errored:",e);
+            continue cexample;
+          }
+          function rec(x) {
+            if (isArr(x)) return x.map(c=>rec(c));
+            else if (isArt(x)) return x.toString();
+            else if (isNum(x)) return x.doubleValue();
+            else return x;
+          }
+          let stack = rec(cc.stack);
+          for (let expected of outputs) {
+            let expStr = (expected.length > 1 || isArr(expected[0]))? null : expected[0]+"";
+            // console.log(expected,stack, equal(expected,stack));
+            // let expNorm = isArr(expected)? bigify(expected) : null;
             try {
-              expected = eval(toEval.replace(/\\/g,"\\\\"));
+              if (expStr!==null && out === expStr) {
+                console.log("pass: output");
+                continue cexample;
+              } else if (equal(stack[stack.length-1], expected[0])) {
+                console.log("pass: ToS");
+                continue cexample;
+              } else if (equal(stack, expected)) {
+                console.log("pass: stack");
+                continue cexample;
+              }
             } catch (e) {
-              console.error("Malfunctioned example:", toEval);
-              pass = false;
-              continue;
+              console.error("what", e);
             }
           }
-          let expStr = (expected.length > 1 || isArr(expected[0]))? null : expected[0]+"";
-          let expNorm = isArr(expected)? bigify(expected) : null;
-          console.log(`testing \`${e.c}\`; expected`, expected);
-          let cc = new CanvasCode(e.c, []);
-          let out = await cc.run(0, false, false);
-          if (expected!==null && out == expStr) {
-            console.log("pass: output")
-          } else if (equal(cc.get(), expNorm)) {
-            console.log("pass: ToS")
-          } else if (equal(cc.stack, expNorm)) {
-            console.log("pass: stack")
-          } else {
-            pass = false;
-            console.error("got",out);
-          }
+          failed++;
+          console.groupEnd();
+          console.error("got",out,stack);
         }
       }
+      console.groupEnd();
       
       // test numbers
       for (i in new Array(300).fill()) {
@@ -505,7 +534,7 @@
         let res = await cc.run(0, false, false);
         console.log("testing", i, r);
         if (res != i) {
-          pass = false;
+          failed++;
           console.error(i+" failed as "+r);
         }
       }
@@ -527,14 +556,14 @@
         if (length && (typeof length === 'number'? compressed.length !== length : compressed.length > +length)) console.warn("unexpected length: wanted "+length+", got "+compressed.length);
         if (res !== parts.join('')) {
           console.error("Compression failed!");
-          pass = false;
+          failed++;
         }
       }
       
-      if (pass) {
-        console.log("Passed all tests!");
+      if (failed) {
+        console.warn(failed+" tests not passed…");
       } else {
-        console.warn("All tests not passed…");
+        console.log("Passed all tests!");
       }
     }
     

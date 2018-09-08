@@ -23,8 +23,9 @@ if 5 columns exist, it's a loop(ish thing) starter they correspond to `NSA｝］
 |`＞` | ✓ |   |   |   |   |   |
 |`‰`  |
 |`ø`  | ✓ |
-|`＾` | ✓ |   |   |
+|`＾` | ✓ |   |   |   |   |   |
 |`◂`  | ✓ |
+|`◂◂`  | ✓ |
 |`←`  |
 |`↑`  |
 |`→`  |
@@ -38,18 +39,18 @@ if 5 columns exist, it's a loop(ish thing) starter they correspond to `NSA｝］
 |`┐`  | ✓ |
 |`└`  | ✓ |
 |`┘`  | ✓ |
-|`├`  | ✓ | ✓ | □ |
+|`├`  | ✓ | ✓ | ✓ |
 |`┤`  | ✓ | ✓ | ✓ |
 |`┬`  | ✓ |   |   |   |   |   |
 |`┴`  |   |   |   |   | ✓ |   |
 |`┼`  | ✓ |
 |`╴`  | ✓ |
-|`╵`  | ✓ | ✓ |   |
+|`╵`  | ✓ | ✓ | ✓ |
 |`╶`  | ✓ |
-|`╷`  | ✓ | ✓ |   |
+|`╷`  | ✓ | ✓ | ✓ |
 |`╪`  | ✓ |
-|`╋`  |   |   |   |   |   |   | SSS ✓ | aaNN ✓ |
-|`╋╋` |   |   | aaNN ✓ |
+|`╋`  | SSS ✓ | aaNN ✓ |
+|`╋╋` | aaNN ✓ |
 |`↖`  |
 |`↗`  |
 |`↘`  |
@@ -76,7 +77,7 @@ if 5 columns exist, it's a loop(ish thing) starter they correspond to `NSA｝］
 |`Ｊ` |   | ✓ | ✓ |
 |`Ｋ` |   | ✓ | ✓ |
 |`Ｌ` | ✓ | ✓ | ✓ |
-|`Ｍ` |
+|`Ｍ` | ✓ |   |   |   |   |   |
 |`Ｎ` |
 |`Ｏ` | ✓ |
 |`Ｐ` | ✓ |
@@ -108,7 +109,7 @@ if 5 columns exist, it's a loop(ish thing) starter they correspond to `NSA｝］
 |`ｐ` | ✓ |
 |`ｑ` | ✓ |
 |`ｒ` | ✓ | aS ✓ | ✓ |
-|`ｓ` |   | ✓ |   |
+|`ｓ` |   | ✓ |   | ✓ |   |   |
 |`ｔ` | ✓ |
 |`ｕ` | ✓ | ✓ | ✓ |
 |`ｖ` | ✓ | ✓ | ✓ |
@@ -117,10 +118,10 @@ if 5 columns exist, it's a loop(ish thing) starter they correspond to `NSA｝］
 |`ｙ` | ✓ |
 |`ｚ` | ✓ |
 |０-９| ✓ |
-|`‟`  |
+|`‟`  | ✓ |
 |`‼`  | ✓ | ✓ | ✓ |
 |`¼`  |
-|`½`  | ✓ |   |   |
+|`½`  | ✓ |   | ✓ |
 |`¾`  |
 |`√`  | ✓ |   |   |
 |`／` | ✓ | ✓ | ✓ |
@@ -128,7 +129,7 @@ if 5 columns exist, it's a loop(ish thing) starter they correspond to `NSA｝］
 |`∑`  | □ | □ | ✓ |
 |`∙`  | ✓ |
 |`‽`  | ✓ | ✓ | ✓ | ✓ | ✓ |
-|`‾`  |
+|`‾`  | ✓ |
 |`⇵`  | ✓ |   | ✓ |
 |`∔`  | ✓ | ✓ | ✓ |   |   | ✓ |
 |`：` | ✓ |
@@ -139,11 +140,11 @@ if 5 columns exist, it's a loop(ish thing) starter they correspond to `NSA｝］
 |`═`  | ✓ |
 |`║`  | ✓ |
 |`╬`  | ✓ |
-|`“`  |
-|`”`  |
-|`„`  |
-|`？` | ✓ | ✓ | ✓ | ✓ | ✓ |
-|`↶`  |   | ✓ | ✓ |
+|`“`  | ✓ |
+|`”`  | ✓ |
+|`„`  | ✓ |
+|`？` | ✓ | ✓ | ✓ | ✓ | ］｝ ✓ |
+|`↶`  | aN ✓ | ✓ | ✓ |
 |`↷`  | aN ✓ | ✓ | ✓ |
 |`＠` |   |   |   | ✓ | ✓ |   | aNN ✓ | aNNNN ✓ |
 |`＃` | ✓ |
@@ -151,6 +152,9 @@ if 5 columns exist, it's a loop(ish thing) starter they correspond to `NSA｝］
 |`！` |
 |`α`  | ✓ |
 |`ω`  | ✓ |
+|`ŗ` | ✓ |
+|`¹-⁹` | ✓ |
+|`０-９` | ✓ |
 
 table of the palindromizators
 

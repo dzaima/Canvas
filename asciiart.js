@@ -1,3 +1,4 @@
+//# sourceURL=Canvas
 if (module) var Big = require('./bigDecimal');
 // undefined - background
 // null - wasn't there originally - e.g. edges on a ragged array

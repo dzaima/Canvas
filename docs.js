@@ -1,3 +1,4 @@
+//# sourceURL=Docs
 console.log("docs.js loaded!");
 var data = [];
 $.ajax({
@@ -46,35 +47,31 @@ $.ajax({
       url: "files/implemented.md",
       success: function (implemented) {
         console.log("implemented.md loaded!");
-        var regex = /^\|`([^`])+`\s*\|(.+)$/gm;
+        var regex = /^\|`([^`]+)`\s*\|(.+)$/gm;
         var match;
         
         // parsing
         while (match = regex.exec(implemented)) {
           let chr = match[1];
           let cols = match[2].substring(1,match[2].length-2).split(" | ");
-          if (cols.length == 3 || cols.length == 1 || cols.length > 4) {
-            if (cols.length == 5) cols.splice(3);
-            let dataItem = data.find((item) => item.c === chr);
-            if (!dataItem) {
-              console.warn("char not found: "+chr);
-              continue;
-            }
-            dataItem.impl = {};
-            if (cols.length > 1) {
-              let tarr = cols.length == 3? ["N", "S", "A"] : ["NN", "SS", "AA", "NS", "AN", "AS"];
-              cols.forEach((impl, index) => {
-                if (impl.length == 1) dataItem.impl[tarr[index]] = impl==="✓";
-                else {
-                  let parts = impl.split(" ");
-                  dataItem.impl[parts[0].toUpperCase()] = parts[1]==="✓";
-                }
-              });
-            } else {
-              dataItem.impl[""] = cols[0]==="✓";
-            }
-          }else
-          console.log(" ignoring",chr);
+          let dataItem = data.find((item) => item.c === chr);
+          if (!dataItem) {
+            console.warn("char not found: "+chr);
+            continue;
+          }
+          dataItem.impl = {};
+          if (cols.length > 1 || cols[0].length > 1) {
+            let tarr = cols.length == 5? ["N", "S", "A", "｝", "］"] : cols.length == 3? ["N", "S", "A"] : ["NN", "SS", "AA", "NS", "AN", "AS","_","_","_"].slice(0, cols.length);
+            cols.forEach((impl, index) => {
+              if (impl.length == 1) dataItem.impl[tarr[index]] = impl==="✓";
+              else {
+                let parts = impl.split(" ");
+                dataItem.impl[parts[0].toUpperCase()] = parts[1]==="✓";
+              }
+            });
+          } else {
+            dataItem.impl[""] = cols[0]==="✓";
+          }
         }
         console.log("implementation data added!");
         createTable();

@@ -1,5 +1,3 @@
-//# sourceURL=Main
-var version = 7;
 var codepage = "⁰¹²³⁴⁵⁶⁷⁸⁹¶\n＋－（）［］｛｝＜＞‰ø＾◂←↑→↓↔↕ !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~┌┐└┘├┤┬┴╴╵╶╷╋↖↗↘↙×÷±«»≤≥≡≠ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ０１２３４５６７８９‟‼¼½¾√／＼∑∙‽‾⇵∔：；⟳⤢⌐ŗ“”„？＊↶↷＠＃％！─│┼═║╫╪╬αω";
 var baseChars = [...codepage].filter(c=>!"„“”‟\n".includes(c));
 var baseChar = c=>[].indexOf.bind(baseChars)(c);
@@ -54,6 +52,7 @@ if (module) {
   eval("var Canvas = AA.Canvas;");
   var debugLog = console.warn;
 }
+var version = 6;
 var stringChars;
 {
   let printableAsciiArr=[];
@@ -64,6 +63,7 @@ var stringChars;
 
 
 async function redrawDebug(selStart, selEnd, state) {
+  if (!stepping) return;
   result.value = state.printableOut;
   var program = state.program;
   codeState.innerHTML = '<span class="code">' + program.substring(0,selStart) + '</span>'
@@ -300,9 +300,7 @@ CanvasCode = class {
     var get = this.get.bind(this);
     var pop = this.pop.bind(this);
     var push = this.push.bind(this);
-    var cast = this.cast.bind(this);
     var remainders = this.remainders;
-    var lastArgs = this.lastArgs;
     
     
     
@@ -315,12 +313,9 @@ CanvasCode = class {
             this.level = this.p.ptrs.length-2;
             this.obj = this.p.pop();
             this.collect = this.branches.slice(-1)[0].c == "］";
-            this.canvas = isArt(this.obj);
-            if (this.canvas) {
-              this.result = new Canvas([], this.obj.p);
-            } else this.collected = [];
-            this.array = !isNum(this.obj) && !this.canvas;
-            this.endCount = this.canvas? new Big(this.obj.width * this.obj.height) : this.array? new Big(this.obj.length) : this.obj.round(0, Big.ROUND_FLOOR);
+            this.collected = [];
+            this.array = !isNum(this.obj);
+            this.endCount = this.array? new Big(this.obj.length) : this.obj.round(0, Big.ROUND_FLOOR);
             this.index = 0;
             this.continue(undefined, true);
           }
@@ -332,45 +327,22 @@ CanvasCode = class {
           
           continue(ending, first = false) {
             this.ptr = this.branches[0].i;
-            if (!first && this.collect) {
-              let added = this.p.collectToArray();
-              if (this.canvas) {
-                for (let item of added) this.result.overlap(new Canvas(item, this.p), this.obj.sx + this.x, this.obj.sy + this.y);
-              } else this.collected.push(...added);
-            }
-            if (this.index >= this.endCount.intValue()) return this.break();
+            if (!first && this.collect) this.collected.push(...this.p.collectToArray());
+            if (this.index >= this.endCount) return this.break();
             
-            if (this.collect) {
-              this.p.push(new Break(1));
-            }
+            if (this.collect) this.p.push(new Break(1));
             
-            var newItem, x, y;
-            if (this.canvas) {
-              this.x = this.index%this.obj.width;
-              this.y = 0 | this.index/this.obj.width;
-            }
-            // console.log(this.x,this.y,this.obj,this.index,+this.endCount);
+            var newItem;
             if (this.array) newItem = this.obj[this.index];
-            else if (this.canvas) newItem = this.obj.repr[this.y][this.x] || this.obj.background;
-            else newItem = new Big(this.index+1);
+            else newItem = this.index+1;
             this.p.push(newItem);
-            if (this.canvas) {
-              this.p.setSup(this.level, newItem);
-              this.p.setSup(this.level+1, this.x);
-              this.p.setSup(this.level+2, this.y);
-            } else {
-              this.p.setSup(this.level, newItem);
-              this.p.setSup(this.level+1, this.index + (this.array? 1 : 0));
-            }
+            this.p.setSup(this.level, newItem);
+            this.p.setSup(this.level+1, this.index+(this.array? 1 : 0));
             
             this.index++;
           }
           onBreak() {
-            if (this.collect) {
-              if (this.canvas) {
-                this.p.push(this.result);
-              } else this.p.push(this.collected);
-            }
+            if (this.collect) this.p.push(this.collected);
           }
           toString() {
             return `@${this.ptr} loop; ${this.sptr}-${this.eptr}${this.collect? ' '+ arrRepr(this.collected) : ''}`;
@@ -525,7 +497,7 @@ CanvasCode = class {
         let I = $('#inputs')[0].value;
         let P = $('#program')[0].value;
         let E = eval;
-        let p = new (class{
+        let p=new (class{
           get p() { return pop(); }
           get f() { program.focus(); }
           get F() { $('#inputs')[0].focus(); }
@@ -564,13 +536,6 @@ CanvasCode = class {
         SS: (a, b) => b+a,
         SN: (s, n) => s.repeat(n),
         NS: (n, s, ex) => ex("SN", s,n),
-        AN: (a, n, ex) => {
-          if (a.some(c=>!isStr(c))) ex("aN");
-          let max = 0;
-          for (let {length} of a) max = Math.max(max, length);
-          return a.map(ln => (ln+" ".repeat(max-ln.length)).repeat(n.intValue()))
-        },
-        NA: (n, a, ex) => ex("AN", a, n),
         aN: (a, n) => {
           let na = this.blank;
           for (let i = 0; i < n; i++) {
@@ -654,7 +619,7 @@ CanvasCode = class {
       },
       "±": {
         S: (s) => new Canvas(s, this).horizReverse().toString(), // [...s].reduce((a,b)=>b+a)
-        N: (n) => new Big(0).minus(n),
+        N: (n) => B(0).minus(n),
         A: (a) => new Canvas(a, this).horizReverse().toArr(),
         a: (a) => a.horizReverse(),
       },
@@ -696,7 +661,6 @@ CanvasCode = class {
       },
       "ｎ": {
         AN: (a, n) => {
-          // n = n.intValue();
           var out = [];
           var curr = [];
           for (let i = 0; i < a.length; i++) {
@@ -710,7 +674,7 @@ CanvasCode = class {
           return out;
         },
         NA: (n, a, ex) => ex("AN", a, n),
-        SN: (s, n, ex) => ex("AN", [...s], n).map(c => c.join("")),
+        SN: (s, n, ex) => ex("AN", s.split(""), n).map(c => c.join("")),
         NS: (n, s, ex) => ex("SN", s, n),
         aa: (a, b) => a.overlap(b, 0, 0, smartOverlap),
         NN: (a, b) => {push(...a.divideAndRemainder(b));},
@@ -887,7 +851,6 @@ CanvasCode = class {
       },
       "↶": {
         a: (a) => a.rotate(-1, smartRotate),
-        aN: (a, n) => a.rotate(-n, smartRotate),
       },
       "↷": {
         a: (a) => a.rotate(1, smartRotate),
@@ -910,17 +873,14 @@ CanvasCode = class {
       "╵": {
         N: (n) => n.plus(1),
         S: (s) => s.replace(/(^\s*|[.?!]\s*)(\w)/g, (a,b,c)=>b+c.toUpperCase()),
-        A: "vectorize",
       },
       "╷": {
         N: (n) => n.minus(1),
         S: (s) => s.replace(/(^|\W)(\w)/g, (a,b,c)=>b+c.toUpperCase()),
-        A: "vectorize",
       },
       "├": {
         N: (n) => n.plus(2),
-        S: (s) => s.replace(/([^\w_]*)(\w)/, (a,b,c)=>b+c.toUpperCase()),
-        A: "vectorize",
+        S: (s) => s.replace(/([^\w_]*)(\w)/, (a,b,c)=>b+c.toUpperCase())
       },
       "┤": {
         N: (n) => n.minus(2),
@@ -931,7 +891,6 @@ CanvasCode = class {
       },
       "½": {
         N: (n) => n.divide(2),
-        A: "vectorize",
       },
       
       // stack manipulation
@@ -975,7 +934,7 @@ CanvasCode = class {
       },
       "Ｒ": {
         N: (a) => urange(a),
-        S: (s) => {this.background = s},
+        S: (s) => {Canvas.background = s},
       },
       "╶": this.nextInp.bind(this),
       "╴": () => currInp(),
@@ -1038,8 +997,7 @@ CanvasCode = class {
         this.vars.x = this.vars.x.plus(1);
       },
       "ｖ": () => {
-        let ToS = get();
-        if (this.vars.x === undefined) this.vars.x = Big.ZERO; // isNum(ToS)? new Big(0) : isStr(ToS)? "" : isArt(ToS);
+        if (this.vars.x === undefined) this.vars.x = new Big(0);
         if (isNum(this.vars.x)) push(this.vars.x = this.vars.x.plus(1));
         else if (isArr(this.vars.x)) this.vars.x.push(pop());
         else if (isArt(this.vars.x)) this.vars.x.appendVertically(new Canvas(pop()));
@@ -1058,12 +1016,12 @@ CanvasCode = class {
       
       
       "Ｕ": {
-        A: "vectorize",
+        A: "vectorise",
         S: (a) => a.toUpperCase(),
         N: (a) => a.round(0, Big.ROUND_CEILING),
       },
       "ｕ": {
-        A: "vectorize",
+        A: "vectorise",
         S: (a) => a.toLowerCase(),
         N: (a) => a.round(0, Big.ROUND_FLOOR),
       },
@@ -1083,83 +1041,66 @@ CanvasCode = class {
     }
     
     // simple built-ins
-    
-    function exfn(fn, types = new Array(fn.length).fill("T"), body) {
-      if (!isFn(fn)) {
-        throw new Error("exfn called with non-function");
-      }
-      let depth = 1;
-      let args = new Array(types.length);
-      for (let i = types.length-1; i >= 0; i--) {
-        let p = types[i];
-        let c;
-        if (p[0]==="_") c = get(depth++);
-        else c = pop(depth);
-        args[i] = cast(c, p[p.length-1]);
-      }
-      lastArgs.push(...args.map(copy));
-      let res = fn(...args, (type, ...args) => body[type](...args));
-      if (isJSNum(res)) res = new Big(res);
-      if (res !== undefined) push(res);
-    }
-    
-    for (let builtin in simpleBuiltins) {
-      let obj = simpleBuiltins[builtin];
-      this.builtins[builtin] = function () {
-        
-        
-        if (isFn(obj)) {
-          return exfn(obj);
+    for (let key in simpleBuiltins) {
+      this.builtins[key] = function (mode) {
+        // TODO: redo this mess...
+        // mode 1 = return function TODO
+        // mode 2 = is non-default function available
+        let callable = simpleBuiltins[key];
+        let originalObject = callable;
+        let matchingKey;
+        if (mode == 2) {
+          return true;
         }
-        
-        let len = Object.keys(obj).map(c=>c=="default"? 0 : c.length).reduce((a,b)=>Math.max(a,b));
-        let pattern = "";
-        for (let i = len; i >= 1; i--) {
-          pattern+= type(get(i));
-        }
-        
-        let foundKey;
-        function regexify(ptn) {
-          return new RegExp(ptn
-            .replace(/a/g   , "[aAS]")
-            .replace(/[tT]/g, "[aASN]")
-            .replace(/s/g   , "[SN]")
-            .replace(/_/g   , "")
-            +"$");
-        }
-        for (let key in obj) {
-          if (regexify(key).test(pattern)) {
-            foundKey = key;
-            break;
+        if (!isFn(callable)) {
+          let paramTypes = "";
+          for (let i = 0; i < 4; i++) {
+            let item = get(i+1);
+            paramTypes = type(item)+paramTypes;
+          }
+          let newfn;
+          for (let currentKey in callable) {
+            let regkey = currentKey.replace(/a/g, "[aAS]").replace(/[tT]/g, "[aASN]").replace(/s/g, "[SN]").replace(/_/g, "")+"$";
+            if (debug > 2) debugLog(regkey, "tested on", paramTypes);
+            if (new RegExp(regkey).test(paramTypes)) {
+              matchingKey = currentKey;
+              newfn = callable[matchingKey];
+              break;
+            }
+          }
+          if (isFn(newfn)) {
+            if (mode == 2) return true;
+            callable = newfn;
+          } else {
+            if (mode == 2) return false;
+            callable = callable.default;
+            if (!isFn(callable)) {
+              console.error("no appropriate function found for "+key+" with params "+paramTypes);
+            }
           }
         }
-        let sub;
-        
-        if (foundKey) {
-          sub = obj[foundKey];
-          if (debug > 1) console.log("found key "+foundKey+" for "+pattern);
-        } else {
-          sub = obj.default;
-          if (!sub) throw new Error(`key not found and there's no default for ${builtin} on ${pattern}`);
-          exfn(sub, new Array(obj.length).fill("T"), obj);
+        let params = [];
+        let popCtr = 1;
+        let toRemove = [];
+        let rawTypes;
+        if (matchingKey) rawTypes = matchingKey.replace(/_/g, "");
+        for (let i = 0; i < Math.min(originalObject.length? originalObject.length : 10, ((matchingKey || callable).length)); i++) {
+          let item = get(popCtr);
+          if (matchingKey && matchingKey[i] == "_") i++;
+          else toRemove.splice(0, 0, popCtr);
+          if (matchingKey) item = this.cast(item, rawTypes[rawTypes.length-popCtr]);
+          params.push(item);
+          popCtr++;
         }
-        
-        if (isFn(sub)) {
-          exfn(sub, [...foundKey.replace(/[^_]/g, "$&;").split(";").slice(0, -1)], obj);
-            // .replace(/[^_]/g, "1").replace(/_1/g, "0")].map(c=>parseInt(c)));
-        } else if (sub === "vectorize") {
-          function rec(arr) {
-            return arr.map( c => {
-              if (isArr(c)) return rec(c);
-              let t = type(c);
-              let found = Object.keys(obj).find(k => regexify(k).test(t));
-              if (!found) throw new Error(`Type ${t} not defined for ${builtin}`);
-              return obj[found](c);
-            });
-          }
-          push(rec(pop()));
-        } else throw new Error("sub wasn't a function or vectorization request");
-        
+        params.reverse();
+        for (let fromTop of toRemove) {
+          this.remove(fromTop);
+        }
+        this.lastArgs.push(...params.map(copy));
+        let ex = (which, ...newParams) => originalObject[which](...newParams);
+        let res = callable(...params, ex);
+        if (isJSNum(res)) res = B(res);
+        if (res !== undefined) push(res);
       }.bind(this)
     }
     
@@ -1170,7 +1111,7 @@ CanvasCode = class {
         .replace(/([”‟„]|^)([^“”‟„\n]*)(?=[”‟„])/g, "$1“$2")
         .replace(/“[^“”‟„\n]*$/, "$&”");
       while (this.endPt(-1, true, false, pr) !== undefined && (!debug || (ctr++) <= 100)) pr = "｛"+pr;
-      if (ctr>=100 && debug) console.warn("couldn't fix braces after 100 iterations!");
+      if (ctr>=100 && debug) console.error("couldn't fix braces after 100 iterations!");
       return pr;
     });
     
@@ -1189,7 +1130,8 @@ CanvasCode = class {
   
   
   async run (debug = 0, step = false, sleepUpdate = true) {
-    if (running) throw new Error("already running!");
+    
+    if (running) throw "already running!";
     else running = true;
     this.sleepUpdate = sleepUpdate;
     this.debug = debug;
@@ -1203,26 +1145,16 @@ CanvasCode = class {
       }
     )(main, this, -1, main.length));
     var counter = 0;
-    try {
-      while (this.ptrs.length > 0) {
-        if (sleepUpdate && counter%100 == 0) await sleep(0);
-        counter++;
-        await this.cpo.next();
-        if (!running) break;
-      }
-      if (this.implicitOut) this.outputFS(false, false, false);
-      if (!module) {
-        result.placeholder=running? "No output was returned" : "No output on premature stop";
-        result.value = this.printableOut;
-      }
-    } catch (e) {
-      console.error(e);
-      if (!module) result.placeholder = "The interpreter errored during the execution";
-      if (!stepping && devMode && this.cpo) {
-        enterStepping();
-        await redrawDebug(this.cpo.ptr, this.endPt(this.cpo.ptr), this);
-        stopStepping();
-      }
+    while (this.ptrs.length > 0) {
+      if (sleepUpdate && counter%100 == 0) await sleep(0);
+      counter++;
+      await this.cpo.next();
+      if (!running) break;
+    }
+    if (this.implicitOut) this.outputFS(true,true,true);
+    if (!module) {
+      result.placeholder=running? "No output was returned" : "No output on premature stop";
+      result.value = this.printableOut;
     }
     
     running = false;
@@ -1232,7 +1164,7 @@ CanvasCode = class {
   
   setSup (i, v) {
     if (i>8 || i < 0) return;
-    if (isJSNum(v)) v = new Big(v);
+    if (isJSNum(v)) v = B(v);
     this.supVals[i] = v;
   }
   
@@ -1326,8 +1258,8 @@ CanvasCode = class {
     let multibyte = Object.keys(this.builtins).filter(c => c.length>1).find(key => 
       [...key].every((char,i)=>
            program[index+i] == char
-      ) // && this.builtins[key].length > 0
-        // && this.builtins[key](2)
+      ) && this.builtins[key].length > 0
+        && this.builtins[key](2)
     );
     if (multibyte) {
       return index+multibyte.length;
@@ -1355,9 +1287,8 @@ CanvasCode = class {
   }
   
   outputFS (shouldPop, newline, noImpOut) { // output from stack
-    let item;
-    if (shouldPop) item = this.pop();
-    else item = this.get();
+    var item = this.pop();
+    if (!shouldPop) this.push(item);
     if (noImpOut) this.implicitOut = false;
     if (newline) this.println(item);
     else this.print(item);
@@ -1441,10 +1372,10 @@ CanvasCode = class {
   }
   cast (item, rt, p) {
     if (type(item) == rt || rt == "T") return item;
-    if (rt == 'N') return new Big(item.toString().replace(",","."));
+    if (rt == 'N') return B(item.toString().replace(",","."));
     if (rt == 'a' || rt == 't') return new Canvas(item, this);
     if (rt == 'S' || rt == 's') return rt.toString();
-    throw new Error(`cast error from ${type(item)} to ${rt}: ${item} (probably casting to array which is strange & unsupported)`);
+    throw `cast error from ${type(item)} to ${rt}: ${item} (probably casting to array which is strange & unsupported)`;
   }
   prepareStr (str) {
     return str.replace(/ŗ/g, () => this.pop());
@@ -1467,13 +1398,12 @@ function copy (item) {
   return item;
 }
 function equal(a, b) {
-  if (type(a)!==type(b)) return false;
-  if (isArr(a)) return a.length === b.length && a.every((c,i) => equal(c, b[i]));
+  if (type(a)!=type(b)) return false;
+  if (isArr(a)) return a.every((c,i)=>equal(c,b[i]));
   if (isNum(a)) return a.eq(b);
-  if (isJSNum(a)) return new Big(a).eq(b);
   if (isStr(a)) return a===b;
   if (isArt(a)) return equal(a.repr, b.repr);// TODO: this should be improved (i'm lazy)
-  throw new Error("no eq test for "+a+";"+b);
+  throw "no eq test for "+a+";"+b;
 }
 function subType (a, b) { // is `a` a subtype of `b`?
   if (a==b) return true;
@@ -1483,7 +1413,7 @@ function subType (a, b) { // is `a` a subtype of `b`?
 
 function irange (s, e) {//inclusive range
   var out = [];
-  for (let b = new Big(s); b.lte(e); b = b.plus(1)) {
+  for (let b = B(s); b.lte(e); b = b.plus(1)) {
     out.push(b);
   }
   return out;
@@ -1562,7 +1492,7 @@ function bigify (item) {
   var out = [];
   for (citem of item) {
     if (isArr(citem)) citem = bigify(citem);
-    if (isJSNum(citem) && Number.isFinite(citem)) citem = new Big(citem);
+    if (isJSNum(citem)) citem = B(citem);
     out.push(citem);
   }
   return out;
@@ -1623,24 +1553,6 @@ function compressNum(n) {
     console.warn("< compressed start but not anywhere",n);
   } else return `“${toBijective(new Big(n).minus(compressedNumberStart), baseChars.length).map(c=>baseChars[c]).join('')}„`;
 }
-
-// function prettyError(e) {console.log(e.stack+"!");
-//   if (window.chrome) {
-//     try {
-//       let t=e.stack.split("\n");
-//       // console[level](t[0]);
-//       console.groupCollapsed("%c"+t[0]+" @"+t[1].split("main.js:")[1].slice(0,-1), "font-weight:normal;");
-//       t.slice(1).map(c=> {
-//         let parts = c.split(/    at | \(eval at success \(.+\), <anonymous>:/);
-//         console.log(`in ${parts[1]} @${parts[2].slice(0,-1)}`);
-//       })
-//       console.groupEnd();
-//     } catch (well) {
-//       console.groupEnd();
-//       console.error(e);
-//     }
-//   } else console.error(e);
-// }
 
 function compressString(arr) {
   class Part {
