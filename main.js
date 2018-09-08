@@ -300,6 +300,7 @@ CanvasCode = class {
     var get = this.get.bind(this);
     var pop = this.pop.bind(this);
     var push = this.push.bind(this);
+    var remainderPalindromize = this.remainderPalindromize.bind(this);
     var cast = this.cast.bind(this);
     var getRemainder = this.getRemainder.bind(this);
     var remainders = this.remainders;
@@ -1248,8 +1249,8 @@ CanvasCode = class {
   
   remainderPalindromize (canvas, x, y) {
     var xa = [], ya = [];
-    if (x!==null) xa = [H, "mirror", x==2? getRemainder(0) : x, smartOverlap];
-    if (y!==null) ya = [V, smartOverlapBehind, y==2? getRemainder(0) : y, smartOverlap];
+    if (x!==null) xa = [H, "mirror", x==2? this.getRemainder(0) : x, smartOverlap];
+    if (y!==null) ya = [V, smartOverlapBehind, y==2? this.getRemainder(0) : y, smartOverlap];
     return canvas.palindromize(...xa, ...ya);
   }
   // output with 2 trailing and leading newlines removed
