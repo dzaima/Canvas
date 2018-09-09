@@ -1,11 +1,11 @@
 //# sourceURL=Main
-version = 8;
+version = 7;
 codepage = "⁰¹²³⁴⁵⁶⁷⁸⁹¶\n＋－（）［］｛｝＜＞‰ø＾◂←↑→↓↔↕ !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~┌┐└┘├┤┬┴╴╵╶╷╋↖↗↘↙×÷±«»≤≥≡≠ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ０１２３４５６７８９‟‼¼½¾√／＼∑∙‽‾⇵∔：；⟳⤢⌐ŗ“”„？＊↶↷＠＃％！─│┼═║╫╪╬αω";
 const baseChars = [...codepage].filter(c => !"„“”‟\n".includes(c));
 const baseChar = c => [].indexOf.bind(baseChars)(c);
 let compressionChars = "ZQJKVBPYGFWMUCLDRHSNIATEXOzqjkvbpygfwmucldrhsniatexo~!$%&=?@^()<>[]{};:9876543210#*\"'`.,+\\/_|-\nŗ ";
 let compressionModes = 5;
-let boxChars=" \n-|/\\_";
+let boxChars=" -_/\\|¶\n";
 
 var debugCompression = false;
 var compressionParts;
@@ -209,14 +209,14 @@ class Pointer {
                 let pos = -1;
                 let chars = "";
                 while (pos < compressionChars.length) {
-                  if (pos>=0) chars = compressionChars[pos] + chars;
+                  if (pos>=0) chars += compressionChars[pos];
                   pos = pos + 1 + pop(compressionChars.length - pos - (pos===-1));
                 }
                 let lbit = pop(2);
                 let len = chars.length + 1;
                 if (lbit) len+= pop(128)+16;
                 else len+= pop(16);
-                if (debugCompression) console.log("dict: " + chars + " len: " + len);
+                if (debug > 2) console.log("dict: " + chars + " len: " + len);
                 for (; len > 0; len--) {
                   string+= popChar(chars);
                 }
@@ -228,7 +228,7 @@ class Pointer {
                 let len = chars.length + 1;
                 if (lbit) len+= pop(128)+16;
                 else len+= pop(16);
-                if (debugCompression) console.log("boxdict: " + chars + " len: " + len);
+                if (debug > 2) console.log("dict: " + chars + " len: " + len);
                 for (; len > 0; len--) {
                   string+= popChar(chars);
                 }
@@ -1721,7 +1721,7 @@ function compressString(arr) {
       if (unique.length < part.length) { // at least 1 thing is repeating
         let valid = 1;
         let indexes = unique.map(c=>compressionChars.indexOf(c)).sort((a,b)=>a-b);
-        let map = indexes.map(c=>compressionChars[c]).reverse();
+        let map = indexes.map(c=>compressionChars[c]);
         current = new Part("dict");
         if (debugCompression) console.log("trying dict");
         push(2, compressionModes);
