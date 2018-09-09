@@ -137,11 +137,11 @@
     }
     
     let strComp1 = "enter parts in the input field as separate lines, with ¶ as newlines and ŗ as popping from stack\nThis doesn't count the starting quote in the bytecount\nI.split`\\n`＃：clip(compressString(p.p))＃ＱＬ╷；∑Ｌŗ -> ŗ bytes∙p.F＃";
-    let strComp2 = "enter parts in the input field as separate lines, with ¶ as newlines and ŗ as popping from stack\nThis doesn't count the starting quote in the bytecount\n\ndebugCompression=true;I.split`\n`＃：clip(compressString(p.p))＃ＱＬ╷；∑Ｌŗ -> ŗ bytesＯ∙p.F;compressionParts.slice(0,-1).map(c=>c.map(c=>[c.type,c.length]))＃｛｛┤“ｑ&„：└×Ｕ；÷］ ＊］";
+    let strComp2 = "enter parts in the input field as separate lines, with ¶ as newlines and ŗ as popping from stack\nThis doesn't count the starting quote in the bytecount\n\ndebugCompression=true;I.split`\\n`＃：clip(compressString(p.p))＃ＱＬ╷；∑Ｌŗ -> ŗ bytesＯ∙p.F;compressionParts.slice(0,-1).map(c=>c.map(c=>[c.type,c.length]))＃｛｛┤“ｑ&„：└×Ｕ；÷］ ＊］";
     if (!localStorage.saves) {
       localStorage.saves = JSON.stringify([
         ["string compress", strComp1, "", 1],
-        ["number compress", "clip(compressNum(p.p))＃p.F＃", "", 1]
+        ["number compress", "clip(compressNum(p.p))＃p.F＃", "", 1],
       ]);
     }
     if (JSON.parse(localStorage.saves).find(c=>c[1]==strComp1)) {
