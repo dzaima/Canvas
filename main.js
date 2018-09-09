@@ -150,7 +150,7 @@ class Pointer {
   break() {
     this.finished = true;
     this.onBreak();
-    this.p.break(this.eptr+1, this);
+    this.p.break(this.eptr, this);
   }
   onBreak() {}
   init() {}
