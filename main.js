@@ -1659,7 +1659,8 @@ function compressString(arr) {
     }
     finish() {
       let res = Big.ZERO;
-      for (let i = this.arr.length-1; i >= 0; i--) res = res.mul(this.arr[i][1]).plus(this.arr[i][0]);
+      for (let i = this.arr.length-1; i >= 0; i--)
+        res = res.mul(this.arr[i][1]).plus(this.arr[i][0]);
       this.score = res;
       this.length = Math.log(this.score.floatValue())/Math.log(252);
     }

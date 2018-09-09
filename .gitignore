@@ -1,2 +1,4 @@
 temp/
-node_modules
+node_modules/
+.fuse_hidden*
+.idea/
