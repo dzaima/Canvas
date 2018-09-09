@@ -7,6 +7,8 @@ let compressionChars = "ZQJKVBPYGFWMUCLDRHSNIATEXOzqjkvbpygfwmucldrhsniatexo~!$%
 let compressionModes = 5;
 let boxChars=" -_/\\|¶\n";
 
+var debugCompression = false;
+var compressionParts;
 
 const shortNumbers = {};
 let simpleNumbers;
@@ -515,6 +517,7 @@ CanvasCode = class {
       
       "ω": () => push(this.lastArgs.slice(-1)[0]),
       "α": () => push(this.lastArgs.slice(-2)[0]),
+      "ｇ": () => push(this.remainders.slice(-2)[0]),
       "⁰": () => {
         let utype = type(get(1));
         let res = [];
@@ -1641,46 +1644,60 @@ function compressNum(n) {
 // }
 
 function compressString(arr) {
+  compressionParts = [];
   class Part {
     constructor (type) {
       this.type = type;
       this.arr = [];
-      this.score = Big.ONE;
+      // this.score = Big.ONE;
     }
     add(n, b) {
-      this.score = this.score.mul(b).add(n);
-      this.S=+this.score;
+      // this.score = this.score.mul(b).add(n);
+      // this.S=+this.score;
+      // this.L=Math.log(this.S)/Math.log(252);
       this.arr.push([n, b]);
     }
-    all(a) {
-      this.arr = this.arr.concat(a.arr);
+    finish() {
+      let res = Big.ZERO;
+      for (let i = this.arr.length-1; i >= 0; i--) res = res.mul(this.arr[i][1]).plus(this.arr[i][0]);
+      this.score = res;
+      this.length = Math.log(this.score.floatValue())/Math.log(252);
     }
   }
-  let stack = [new Part()];
+  // let stack = [new Part()];
+  let current;
+  let allparts = [];
   function push(n, b) {
-    if (debug>2) console.log(n, b);
-    stack[stack.length-1].add(n, b);
+    if (debugCompression) console.log(n, b);
+    current.add(n, b);
   }
   for (let part of arr) {
     if (!part) continue;
     part = part.replace(/¶/g, "\n");
-    if (part.length < 3) {
+    if (part.length <= 2) {
+      current = new Part("char");
       push(0, compressionModes);
       push(part.length-1, 2);
       for (let c of part) push(compressionChars.indexOf(c), compressionChars.length);
+      allparts.push(...current.arr);
+      if (debugCompression) compressionParts.push([current]);
+      current.finish();
     } else {
       let attempts = [];
       if (part.length <= 18) {
-        stack.push(new Part("chars"));
+        current = new Part("chars");
+        if (debugCompression) console.log("trying raw ASCII");
         push(1, compressionModes);
         push(part.length-3, 16);
         for (let c of part) push(compressionChars.indexOf(c), compressionChars.length);
-        attempts.push(stack.pop());
+        attempts.push(current);
+        current.finish();
       }
       let unique = [...part].filter((c,i,a) => a.indexOf(c) === i);
       if (unique.length < part.length && unique.every(c=>boxChars.includes(c))) {
         let valid = 1;
-        stack.push(new Part("boxdict"));
+        current = new Part("boxdict");
+        if (debugCompression) console.log("trying boxdict");
         push(3, compressionModes);
         for (let c of boxChars)
           push(+(unique.includes(c)), 2);
@@ -1697,28 +1714,22 @@ function compressString(arr) {
           push(slen - 16, 128);
         }
         for (let c of part) push(chars.indexOf(c), chars.length);
-        if (valid) attempts.push(stack.pop());
+        if (valid) attempts.push(current);
+        current.finish();
         
       }
       if (unique.length < part.length) { // at least 1 thing is repeating
         let valid = 1;
         let indexes = unique.map(c=>compressionChars.indexOf(c)).sort((a,b)=>a-b);
         let map = indexes.map(c=>compressionChars[c]);
-        stack.push(new Part("dict"));
+        current = new Part("dict");
+        if (debugCompression) console.log("trying dict");
         push(2, compressionModes);
         let curr = -1;
         for (let c of indexes) {
           push(c-curr-1, compressionChars.length - curr - (curr===-1));
           curr = c;
         }
-        // 1 12345
-        // 2 2345¶
-        // 4 345¶
-        
-        // 5 5¶
-        // ¶ ¶
-        
-        // ¶ 5¶
         let end = compressionChars.length - curr;
         push(end-1, end);
         let slen = part.length-unique.length-1;
@@ -1731,15 +1742,23 @@ function compressString(arr) {
           push(slen - 16, 128);
         }
         for (let c of part) push(map.indexOf(c), map.length);
-        if (valid) attempts.push(stack.pop());
+        if (valid) attempts.push(current);
+        current.finish();
       }
-      let sorted = attempts.sort((a,b)=>a.S-b.S);
-      stack[0].all(sorted[0]);
-      if (debug>1) console.log("possible for part:", sorted);
+      let sorted = attempts.sort((a,b)=>a.score.minus(b.score).intValue());
+      allparts.push(...sorted[0].arr);
+      if (debugCompression) console.log("possible for part:", sorted);
+      if (debugCompression) compressionParts.push(sorted);
     }
   }
   let res = Big.ZERO;
-  let ns = stack.pop().arr;
+  let ns = allparts;
+  if (debugCompression) {
+    let p = new Part();
+    p.arr = allparts;
+    p.finish();
+    compressionParts.push(p);
+  }
   for (let i = ns.length-1; i>= 0; i--) res = res.mul(ns[i][1]).add(ns[i][0]);
   return '“' + toBijective(res, baseChars.length).map(c=>baseChars[c]).join('') + '‟';
 }

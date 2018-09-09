@@ -235,7 +235,8 @@
   SS: encase the 1st string in the 2nd
     `hello∙'ｅ` → "'hello'"
 ｆ	
-ｇ	
+ｇ	push the last remainder
+  `５⇵ｇ）` → [3,1]
 ｈ	
 ｉ	
 ｊ	remove first item / first line
@@ -440,6 +441,9 @@
 two of the same palindromizators next to each other disable character mirroring
 if after a double-line there's a character with that as a single line, it's replaced by a remainder.
 So ╫│ is vertical palindromization with overlap 1 and horizontal with overlap of the remainder
+╬┼	quad palindromize with remainder overlap
+  `３⇵-×：↷ｎ╬┼` → "+-+¶| |¶+-+"
+  `４⇵-×：↷ｎ╬┼` → "+--+¶|  |¶|  |¶+--+"
 
 
 
