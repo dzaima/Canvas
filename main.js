@@ -1148,6 +1148,7 @@ CanvasCode = class {
           sub = obj.default;
           if (!sub) throw new Error(`key not found and there's no default for ${builtin} on ${pattern}`);
           exfn(sub, new Array(obj.length).fill("T"), obj);
+          return;
         }
         
         if (isFn(sub)) {
