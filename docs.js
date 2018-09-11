@@ -297,26 +297,27 @@ transforms.sort((a,b)=>{
 });
 let tkey = localStorage.kpr? eval(localStorage.kpr) : c => c.key === "F1" || c.key === "F2";
 
-program.onkeydown = function (e) {
+inputs.onkeydown = program.onkeydown = function (e) {
   // console.log(e);
-  if (program.selectionStart === program.selectionEnd) {
+  let el = e.srcElement
+  if (el.selectionStart === el.selectionEnd) {
     if (e.key === "Tab") {
       e.preventDefault();
-      var ptr = program.selectionStart;
-      var schr = program.value[ptr-1];
+      var ptr = el.selectionStart;
+      var schr = el.value[ptr-1];
       var cycle = cycles.find(c=>c.includes(schr));
       if (!cycle) return;
       var chr = cycle[(cycle.indexOf(schr) + 1) % cycle.length];
-      program.value = program.value.substring(0,ptr-1)+chr+program.value.substring(ptr);
-      program.selectionStart = program.selectionEnd = ptr;
+      el.value = el.value.substring(0,ptr-1)+chr+el.value.substring(ptr);
+      el.selectionStart = el.selectionEnd = ptr;
     } else if (tkey(e)) {
-      let ptr = program.selectionStart;
-      const PV = program.value;
+      let ptr = el.selectionStart;
+      const PV = el.value;
       for (let [k, v] of transforms) {
         //console.log([...PV.slice(ptr-k.length, ptr)].sort().join(''), k);
         if ([...PV.slice(ptr-k.length, ptr)].sort().join('') === k) {
-          program.value = PV.slice(0, ptr-k.length)+v+PV.slice(ptr, PV.length);
-          program.selectionStart = program.selectionEnd = ptr-k.length + v.length;
+          el.value = PV.slice(0, ptr-k.length)+v+PV.slice(ptr, PV.length);
+          el.selectionStart = el.selectionEnd = ptr-k.length + v.length;
           break;
         }
       }
