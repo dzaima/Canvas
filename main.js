@@ -1378,7 +1378,7 @@ CanvasCode = class {
   
   currInp (next) {
     if (!next) next = 0;
-    return this.inputs[(this.inpCtr+next-1)%this.inputs.length];
+    return copy(this.inputs[(this.inpCtr+next-1)%this.inputs.length]);
   }
   
   nextInp() {
