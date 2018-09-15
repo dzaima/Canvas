@@ -47,7 +47,7 @@
   NN: greater than
     `２７＞` → 0
 ‰	
-ø	push an empty art object
+ø	push an empty art object //KEYW new canvas object
   `ø３｛１hi╋` → "hhhi"
 ＾	power
   NN: x^y

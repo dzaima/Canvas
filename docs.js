@@ -1,4 +1,80 @@
 //# sourceURL=Docs
+
+var cycles = [
+  
+  "AＡ","BＢ","CＣ","DＤ","EＥ","FＦ","GＧ","HＨ","IＩ","JＪ","KＫ","LＬ","MＭ",
+  "NＮ","OＯ","PＰ","QＱ","RＲ","SＳ","TＴ","UＵ","VＶ","WＷ","XＸ","YＹ","ZＺ",
+  "aａα","bｂ","cｃ","dｄ","eｅ","fｆ","gｇ","hｈ","iｉ","jｊ","kｋ","lｌ","mｍ",
+  "nｎ","oｏ","pｐ","qｑ","rｒ√ŗ","sｓ∑","tｔ","uｕ","vｖ","wｗω","xｘ","yｙ","zｚ",
+  
+  "0０⁰","1１¹","2２²","3３³","4４⁴","5５⁵","6６⁶","7７⁷","8８⁸","9９⁹",
+  "!！‼", "@＠", "#＃", "%％", "^＾",
+  "+＋╋∔", "-－─∔", "*×＊", "/／÷", "\\＼", "|｜│║",
+  ":：", ";；", "?？‽", "\"”‟", "'“„",
+  "(（", ")）", "[［", "]］", "{｛", "}｝", "<＜≤«", ">＞≥»",
+  "=≡≠═",
+  " ∙", "\n¶"
+];
+
+var transforms = [];
+var otransforms = Object.entries({
+  "||-": "╫",
+  "--|": "╪",
+  "=|": "╪",
+  "|": "│",
+  "||": "║",
+  "-": "─",
+  "--": "═",
+  "-|": "┼",
+  "--||": "╬",
+  "=||": "╬",
+  "<>": "↔",
+  "+-": "±", // also horizontal reverse
+  "^v": "↕",
+  "rev": "⇵",
+  "cw": "↷",
+  "ccw": "↶",
+  "rot": "⟳",
+  "o/":  "ø",  // empty art obj
+  "o\\": "ø",
+  "new": "ø",
+  "pop": "┐", // pop & remove item
+  "tri": "⌐", // triplicate
+  "dup": "┌", // duplicate 2nd from top
+  "g2": "┌", // duplicate 2nd from top
+  "3rd": "┘", // duplicate 2nd from top
+  "swap": "└",
+  "//": "⤢",
+  "abs": "⤢",
+  "+2":  "├",
+  "inc": "╵",
+  "+1":  "╵",
+  "-1":  "╷",
+  "dec": "╷",
+  "-2":  "┤",
+  "to":  "┬",  // to base (2 nums -> arr)
+  "from": "┴", // from base (arr & base -> num)
+  "dig": "◂",
+  "=/": "≠",
+  "!!": "‼",
+  "12": "½",
+  "1/2": "½",
+  "/2": "½",
+  "rt": "√",
+  "╴": "prev",
+  "╶": "next",
+  "": "",
+});
+for (let [k, v] of otransforms) {
+  transforms.push([[...k].sort().join(''), v]);
+}
+
+transforms.sort((a,b)=>{
+  let p1 = b[0].length-a[0].length;
+  if (p1) return p1;
+  return (b[0]>a[0]) - (b[0]<a[0])
+});
+
 console.log("docs.js loaded!");
 var data = [];
 $.ajax({
@@ -136,7 +212,11 @@ function createTable() {
     let desc = docstable.children[2].insertRow(-1);
     desc.classList.add("sdesc", "chrinf");
     desc.chr = item.c;
-    desc.innerHTML = '<th><a class="chr" href=""><code>' + item.c + '</code></a></th>';
+    let title = "";
+    otransforms.filter(c=>c[1]==item.c).forEach(c => title+= [...c[0]].join(" ")+" <compose>\n");
+    cycles.filter(c => c.includes(item.c)).map(c=> title+= c[0] + " <tab>".repeat(c.indexOf(item.c)));
+    title = title.replace(/"/g, '&quot;');
+    desc.innerHTML = `<th><a class="chr" href="" title="${title}"><code>${item.c}</code></a></th>`;
     desc.insertCell(1).innerHTML = item.desc.replace(/`([^`]+)`/g, '<code class="cv">$1</code>');
     let el = desc.children[0].children[0].children[0];
     if (item.impl !== undefined) el.style.color = Object.values(item.impl).includes(true)? "#55bb55" : "#bb5555";
@@ -222,79 +302,6 @@ function createTable() {
   });
   console.log("table created!");
 }
-var cycles = [
-  
-  "AＡ","BＢ","CＣ","DＤ","EＥ","FＦ","GＧ","HＨ","IＩ","JＪ","KＫ","LＬ","MＭ",
-  "NＮ","OＯ","PＰ","QＱ","RＲ","SＳ","TＴ","UＵ","VＶ","WＷ","XＸ","YＹ","ZＺ",
-  "aａα","bｂ","cｃ","dｄ","eｅ","fｆ","gｇ","hｈ","iｉ","jｊ","kｋ","lｌ","mｍ",
-  "nｎ","oｏ","pｐ","qｑ","rｒ√ŗ","sｓ∑","tｔ","uｕ","vｖ","wｗω","xｘ","yｙ","zｚ",
-  
-  "0０⁰","1１¹","2２²","3３³","4４⁴","5５⁵","6６⁶","7７⁷","8８⁸","9９⁹",
-  "!！‼", "@＠", "#＃", "%％", "^＾",
-  "+＋╋∔", "-－─∔", "*×＊", "/／÷", "\\＼", "|｜│║",
-  ":：", ";；", "?？‽", "\"”‟", "'“„",
-  "(（", ")）", "[［", "]］", "{｛", "}｝", "<＜≤«", ">＞≥»",
-  "=≡≠═",
-  " ∙", "\n¶"
-];
-
-var transforms = [];
-for (let [k, v] of Object.entries({
-  "||-": "╫",
-  "--|": "╪",
-  "=|": "╪",
-  "|": "│",
-  "||": "║",
-  "-": "─",
-  "--": "═",
-  "-|": "┼",
-  "--||": "╬",
-  "=||": "╬",
-  "<>": "↔",
-  "+-": "±", // also horizontal reverse
-  "^v": "↕",
-  "rev": "⇵",
-  "cw": "↷",
-  "ccw": "↶",
-  "rot": "⟳",
-  "o/":  "ø",  // empty art obj
-  "o\\": "ø",
-  "new": "ø",
-  "pop": "┐", // pop & remove item
-  "tri": "⌐", // triplicate
-  "dup": "┌", // duplicate 2nd from top
-  "g2": "┌", // duplicate 2nd from top
-  "3rd": "┘", // duplicate 2nd from top
-  "swap": "└",
-  "//": "⤢",
-  "abs": "⤢",
-  "+2":  "├",
-  "inc": "╵",
-  "+1":  "╵",
-  "-1":  "╷",
-  "dec": "╷",
-  "-2":  "┤",
-  "to":  "┬",  // to base (2 nums -> arr)
-  "from": "┴", // from base (arr & base -> num)
-  "dig": "◂",
-  "=/": "≠",
-  "!!": "‼",
-  "12": "½",
-  "1/2": "½",
-  "/2": "½",
-  "rt": "√",
-  "": "",
-  "": "a",
-  "": "c",
-})) {
-  transforms.push([[...k].sort().join(''), v]);
-}
-
-transforms.sort((a,b)=>{
-  let p1 = b[0].length-a[0].length;
-  if (p1) return p1;
-  return (b[0]>a[0]) - (b[0]<a[0])
-});
 let tkey = localStorage.kpr? eval(localStorage.kpr) : c => c.key === "F1" || c.key === "F2";
 
 inputs.onkeydown = program.onkeydown = function (e) {
