@@ -1617,13 +1617,15 @@ function fromBijective (n, b) {
 }
 
 function compressNum(n) {
-  if (n < compressedNumberStart) {
-    let c = Object.entries(simpleNumbers).find(c=>c[1]===n);
+  n = new Big(n);
+  if (n.lt(compressedNumberStart)) {
+    let tn = n.intValue();
+    let c = Object.entries(simpleNumbers).find(c=>c[1]===tn);
     if (c) return c[0];
-    c = Object.entries(shortNumbers).find(c=>c[1]===n);
+    c = Object.entries(shortNumbers).find(c=>c[1]===tn);
     if (c) return c[0];
     console.warn("< compressed start but not anywhere",n);
-  } else return `“${toBijective(new Big(n).minus(compressedNumberStart), baseChars.length).map(c=>baseChars[c]).join('')}„`;
+  } else return `“${toBijective(n.minus(compressedNumberStart), baseChars.length).map(c=>baseChars[c]).join('')}„`;
 }
 
 // function prettyError(e) {console.log(e.stack+"!");
