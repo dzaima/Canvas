@@ -257,7 +257,7 @@ class Pointer {
         }
       }
     }
-    if (this !== this.p.cpo && !this.p.cpo.inParent) index = eindex = 0; // WARNING destructive
+    if (this !== this.p.cpo && !this.p.cpo.inParent) index = eindex = 0; // WARNING destructive; for the stepper to start normally
     if (this.p.debug) debugLog(`${instr}@${index}${eindex-index===1||(eindex===0&&index===0)?'':"-"+(eindex-1)}: ${arrRepr(this.p.stack)}`);
     if (stepping) await redrawDebug(index, eindex, this.p);
   }
@@ -1346,10 +1346,11 @@ CanvasCode = class {
   
   break(newPtr, who) {
     if (debug > 1) debugLog(`break from ${this.ptrs.length} to ${newPtr}`);
-    var ptr = this.ptrs.pop();
-    if (debug > 1 && who !== ptr) console.warn("break who != last ptr");
+    var ptr = this.ptrs.indexOf(who);
+    this.ptrs.splice(ptr, 1);
+    // if (debug > 1 && who !== ptr) console.warn("break who != last ptr");
     if (this.ptrs.length === 0) return;
-    if (ptr.inParent) this.cpo.update(newPtr);
+    if (who.inParent && ptr != 0) this.ptrs[ptr-1].update(newPtr);
   }
   
   executeHere (newPr) {
