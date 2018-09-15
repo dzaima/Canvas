@@ -214,7 +214,7 @@ function createTable() {
     desc.chr = item.c;
     let title = "";
     otransforms.filter(c=>c[1]==item.c).forEach(c => title+= [...c[0]].join(" ")+" <compose>\n");
-    cycles.filter(c => c.includes(item.c)).map(c=> title+= c[0] + " <tab>".repeat(c.indexOf(item.c)));
+    cycles.filter(c => c.includes(item.c)).map(c=> title+= c[0] + " <tab>".repeat(c.indexOf(item.c)) + "\n");
     title = title.replace(/"/g, '&quot;');
     desc.innerHTML = `<th><a class="chr" href="" title="${title}"><code>${item.c}</code></a></th>`;
     desc.insertCell(1).innerHTML = item.desc.replace(/`([^`]+)`/g, '<code class="cv">$1</code>');
