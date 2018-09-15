@@ -1062,7 +1062,7 @@ CanvasCode = class {
       "Ｐ": () => this.outputFS(true, true, true),
       "ｐ": () => this.outputFS(true, false, true),
       
-      
+      "Ｅ": code => this.executeHere(code),
       "Ｕ": {
         A: "vectorize",
         S: (a) => a.toUpperCase(),
@@ -1353,6 +1353,7 @@ CanvasCode = class {
   }
   
   executeHere (newPr) {
+    newPr = newPr+"";
     this.addPtr(new (
       class extends Pointer {
         init() { this.inParent = false; }
