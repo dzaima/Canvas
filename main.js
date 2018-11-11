@@ -690,7 +690,7 @@ CanvasCode = class {
       "ｍ": {
         SN: (s, n) => s.repeat(Math.ceil(n/s.length)).substring(0, +n),
         AN: (a, n) => new Array(+n).fill().map((_,i) => a[i%a.length]),
-        aN: (a, n) => a.subsection(0, 0, +n),
+        aN: (a, n) => a.repeatingSubsection(+n, a.repr.length),
         
         NS: (n, s, ex) => ex("SN", s, n),
         NA: (n, a, ex) => ex("AN", a, n),
@@ -1648,6 +1648,10 @@ function compressNum(n) {
 //   } else console.error(e);
 // }
 
+function bigLog10(big) {
+  return (big+"").length + Math.log10("0."+big)
+}
+
 function compressString(arr) {
   compressionParts = [];
   class Part {
@@ -1663,11 +1667,11 @@ function compressString(arr) {
       this.arr.push([n, b]);
     }
     finish() {
-      let res = Big.ZERO;
+      let res = Big.ONE; // Big.ZERO;
       for (let i = this.arr.length-1; i >= 0; i--)
         res = res.mul(this.arr[i][1]).plus(this.arr[i][0]);
       this.score = res;
-      this.length = Math.log(this.score.floatValue())/Math.log(252);
+      this.length = bigLog10(this.score)/Math.log(252);
     }
   }
   // let stack = [new Part()];
@@ -1696,6 +1700,23 @@ function compressString(arr) {
         push(1, compressionModes);
         push(part.length-3, 16);
         for (let c of part) push(compressionChars.indexOf(c), compressionChars.length);
+        attempts.push(current);
+        current.finish();
+      } else {
+        current = new Part("chars");
+        if (debugCompression) console.log("trying raw ASCII");
+        for (let [subpart] of part.matchAll(".{1,18}")) {
+          if (subpart.length <= 2) {
+            push(0, compressionModes);
+            push(subpart.length-1, 2);
+            for (let c of subpart) push(compressionChars.indexOf(c), compressionChars.length);
+          } else {
+            push(1, compressionModes);
+            push(subpart.length-3, 16);
+            for (let c of subpart) push(compressionChars.indexOf(c), compressionChars.length);
+          }
+        }
+        
         attempts.push(current);
         current.finish();
       }

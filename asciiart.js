@@ -176,6 +176,15 @@ class Canvas {
     if (ney !== undefined) ney+= this.sy;
     return new Canvas(this.repr.slice(nsy, ney).map(c => c.slice(nsx, nex)), this.p);
   }
+  repeatingSubsection (x, y) {
+    var r = this.repr;
+    while (r.length < y) r = r.concat(this.repr);
+    return new Canvas(r.slice(0, y).map(c => {
+      var cr = c;
+      while (cr.length < x) cr = cr.concat(c);
+      return cr.slice(0, x);
+    }), this.p);
+  }
   forEach (lambda) {
     for (let x = this.sx; x < this.ex; x++) {
       for (let y = this.sy; y < this.ey; y++) {
