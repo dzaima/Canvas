@@ -96,6 +96,17 @@ class Canvas {
   get width() { return this.ex-this.sx }
   get height() { return this.ey-this.sy }
   
+  stringForm() {
+    var res = "";
+    for (let y = 0; y < this.ey; y++) {
+      for (let x = 0; x < this.ex; x++) {
+        res+= this.getChr(x, y);
+      }
+      res+= "\n";
+    }
+    return res.substring(0, res.length-1);
+  }
+  
   copy() {
     let res = new Canvas(this);
     res.sx = this.sx;
@@ -172,9 +183,12 @@ class Canvas {
   subsection (nsx, nsy, nex, ney) {
     if (nsx !== undefined) nsx+= this.sx;
     if (nsy !== undefined) nsy+= this.sy;
-    if (nex !== undefined) nex+= this.sx;
-    if (ney !== undefined) ney+= this.sy;
-    return new Canvas(this.repr.slice(nsy, ney).map(c => c.slice(nsx, nex)), this.p);
+    // if (nex !== undefined) nex+= this.sx;
+    // if (ney !== undefined) ney+= this.sy;
+    // return new Canvas(this.repeatingSubsection(nex, ney).repr.slice(nsy).map(c => c.slice(nsx)), this.p);
+    let resc = new Canvas(this);
+    resc.allocate(nex, ney);
+    return new Canvas(resc.repr.slice(nsy, ney).map(c => c.slice(nsx, nex)), this.p);
   }
   repeatingSubsection (x, y) {
     var r = this.repr;

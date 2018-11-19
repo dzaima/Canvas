@@ -257,7 +257,7 @@ class Pointer {
         }
       }
     }
-    if (this !== this.p.cpo && !this.p.cpo.inParent) index = eindex = 0; // WARNING destructive; for the stepper to start normally
+    if (this !== this.p.cpo && !this.p.cpo.inParent) index = eindex = 0; // WARNING destructive; for the stepper to start normally; TODO fix ⁷V5±‟⁸｛↔
     if (this.p.debug) debugLog(`${instr}@${index}${eindex-index===1||(eindex===0&&index===0)?'':"-"+(eindex-1)}: ${arrRepr(this.p.stack)}`);
     if (stepping) await redrawDebug(index, eindex, this.p);
   }
@@ -666,6 +666,17 @@ CanvasCode = class {
       },
       "╋": {
         SSS: (a,b,c) => a.split(b).join(c),
+        aaa: (a,b,c) => {
+          let res = new Canvas(a);
+          for (let y = a.sy-b.sy; y < a.ey+b.ey; y++) {
+            for (let x = a.sx-b.sx; x < a.ex+b.ex; x++) {
+              if (equal(a.subsection(x, y, x+b.width, y+b.height), b)) {
+                res.overlap(c, x, y);
+              }
+            }
+          }
+          return res;
+        },
         aaNN: (a, b, x, y) => a.overlap(b, x.minus(1), y.minus(1), smartOverlap),
         length: 4,
         default: (a, b, c, d, ex) => ex("aaNN", ...this.orderAs("aaNN", a, b, c, d)),
@@ -1481,7 +1492,7 @@ function equal(a, b) {
   if (isNum(a)) return a.eq(b);
   if (isJSNum(a)) return new Big(a).eq(b);
   if (isStr(a)) return a===b;
-  if (isArt(a)) return equal(a.repr, b.repr);// TODO: this should be improved (i'm lazy)
+  if (isArt(a)) return equal(a.stringForm(), b.stringForm());
   throw new Error("no eq test for "+a+";"+b);
 }
 function subType (a, b) { // is `a` a subtype of `b`?
