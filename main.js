@@ -591,7 +591,8 @@ CanvasCode = class {
         SS: (a, b) => [...a].join(b),
         AS: (a, s) => a.join(s),
         SA: (s, a) => a.join(s),
-        aa: (a, b, ex) => ex("SS", a.toString(), b.toString()),
+        aS: (a, s) => a.toString().split('\n').map(ln=>[...ln].join(s)),
+        Sa: (s, a) => a.toString().split('\n').map(ln=>[...ln].join(s)),
         
         SN: (s, n) => new Array(+n).fill(s),
         NS: (n, s, ex) => ex("SN", s, n),
