@@ -257,6 +257,7 @@ class Pointer {
         }
       }
     }
+    if (!this.p.cpo) return; // i have no idea
     if (this !== this.p.cpo && !this.p.cpo.inParent) index = eindex = 0; // WARNING destructive; for the stepper to start normally; TODO fix ⁷V5±‟⁸｛↔
     if (this.p.debug) debugLog(`${instr}@${index}${eindex-index===1||(eindex===0&&index===0)?'':"-"+(eindex-1)}: ${arrRepr(this.p.stack)}`);
     if (stepping) await redrawDebug(index, eindex, this.p);
