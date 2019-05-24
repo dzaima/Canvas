@@ -384,6 +384,77 @@ CanvasCode = class {
           
         }
       )(this.program, this, this.cpo.ptr)),
+      
+      "Ｈ": () => this.addPtr(new (
+        class extends Pointer {
+          init() {
+            this.level = this.p.ptrs.length-2;
+            this.obj = this.p.pop();
+            this.p.push(this.p.blank);
+            this.collect = this.branches.slice(-1)[0].c === "］";
+            this.canvas = isArt(this.obj);
+            if (this.canvas) {
+              this.result = new Canvas([], this.obj.p);
+            } else this.collected = [];
+            this.array = !isNum(this.obj) && !this.canvas;
+            this.endCount = this.canvas? new Big(this.obj.width * this.obj.height) : this.array? new Big(this.obj.length) : this.obj.round(0, Big.ROUND_FLOOR);
+            this.index = 0;
+            this.continue(undefined, true);
+          }
+          
+          iter() {
+            this.ptr = this.p.nextIns(this.ptr, this.program);
+            if (this.ptr >= this.eptr) this.continue();
+          }
+          
+          continue(ending, first = false) {
+            this.ptr = this.branches[0].i;
+            if (!first && this.collect) {
+              let added = this.p.collectToArray();
+              if (this.canvas) {
+                for (let item of added) this.result.overlap(new Canvas(item, this.p), this.obj.sx + this.x, this.obj.sy + this.y);
+              } else this.collected.push(...added);
+            }
+            if (this.index >= this.endCount.intValue()) return this.break();
+            
+            if (this.collect) {
+              this.p.push(new Break(1));
+            }
+  
+            let newItem, x, y;
+            if (this.canvas) {
+              this.x = this.index%this.obj.width;
+              this.y = 0 | this.index/this.obj.width;
+            }
+            // console.log(this.x,this.y,this.obj,this.index,+this.endCount);
+            if (this.array) newItem = this.obj[this.index];
+            else if (this.canvas) newItem = this.obj.repr[this.y][this.x] || this.obj.background;
+            else newItem = new Big(this.index+1);
+            this.p.push(newItem);
+            if (this.canvas) {
+              this.p.setSup(this.level, newItem);
+              this.p.setSup(this.level+1, this.x);
+              this.p.setSup(this.level+2, this.y);
+            } else {
+              this.p.setSup(this.level, newItem);
+              this.p.setSup(this.level+1, this.index + (this.array? 1 : 0));
+            }
+            
+            this.index++;
+          }
+          onBreak() {
+            if (this.collect) {
+              if (this.canvas) {
+                this.p.push(this.result);
+              } else this.p.push(this.collected);
+            }
+          }
+          toString() {
+            return `@${this.ptr} loop; ${this.sptr}-${this.eptr}${this.collect? ' '+ arrRepr(this.collected) : ''}`;
+          }
+          
+        }
+      )(this.program, this, this.cpo.ptr)),
       "［": () => this.addPtr(new (
         class extends Pointer {
           init() {
@@ -795,6 +866,11 @@ CanvasCode = class {
         N: (n) => +!n.eq(0),
         S: (s) => +(s.length !== 0),
         a: (a) => new Canvas(a.repr, this),
+      },
+      "！": {
+        N: (n) => +n.eq(0),
+        S: (s) => +(s.length === 0),
+        a: (a) => a.rotate(3).horizReverse(),
       },
       // string manipulation
       "Ｓ": {
@@ -1292,7 +1368,7 @@ CanvasCode = class {
     var lvl = 1;
     while (lvl > 0) {
       ind = this.nextIns(ind, program);
-      if ("［｛？‽Ｗ".includes(program[ind])) {
+      if ("［｛Ｈ？‽Ｗ".includes(program[ind])) {
         bstk.push({ c:program[ind], s:0 });
         lvl++;
       }

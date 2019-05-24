@@ -176,7 +176,7 @@
   `５“２＋”ｗＥｙＥ` → 9
 Ｆ	
 Ｇ	
-Ｈ	
+Ｈ	equal to ø；｛
 Ｉ	
 Ｊ	pop the first item / first line
   `helloＪ` → "ello", "h"
@@ -373,7 +373,7 @@
   aN: rotate clockwise that many times
   A, AN: rotate the items so that it looks rotated if printed
 ⤢	transpose / absolute value
-  a: transpose
+  a: transpose around main diagonal
     `ab¶cd⤢` → "ac¶bd"
   N: absolute value
     `４⤢` → 4
@@ -425,7 +425,10 @@
 ％	modulo
   NN: modulo
     `８３％` → 2
-！	
+！	not / transpose
+  N: `1` if value is `0`, else `0`
+  S: is string empty
+  a: transpose around antidiagonal
 α	get the second to last argument used in a simpleFunction //KEYW history
     `７３÷１％α；－` → 2 //NOTE (floor division implementation)
 ω	get the last argument used in a simpleFunction //KEYW history
