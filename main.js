@@ -1760,7 +1760,7 @@ function compressString(arr) {
       for (let i = this.arr.length-1; i >= 0; i--)
         res = res.mul(this.arr[i][1]).plus(this.arr[i][0]);
       this.score = res;
-      this.length = bigLog10(this.score)/Math.log(252);
+      this.length = bigLog10(this.score)/Math.log10(252);
     }
   }
   // let stack = [new Part()];
