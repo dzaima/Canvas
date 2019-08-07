@@ -636,7 +636,11 @@ CanvasCode = class {
         AN: (a, b) => (a.push(b), a),
         NA: (a, b) => (b.splice(0, 0, a), b),
       },
-      "－": (a, b) => a.minus(b),
+      "－": {
+        NN: (a, b) => a.minus(b),
+        AA: (a, b) => b.concat(a),
+        aa: (a, b) => b.appendVertically(a),
+      },
       "×": {
         NN: (a, b) => a.multiply(b),
         SS: (a, b) => b+a,
